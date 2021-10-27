@@ -1,2 +1,0 @@
-class TeacherLeader < ApplicationRecord
-end
