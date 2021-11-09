@@ -24,7 +24,7 @@ gem 'jsonapi-serializer'
 gem 'rack-cors'
 
 # User auth
-gem 'devise'
+gem 'devise', github: "ghiculescu/devise", branch: "patch-2"
 
 # Deprecate front-end tech
 # Use SCSS for stylesheets
