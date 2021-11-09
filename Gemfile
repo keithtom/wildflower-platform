@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.0'
+ruby '3.0.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', github: 'rails/rails', branch: 'main'
@@ -9,23 +9,30 @@ gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
+# Use Redis adapter to run Action Cable in production
+# gem 'redis', '~> 4.0'
+# Use Active Model has_secure_password
+# gem 'bcrypt', '~> 3.1.7'
+# Use Active Storage variant
+# gem 'image_processing', '~> 1.2'
+
+# Code Organization
+gem 'simple_command'
+
+# Build JSON APIs
+gem 'jsonapi-serializer'
+gem 'rack-cors'
+
+# User auth
+gem 'devise'
+
+# Deprecate front-end tech
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '~> 5.0'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
-# Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
-# Use Active Model has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use Active Storage variant
-# gem 'image_processing', '~> 1.2'
-
-gem 'devise'
 
 gem 'bootstrap', '~> 5.1.0'
 
@@ -33,9 +40,17 @@ gem 'bootstrap', '~> 5.1.0'
 gem 'bootsnap', '>= 1.4.4', require: false
 
 group :development, :test do
+  gem 'dotenv-rails'
+
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'guard-rspec'
+  gem 'rspec-its'
   gem 'rspec-rails'
+
+  gem 'database_cleaner-active_record'
+  gem 'factory_bot_rails'
+  gem 'faker'
 end
 
 group :development do
@@ -45,8 +60,18 @@ group :development do
   # Can be configured to work on production as well see: https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
   gem 'listen', '~> 3.3'
   gem 'rack-mini-profiler', '~> 2.0'
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
+
+  gem 'rubocop', require: false
+
+  gem 'rails-erd'
+end
+
+group :production do
+  # Use Sidekiq for background jobs
+  gem 'sidekiq'
+
+  # for ActiveStorage
+  gem 'aws-sdk-s3', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
