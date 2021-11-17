@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/concern'
 
 class ApplicationRecord < ActiveRecord::Base
@@ -23,7 +25,7 @@ class ApplicationRecord < ActiveRecord::Base
 
       loop do
         self.external_identifier = generate_external_identifier
-        break unless self.class.where(external_identifier: external_identifier).exists?
+        break unless self.class.exists?(external_identifier: external_identifier)
       end
     end
   end
