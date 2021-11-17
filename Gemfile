@@ -24,7 +24,7 @@ gem 'jsonapi-serializer'
 gem 'rack-cors'
 
 # User auth
-gem 'devise', github: "ghiculescu/devise", branch: "patch-2"
+gem 'devise', github: 'ghiculescu/devise', branch: 'patch-2'
 
 # Deprecate front-end tech
 # Use SCSS for stylesheets
@@ -61,7 +61,9 @@ group :development do
   gem 'listen', '~> 3.3'
   gem 'rack-mini-profiler', '~> 2.0'
 
-  gem 'rubocop', require: false
+  gem 'rubocop'
+  gem 'rubocop-rails'
+  gem 'rubocop-rspec'
 
   gem 'rails-erd'
 end
