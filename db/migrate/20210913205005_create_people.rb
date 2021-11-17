@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreatePeople < ActiveRecord::Migration[7.0]
   def change
     create_table :people do |t|
@@ -6,7 +8,7 @@ class CreatePeople < ActiveRecord::Migration[7.0]
       t.string :last_name
       t.string :phone
 
-      t.string :journey_state  # paused, ETL, TL, OG, WF
+      t.string :journey_state # paused, ETL, TL, OG, WF
 
       # race data
       # marketing data, lead object.
