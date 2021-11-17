@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_16_233935) do
+ActiveRecord::Schema.define(version: 2021_11_17_190245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,7 +26,9 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.string "country"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+    t.index ["external_identifier"], name: "index_addresses_on_external_identifier", unique: true
   end
 
   create_table "people", force: :cascade do |t|
@@ -37,7 +39,9 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.string "journey_state"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
     t.index ["email"], name: "index_people_on_email", unique: true
+    t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
   end
 
   create_table "person_experiences", force: :cascade do |t|
@@ -50,6 +54,8 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.bigint "school_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_person_experiences_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_person_experiences_on_person_id"
     t.index ["school_id"], name: "index_person_experiences_on_school_id"
   end
@@ -60,6 +66,8 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_person_roles_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_person_roles_on_person_id"
   end
 
@@ -69,6 +77,8 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_person_skills_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_person_skills_on_person_id"
   end
 
@@ -86,6 +96,8 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.string "status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -97,7 +109,9 @@ ActiveRecord::Schema.define(version: 2021_11_16_233935) do
     t.integer "person_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
