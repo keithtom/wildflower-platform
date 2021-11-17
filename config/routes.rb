@@ -2,7 +2,14 @@
 
 Rails.application.routes.draw do
   devise_for :users
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  
+
+  namespace :api do
+    namespace :v1 do
+      resources :people, only: %i[index show]
+      resources :schools, only: %i[index show]
+    end
+  end
 
   resources :people, only: %i[index show edit update]
   # create (on signup, read, update (if you), destroy? never.)

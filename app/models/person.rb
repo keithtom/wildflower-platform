@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Person < ApplicationRecord
+  include ApplicationRecord::ExternalIdentifier
+
   has_many :experiences, dependent: :destroy
   has_many :schools, through: :experiences
 
