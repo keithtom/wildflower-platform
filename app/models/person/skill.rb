@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-module Person
-  class Skill < ApplicationRecord
+class Person
+  class Skill
     belongs_to :person
+    belongs_to :skill
   end
 end
