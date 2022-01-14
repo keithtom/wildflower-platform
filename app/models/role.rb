@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Role < ApplicationRecord
+  include ApplicationRecord::ExternalIdentifier
+
   ASSISTANT = 'assistant'
   FOUNDER = 'founder'
   TEACHER = 'teacher'
