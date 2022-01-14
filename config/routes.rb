@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  devise_for :users
-  
 
-  namespace :api do
-    namespace :v1 do
-      resources :people, only: %i[index show]
-      resources :schools, only: %i[index show]
-    end
+
+  namespace :v1 do
+    resources :people, only: %i[index show]
+    resources :schools, only: %i[index show]
   end
 
+  ### DELETE!
+  devise_for :users
   resources :people, only: %i[index show edit update]
   # create (on signup, read, update (if you), destroy? never.)
 
