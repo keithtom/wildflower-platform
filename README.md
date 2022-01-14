@@ -19,6 +19,7 @@ Things you may want to cover:
 
 * Services (job queues, cache servers, search engines, etc.)
 
-* Deployment instructions
+## Deployment instructions
 
-* ...
+Any merge to the `main` branch on the Github repository will automatically deploy to produciton and run migrations.
+You can follow the process by using the `heroku logs --tail` command.
