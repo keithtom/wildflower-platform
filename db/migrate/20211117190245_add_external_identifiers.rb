@@ -11,11 +11,11 @@ class AddExternalIdentifiers < ActiveRecord::Migration[7.0]
     add_column :users, :external_identifier, :string, null: false
     add_index :users, :external_identifier, unique: true
 
-    add_column :person_skills, :external_identifier, :string, null: false
-    add_index :person_skills, :external_identifier, unique: true
+    add_column :skills, :external_identifier, :string, null: false
+    add_index :skills, :external_identifier, unique: true
 
-    add_column :person_roles, :external_identifier, :string, null: false
-    add_index :person_roles, :external_identifier, unique: true
+    add_column :roles, :external_identifier, :string, null: false
+    add_index :roles, :external_identifier, unique: true
 
     add_column :addresses, :external_identifier, :string, null: false
     add_index :addresses, :external_identifier, unique: true

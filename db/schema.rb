@@ -65,8 +65,6 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.bigint "role_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "external_identifier", null: false
-    t.index ["external_identifier"], name: "index_person_roles_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_person_roles_on_person_id"
     t.index ["role_id"], name: "index_person_roles_on_role_id"
   end
@@ -76,8 +74,6 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.bigint "skill_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "external_identifier", null: false
-    t.index ["external_identifier"], name: "index_person_skills_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_person_skills_on_person_id"
     t.index ["skill_id"], name: "index_person_skills_on_skill_id"
   end
@@ -87,6 +83,8 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_roles_on_external_identifier", unique: true
   end
 
   create_table "schools", force: :cascade do |t|
@@ -112,6 +110,8 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_skills_on_external_identifier", unique: true
   end
 
   create_table "users", force: :cascade do |t|
