@@ -1,4 +1,4 @@
-class Api::V1::SchoolsController < ApiController
+class V1::SchoolsController < ApiController
   def index
     @schools = School.all
     render json: V1::SchoolSerializer.new(@schools)
