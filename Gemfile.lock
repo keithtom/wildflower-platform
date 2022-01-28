@@ -346,7 +346,7 @@ DEPENDENCIES
   guard-rspec
   jsonapi-serializer
   listen (~> 3.3)
-  pg
+  pg (~> 1.1)
   puma (~> 5.0)
   rack-cors
   rack-mini-profiler (~> 2.0)
