@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_17_190245) do
+ActiveRecord::Schema.define(version: 2022_01_31_205512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.string "external_identifier", null: false
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
     t.index ["external_identifier"], name: "index_addresses_on_external_identifier", unique: true
+  end
+
+  create_table "hubs", force: :cascade do |t|
+    t.string "name"
+    t.bigint "entrepreneur_id"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["entrepreneur_id"], name: "index_hubs_on_entrepreneur_id"
+    t.index ["external_identifier"], name: "index_hubs_on_external_identifier", unique: true
   end
 
   create_table "people", force: :cascade do |t|
@@ -78,6 +88,18 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.index ["skill_id"], name: "index_person_skills_on_skill_id"
   end
 
+  create_table "pods", force: :cascade do |t|
+    t.string "name"
+    t.bigint "hub_id"
+    t.bigint "primary_contact_id"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_identifier"], name: "index_pods_on_external_identifier", unique: true
+    t.index ["hub_id"], name: "index_pods_on_hub_id"
+    t.index ["primary_contact_id"], name: "index_pods_on_primary_contact_id"
+  end
+
   create_table "roles", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -85,6 +107,12 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "external_identifier", null: false
     t.index ["external_identifier"], name: "index_roles_on_external_identifier", unique: true
+  end
+
+  create_table "school_relationships", force: :cascade do |t|
+    t.string "kind"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "schools", force: :cascade do |t|
@@ -102,7 +130,15 @@ ActiveRecord::Schema.define(version: 2021_11_17_190245) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "external_identifier", null: false
+    t.bigint "pod_id"
+    t.string "short_name"
+    t.string "airtable_id"
+    t.string "facebook"
+    t.string "instagram"
+    t.string "timezone"
+    t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
+    t.index ["pod_id"], name: "index_schools_on_pod_id"
   end
 
   create_table "skills", force: :cascade do |t|
