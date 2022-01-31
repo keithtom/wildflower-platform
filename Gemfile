@@ -6,7 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '3.0.2'
 
 gem 'rails', '~> 7.0.1'
-gem "pg", "~> 1.1"
+gem 'pg', '~> 1.1'
 
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
@@ -42,9 +42,10 @@ group :development, :test do
   gem 'rspec-rails'
 
   gem 'database_cleaner-active_record'
-  gem 'factory_bot_rails'
   gem 'faker'
 end
+gem 'factory_bot_rails' # move to development after initial testing done
+gem 'faker'
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
