@@ -18,11 +18,6 @@ class CreateSchools < ActiveRecord::Migration[7.0]
 
       t.string :status
 
-      # phone,email
-      # website, facebook, etc
-
-      # board members
-
       t.timestamps
     end
   end
