@@ -2,5 +2,4 @@
 
 class Skill < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
-
 end

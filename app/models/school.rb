@@ -7,6 +7,7 @@ class School < ApplicationRecord
   has_one :address, as: :addressable, dependent: :destroy
 
   has_many :school_relationships, class_name: 'School::Relationship', dependent: :destroy
+  has_many :people, through: :school_relationships
 
   module Governance
     CHARTER = 'Charter'
