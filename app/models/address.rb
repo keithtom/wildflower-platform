@@ -2,4 +2,6 @@
 
 class Address < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
+
+  belongs_to :addressable, polymorphic: true
 end
