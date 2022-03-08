@@ -66,6 +66,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    acts-as-taggable-on (9.0.1)
+      activerecord (>= 6.0, < 7.1)
     ast (2.4.2)
     autoprefixer-rails (10.4.2.0)
       execjs (~> 2)
@@ -335,6 +337,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  acts-as-taggable-on
   aws-sdk-s3
   bootstrap (~> 5.1.0)
   byebug

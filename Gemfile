@@ -27,6 +27,9 @@ gem 'rack-cors'
 # User auth
 gem 'devise'
 
+# models
+gem 'acts-as-taggable-on'
+
 # Deprecate front-end tech
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
