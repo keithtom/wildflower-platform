@@ -3,5 +3,5 @@
 class Address < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  belongs_to :addressable, polymorphic: true
+  belongs_to :addressable, polymorphic: true, optional: true
 end

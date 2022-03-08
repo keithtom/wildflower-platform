@@ -53,40 +53,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
   end
 
-  create_table "person_experiences", force: :cascade do |t|
-    t.bigint "person_id"
-    t.string "type"
-    t.string "name"
-    t.text "description"
-    t.date "start_date"
-    t.date "end_date"
-    t.bigint "school_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "external_identifier", null: false
-    t.index ["external_identifier"], name: "index_person_experiences_on_external_identifier", unique: true
-    t.index ["person_id"], name: "index_person_experiences_on_person_id"
-    t.index ["school_id"], name: "index_person_experiences_on_school_id"
-  end
-
-  create_table "person_roles", force: :cascade do |t|
-    t.bigint "person_id"
-    t.bigint "role_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["person_id"], name: "index_person_roles_on_person_id"
-    t.index ["role_id"], name: "index_person_roles_on_role_id"
-  end
-
-  create_table "person_skills", force: :cascade do |t|
-    t.bigint "person_id"
-    t.bigint "skill_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["person_id"], name: "index_person_skills_on_person_id"
-    t.index ["skill_id"], name: "index_person_skills_on_skill_id"
-  end
-
   create_table "pods", force: :cascade do |t|
     t.string "name"
     t.bigint "hub_id"
@@ -99,19 +65,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
     t.index ["primary_contact_id"], name: "index_pods_on_primary_contact_id"
   end
 
-  create_table "roles", force: :cascade do |t|
-    t.string "name"
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "external_identifier", null: false
-    t.index ["external_identifier"], name: "index_roles_on_external_identifier", unique: true
-  end
-
   create_table "school_relationships", force: :cascade do |t|
     t.string "kind"
+    t.bigint "school_id"
+    t.bigint "person_id"
+    t.string "name"
+    t.text "description"
+    t.date "start_date"
+    t.date "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_school_relationships_on_person_id"
+    t.index ["school_id"], name: "index_school_relationships_on_school_id"
   end
 
   create_table "schools", force: :cascade do |t|
@@ -138,15 +103,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
     t.index ["pod_id"], name: "index_schools_on_pod_id"
-  end
-
-  create_table "skills", force: :cascade do |t|
-    t.string "name"
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "external_identifier", null: false
-    t.index ["external_identifier"], name: "index_skills_on_external_identifier", unique: true
   end
 
   create_table "taggings", force: :cascade do |t|

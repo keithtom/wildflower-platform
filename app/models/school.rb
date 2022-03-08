@@ -4,7 +4,7 @@ class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
   belongs_to :pod, optional: true
-  has_one :address, as: :addressable, dependent: :destroy
+  has_one :address, as: :addressable, dependent: :destroy, required: false, inverse_of: :addressable
 
   has_many :school_relationships, class_name: 'School::Relationship', dependent: :destroy
   has_many :people, through: :school_relationships
