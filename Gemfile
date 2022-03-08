@@ -7,9 +7,9 @@ ruby '3.0.2'
 
 gem 'rails', '~> 7.0.1'
 gem 'pg', '~> 1.1'
+gem 'puma', '~> 5.0'
 
 # Use Puma as the app server
-gem 'puma', '~> 5.0'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
@@ -20,6 +20,7 @@ gem 'puma', '~> 5.0'
 # Code Organization
 gem 'simple_command'
 
+
 # Build JSON APIs
 gem 'jsonapi-serializer'
 gem 'rack-cors'
@@ -29,11 +30,6 @@ gem 'devise'
 
 # models
 gem 'acts-as-taggable-on'
-
-# Deprecate front-end tech
-# Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
-gem 'bootstrap', '~> 5.1.0'
 
 group :development, :test do
   gem 'dotenv-rails'
@@ -47,7 +43,8 @@ group :development, :test do
   gem 'database_cleaner-active_record'
   gem 'faker'
 end
-gem 'factory_bot_rails' # move to development after initial testing done
+
+gem 'factory_bot_rails' # move to development after initial testing done; needed for production seeding
 gem 'faker'
 
 group :development do
