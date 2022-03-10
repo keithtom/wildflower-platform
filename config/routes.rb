@@ -4,16 +4,24 @@ Rails.application.routes.draw do
 
 
   namespace :v1 do
-    # user resources
-    # create only if email confirmed.  anyone cna hit api
-    # update only if it is you or super admin
+    resources :users, except: [:index, :destroy]
 
-    resources :people, only: %i[index create show update]
+    resources :hubs, except: :destroy do
+      resources :pods, except: :destroy
+    end
+
+    resources :people, except: :destroy do
+      resources :school_relationships
+    end
     get "people/search", as: :search_people
 
 
-    resources :schools, only: %i[index create show update]
+    resources :schools, except: :destroy do
+      resources :school_relationships
+    end
     get "schools/search", as: :search_schools
+
+
   end
 
   ### DELETE!
