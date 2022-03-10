@@ -18,30 +18,40 @@ require 'factory_bot_rails'
 #   Hub.create!(name: hub_name, :entrepreneur => FactoryBot.create(:person))
 # end
 
+# general context
 hub1 = FactoryBot.create(:hub)
 hub2 = FactoryBot.create(:hub)
 
-pod1 = FactoryBot.create(:pod, hub: hub1)
-
-school1 = FactoryBot.create(:school, :pod => pod1)
-school2 = FactoryBot.create(:school)
-
+# two teacher leaders for school 1
 person1 = FactoryBot.create(:person)
 person2 = FactoryBot.create(:person)
 
 user1 = FactoryBot.create(:user, :person => person1)
 user2 = FactoryBot.create(:user, :person => person2)
-user3 = FactoryBot.create(:user)  # hasn't yet associated person
 
+pod1 = FactoryBot.create(:pod, hub: hub1)
+school1 = FactoryBot.create(:school, :pod => pod1)
 school1.address = FactoryBot.create(:address)
-school2.address = FactoryBot.create(:address)
 
-person1.skills << FactoryBot.create(:skill)
-person1.skills << FactoryBot.create(:skill)
-person1.roles << FactoryBot.create(:role)
+person1.audience_list = "primary, elementary"
+person1.role_list = "marketing, operations, teacher leader"
 person1.address = FactoryBot.create(:address)
-person1.experiences << FactoryBot.create(:person_experience, school: school1)
+person1.school_relationships << FactoryBot.create(:school_relationship, school: school1)
+person1.save!
+
+person2.audience_list = "charter, foundation"
+person2.role_list = "compliance, communications, finance, teacher leader"
+person2.address = FactoryBot.create(:address)
+person2.school_relationships << FactoryBot.create(:school_relationship, school: school1)
+person2.save!
 
 
-person2.skills << FactoryBot.create(:skill)
-person2.roles << FactoryBot.create(:role)
+# new ETL
+person3 = FactoryBot.create(:person)
+user3 = FactoryBot.create(:user, :person => person3)
+pod3 = FactoryBot.create(:pod, hub: hub2)
+school3 = FactoryBot.create(:school)
+school3.address = FactoryBot.create(:address)
+
+# new discovery user
+user3 = FactoryBot.create(:user)  # hasn't yet associated personal profile yet

@@ -3,13 +3,10 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  has_many :experiences, dependent: :destroy
-  has_many :schools, through: :experiences
+  acts_as_taggable_on :audiences, :roles
 
-  has_many :person_roles, dependent: :destroy, :class_name => "Person::Role"
-  has_many :roles, through: :person_roles
-  has_many :person_skills, dependent: :destroy, :class_name => "Person::Skill"
-  has_many :skills, through: :person_skills
+  has_many :school_relationships, dependent: :destroy
+  has_many :schools, through: :school_relationships
 
   has_one :address, as: :addressable, dependent: :destroy
 end
