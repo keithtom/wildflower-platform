@@ -3,6 +3,8 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  searchkick
+
   acts_as_taggable_on :audiences, :roles
 
   has_many :school_relationships, dependent: :destroy

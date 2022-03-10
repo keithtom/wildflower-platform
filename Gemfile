@@ -24,6 +24,10 @@ gem 'simple_command'
 gem 'jsonapi-serializer'
 gem 'rack-cors'
 
+# Search
+gem "searchkick"
+gem "elasticsearch"
+
 # User auth
 gem 'devise'
 

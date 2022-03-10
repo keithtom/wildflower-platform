@@ -4,17 +4,18 @@ Rails.application.routes.draw do
 
 
   namespace :v1 do
-    resources :people, only: %i[index show]
-    resources :schools, only: %i[index show]
+    # user resources
+    # create only if email confirmed.  anyone cna hit api
+    # update only if it is you or super admin
+
+    resources :people, only: %i[index create show update]
+    get "people/search", as: :search_people
+
+
+    resources :schools, only: %i[index create show update]
+    get "schools/search", as: :search_schools
   end
 
   ### DELETE!
   devise_for :users
-  resources :people, only: %i[index show edit update]
-  # create (on signup, read, update (if you), destroy? never.)
-
-  resources :teacher_leaders, only: %i[index show edit update]
-  resources :partners, only: %i[index show edit update]
-
-  resources :schools, only: %i[index show edit update]
 end
