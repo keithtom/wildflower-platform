@@ -20,7 +20,6 @@ gem 'puma', '~> 5.0'
 # Code Organization
 gem 'simple_command'
 
-
 # Build JSON APIs
 gem 'jsonapi-serializer'
 gem 'rack-cors'
@@ -41,7 +40,6 @@ group :development, :test do
   gem 'rspec-rails'
 
   gem 'database_cleaner-active_record'
-  gem 'faker'
 end
 
 gem 'factory_bot_rails' # move to development after initial testing done; needed for production seeding
