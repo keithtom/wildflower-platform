@@ -1,5 +1,7 @@
 class V1::PeopleController < ApiController
   def index
+    # eager load tags
+
     @people = Person.all
     render json: V1::PersonSerializer.new(@people)
   end

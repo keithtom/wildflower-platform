@@ -1,10 +1,7 @@
 namespace :tags do
   desc 'Setup the initial tags list.'
-  task 'initialize' do
-    if ActsAsTaggableOn::Tag.any?
-      puts 'Tags already exist... aborting!'
-      return
-    end
+  task initialize: :environment do
+    abort 'Tags already exist... aborting!' if ActsAsTaggableOn::Tag.any?
 
     roles = ['founder', 'board member', 'assistant teacher', 'operations', 'communications', 'finance', 'marketing',
              'admissions', 'compliance', 'fundraising', 'well-being']
@@ -12,7 +9,7 @@ namespace :tags do
                 'regional site entrepreneur & operations guide', 'teacher leader']
 
     (roles + audience).each do |name|
-      ActsAsTaggableOn::Tag.create name: name
+      ActsAsTaggableOn::Tag.create! name: name
     end
   end
 end

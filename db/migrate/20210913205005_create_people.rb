@@ -29,10 +29,6 @@ class CreatePeople < ActiveRecord::Migration[7.0]
 
     # we have such broad tables... many sources coming together from many purposes...
     # you should be able to "join" in the SSJ data set.
-    # skills list...
-
-    # advanced options
-    # flexible tuition, charter, etc
 
     add_index :people, :email, unique: true
   end

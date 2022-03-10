@@ -6,8 +6,10 @@ module V1
                :max_enrollment, :facebook, :instagram
 
     belongs_to :pod
-    has_one :address
 
+    has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer
     has_many :people
+
+    has_one :address
   end
 end

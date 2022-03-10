@@ -5,9 +5,10 @@ module V1
     attributes :email, :first_name, :last_name, :phone
 
     has_many :schools
-    has_many :roles
-    has_many :skills
-    has_many :experiences, :serializer => V1::Person::ExperienceSerializer
+    has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer
+
+    has_many :roles, serializer: V1::TagSerializer
+    has_many :audiences, serializer: V1::TagSerializer
 
     has_one :address
   end

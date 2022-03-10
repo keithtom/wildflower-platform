@@ -5,6 +5,7 @@ class ActsAsTaggableOnMigration < ActiveRecord::Migration[6.0]
   def self.up
     create_table ActsAsTaggableOn.tags_table do |t|
       t.string :name
+      t.string :description
       t.timestamps
     end
 

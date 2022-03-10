@@ -1,4 +1,4 @@
-class School::Relationship < ApplicationRecord
+class SchoolRelationship < ApplicationRecord
   TYPES = []
 
   belongs_to :school
