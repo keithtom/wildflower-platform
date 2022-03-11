@@ -6,15 +6,18 @@ class V1::PeopleController < ApiController
   end
 
 
+  # this shoudl return a list of people.
+  # or do you have a search API that knows to return a search object.
   def search
     # eager load tags
-    offset = 0
-    limit = nil
-    where = {}.merge(search_params[:people_filters]).merge(search_params[:school_filters])
+    offset = search_params[:offset]
+    limit = search_params[:limit]
+    where = {}.merge(search_params[:people_filters] || {}).merge(search_params[:school_filters]||{})
     query = search_params[:q]
     boost_where = {} # ideally boost local results first?
-    tracking = {user_id: current_user.id}
-    @people = People.search(query, where: where, limit: limit, offset: offset, track: tracking)
+    tracking = {} # {user_id: current_user.id}
+    @search = Person.search(query, where: where, limit: limit, offset: offset, track: tracking)
+    @people = @search.to_a
     render json: V1::PersonSerializer.new(@people)
   end
 
@@ -29,6 +32,6 @@ class V1::PeopleController < ApiController
   # audience = list of tags (used to be roles)
   # roles = list of tags (used to be skills)
   def search_params
-    params[:people].permit(:q, :audiences, :roles, :people_filters, :school_filters)
+    params.require(:search).permit(:q, :audiences, :roles, :people_filters, :school_filters, :offset, :limit)
   end
 end

@@ -13,7 +13,7 @@ class Person < ApplicationRecord
   has_one :address, as: :addressable
 
   # https://github.com/ankane/searchkick#indexing
-  scope :search_import, -> { includes([{:school_relationships => :schools}, :address, :audiences, :roles]) }
+  scope :search_import, -> { includes([:school_relationships, :schools, :address, {:taggings => :tags}]) }
 
   # https://github.com/ankane/searchkick#indexing
   def search_data
@@ -22,8 +22,8 @@ class Person < ApplicationRecord
       name: "#{first_name} #{last_name}",
       audiences: audience_list.join(" "),
       roles: role_list.join(" "),
-      address_city: address.city,
-      address_state: address.state
+      address_city: address&.city,
+      address_state: address&.state
     }
   end
 end

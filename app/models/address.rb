@@ -11,6 +11,6 @@ class Address < ApplicationRecord
 
   # https://github.com/ankane/searchkick#indexing
   def reindex_addressable
-    addressable.reindex
+    addressable.try(:reindex)
   end
 end

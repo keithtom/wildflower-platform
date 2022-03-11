@@ -44,6 +44,9 @@ group :development, :test do
   gem 'rspec-its'
   gem 'rspec-rails'
 
+  # APIs
+  gem 'jsonapi-rspec'
+
   gem 'database_cleaner-active_record'
 end
 
