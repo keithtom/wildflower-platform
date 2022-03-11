@@ -29,9 +29,6 @@ gem 'oj' # faster serialization
 gem "searchkick"
 gem "elasticsearch", '~> 7.x'
 
-# User auth
-gem 'devise'
-
 # models
 gem 'acts-as-taggable-on'
 

@@ -19,10 +19,5 @@ Rails.application.routes.draw do
     resources :hubs, except: :destroy do
       resources :pods, except: :destroy
     end
-
-
   end
-
-  ### DELETE!
-  devise_for :users
 end

@@ -4,7 +4,6 @@
 
 - Channels: the entry point for websocket connections
 - API Controllers: the entry point for HTTPS API calls
-- Controllers: legacy controllers for devise authentication, serving the initial HTML payload
 - Mailboxes: the entry point for SMTP (email interface)
 
 ## Backend Logic
@@ -15,4 +14,4 @@
 - Mailers: sending outbound emails
 - Models: thin active record model layer
 - Serializer: presenters for the models used primarily for the API & websocket channels
-- Views: mailer views and legacy/devise views
+- Views: mailer views and legacy views
