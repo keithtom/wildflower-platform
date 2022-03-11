@@ -5,7 +5,7 @@ class School < ApplicationRecord
 
   acts_as_taggable_on :audiences
 
-  searchkick
+  searchkick callbacks: :async
 
   belongs_to :pod, optional: true
   has_one :address, as: :addressable, dependent: :destroy, required: false, inverse_of: :addressable
