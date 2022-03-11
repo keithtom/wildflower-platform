@@ -8,9 +8,9 @@ class School < ApplicationRecord
   searchkick callbacks: :async
 
   belongs_to :pod, optional: true
-  has_one :address, as: :addressable, dependent: :destroy, required: false, inverse_of: :addressable
+  has_one :address, as: :addressable, required: false, inverse_of: :addressable
 
-  has_many :school_relationships, dependent: :destroy
+  has_many :school_relationships
   has_many :people, through: :school_relationships
 
   module Governance
@@ -46,5 +46,22 @@ class School < ApplicationRecord
     TEN_MONTH = '10 month'
     YEAR_ROUND = 'Year Round'
     TYPES = [NINE_MONTH, TEN_MONTH, YEAR_ROUND]
+  end
+
+  # https://github.com/ankane/searchkick#indexing
+  scope :search_import, -> { includes([{:school_relationships => :people}, :address, :audiences]) }
+
+  # https://github.com/ankane/searchkick#indexing
+  def search_data
+    {
+      name: name,
+      short_name: short_name,
+      old_name: old_name,
+      website: website,
+      email: email,
+      audiences: audience_list.join(" "),
+      address_city: address.city,
+      address_state: address.state
+    }
   end
 end

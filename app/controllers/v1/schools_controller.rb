@@ -6,6 +6,9 @@ class V1::SchoolsController < ApiController
   end
 
   def search
+    # eager load tags
+    @schools = School.search("")
+    render json: V1::SchoolSerializer.new(@schools)
   end
 
   def show
