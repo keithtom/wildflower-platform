@@ -23,10 +23,11 @@ gem 'simple_command'
 # Build JSON APIs
 gem 'jsonapi-serializer'
 gem 'rack-cors'
+gem 'oj' # faster serialization
 
 # Search
 gem "searchkick"
-gem "elasticsearch"
+gem "elasticsearch", '~> 7.x'
 
 # User auth
 gem 'devise'

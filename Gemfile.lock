@@ -110,13 +110,13 @@ GEM
     dotenv-rails (2.7.6)
       dotenv (= 2.7.6)
       railties (>= 3.2)
-    elastic-transport (8.0.0)
-      faraday (~> 1)
+    elasticsearch (7.17.1)
+      elasticsearch-api (= 7.17.1)
+      elasticsearch-transport (= 7.17.1)
+    elasticsearch-api (7.17.1)
       multi_json
-    elasticsearch (8.1.0)
-      elastic-transport (= 8.0.0)
-      elasticsearch-api (= 8.1.0)
-    elasticsearch-api (8.1.0)
+    elasticsearch-transport (7.17.1)
+      faraday (~> 1)
       multi_json
     erubi (1.10.0)
     factory_bot (6.2.0)
@@ -213,6 +213,7 @@ GEM
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oj (3.13.11)
     orm_adapter (0.5.0)
     parallel (1.21.0)
     parser (3.1.1.0)
@@ -355,12 +356,13 @@ DEPENDENCIES
   database_cleaner-active_record
   devise
   dotenv-rails
-  elasticsearch
+  elasticsearch (~> 7.x)
   factory_bot_rails
   faker
   guard-rspec
   jsonapi-serializer
   listen (~> 3.3)
+  oj
   pg (~> 1.1)
   puma (~> 5.0)
   rack-cors
