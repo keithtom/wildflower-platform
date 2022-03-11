@@ -49,7 +49,7 @@ class School < ApplicationRecord
   end
 
   # https://github.com/ankane/searchkick#indexing
-  scope :search_import, -> { includes([{:school_relationships => :people}, :address, :audiences]) }
+  scope :search_import, -> { includes([:school_relationships, :people, :address, {:taggings => :tags}]) }
 
   # https://github.com/ankane/searchkick#indexing
   def search_data
@@ -60,8 +60,8 @@ class School < ApplicationRecord
       website: website,
       email: email,
       audiences: audience_list.join(" "),
-      address_city: address.city,
-      address_state: address.state
+      address_city: address&.city,
+      address_state: address&.state
     }
   end
 end

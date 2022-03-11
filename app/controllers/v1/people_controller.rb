@@ -5,9 +5,6 @@ class V1::PeopleController < ApiController
     render json: V1::PersonSerializer.new(@people)
   end
 
-
-  # this shoudl return a list of people.
-  # or do you have a search API that knows to return a search object.
   def search
     # eager load tags
     offset = search_params[:offset]
