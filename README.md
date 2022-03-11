@@ -23,3 +23,16 @@ Things you may want to cover:
 
 Any merge to the `main` branch on the Github repository will automatically deploy to produciton and run migrations.
 You can follow the process by using the `heroku logs --tail` command.
+
+
+## Platform API
+
+- Search APIs: people/schools
+- show/index
+- edit/update
+- create
+
+- main entities are people and schools
+- school relationships connects the two
+
+- tags are another dimension

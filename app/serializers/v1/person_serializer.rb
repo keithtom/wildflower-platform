@@ -2,7 +2,7 @@
 
 module V1
   class PersonSerializer < ApplicationSerializer
-    attributes :email, :first_name, :last_name, :phone
+    attributes :email, :first_name, :last_name, :phone, :updated_at
 
     has_many :schools
     has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer

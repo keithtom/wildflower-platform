@@ -23,6 +23,11 @@ gem 'simple_command'
 # Build JSON APIs
 gem 'jsonapi-serializer'
 gem 'rack-cors'
+gem 'oj' # faster serialization
+
+# Search
+gem "searchkick"
+gem "elasticsearch", '~> 7.x'
 
 # User auth
 gem 'devise'
@@ -38,6 +43,9 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'rspec-its'
   gem 'rspec-rails'
+
+  # APIs
+  gem 'jsonapi-rspec'
 
   gem 'database_cleaner-active_record'
 end
