@@ -1,8 +1,6 @@
 namespace :search do
   desc 'Re-index objects for search'
 
-  task reindex: :environment do
-    Person.reindex
-    School.reindex
+  task reindex: "searchkick:reindex:all" do
   end
 end

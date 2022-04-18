@@ -49,7 +49,7 @@ class School < ApplicationRecord
   end
 
   # https://github.com/ankane/searchkick#indexing
-  scope :search_import, -> { includes([:school_relationships, :people, :address, {:taggings => :tags}]) }
+  scope :search_import, -> { includes([:school_relationships, :people, :address, {:taggings => :tag}]) }
 
   # https://github.com/ankane/searchkick#indexing
   def search_data
