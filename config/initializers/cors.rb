@@ -4,13 +4,14 @@
 # Handle Cross-Origin Resource Sharing (CORS) in order to accept cross-origin AJAX requests.
 
 # Read more: https://github.com/cyu/rack-cors
-
+# Access-Control-Allow-Origin
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "localhost:3000", /\Ahttps:\/\/.+\.vercel\.app/\z, "https://platform.wildflowerschools.org", "https://journey.wildflowerschools.org", "https://staging-journey.wildflowerschools.org"
-
+    # origins "localhost:3000", /\Ahttps:\/\/.+\.vercel\.app/\z, "https://platform.wildflowerschools.org", "https://journey.wildflowerschools.org", "https://staging-journey.wildflowerschools.org"
+    origins '*'
     resource "*",
       headers: :any,
+      # credentials: true,
       methods: [:get, :post, :put, :patch, :delete, :options, :head]
   end
 end
