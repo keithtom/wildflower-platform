@@ -60,6 +60,9 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.default_url_options = { host: ENV['HOST'] }
 
+  # this allows any vercel app to send requests.  for now, we'll allow it.  the api is meant to eventually be public so parents can develop with the API
+  config.hosts << ".vercel.app"
+  config.hosts << ".wildflowerschools.org"
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
