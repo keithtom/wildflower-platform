@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "localhost:3000", \Ahttps:\/\/.+\.mywebsite\.app/\z, "https://platform.wildflowerschools.org", "https://journey.wildflowerschools.org", "https://staging-journey.wildflowerschools.org"
+    origins "localhost:3000", /\Ahttps:\/\/.+\.vercel\.app/\z, "https://platform.wildflowerschools.org", "https://journey.wildflowerschools.org", "https://staging-journey.wildflowerschools.org"
 
     resource "*",
       headers: :any,
