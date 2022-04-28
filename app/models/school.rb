@@ -3,10 +3,12 @@
 class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  acts_as_taggable_on :audiences
+  acts_as_taggable_on :audiences, :ages_served, :charter, :tuition_assistance_types
+
 
   searchkick callbacks: :async
 
+  belongs_to :hub, optional: true
   belongs_to :pod, optional: true
   has_one :address, as: :addressable, required: false, inverse_of: :addressable
 

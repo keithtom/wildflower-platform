@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
+ActiveRecord::Schema[7.0].define(version: 2022_04_28_222053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,6 +38,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
     t.datetime "updated_at", null: false
     t.index ["entrepreneur_id"], name: "index_hubs_on_entrepreneur_id"
     t.index ["external_identifier"], name: "index_hubs_on_external_identifier", unique: true
+    t.index ["name"], name: "index_hubs_on_name", unique: true
   end
 
   create_table "people", force: :cascade do |t|
@@ -86,7 +87,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
     t.string "phone"
     t.string "email"
     t.string "governance_type"
-    t.string "tuition_assistance_type"
     t.string "ages_served"
     t.string "calendar"
     t.integer "max_enrollment"
@@ -100,8 +100,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_08_160840) do
     t.string "facebook"
     t.string "instagram"
     t.string "timezone"
+    t.string "domain"
+    t.string "logo_url"
+    t.bigint "hub_id"
+    t.string "raw_address"
+    t.date "opened_on"
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
+    t.index ["hub_id"], name: "index_schools_on_hub_id"
     t.index ["pod_id"], name: "index_schools_on_pod_id"
   end
 
