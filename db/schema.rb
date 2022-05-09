@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_28_222053) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_09_201846) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,8 +50,40 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_28_222053) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.string "middle_name"
+    t.string "personal_email"
+    t.string "raw_address"
+    t.string "airtable_id"
+    t.bigint "hub_id"
+    t.bigint "pod_id"
+    t.text "about"
+    t.string "tc_user_id"
+    t.string "prosperworks_id"
+    t.boolean "willing_to_relocate"
+    t.string "primary_language"
+    t.string "race_ethnicity_other"
+    t.string "household_income"
+    t.string "income_background"
+    t.string "gender"
+    t.string "gender_other"
+    t.boolean "lgbtqia"
+    t.string "pronouns"
+    t.string "pronouns_other"
+    t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
+    t.index ["hub_id"], name: "index_people_on_hub_id"
+    t.index ["pod_id"], name: "index_people_on_pod_id"
+  end
+
+  create_table "people_relationships", force: :cascade do |t|
+    t.bigint "person_id_id"
+    t.bigint "other_person_id_id"
+    t.string "kind"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["other_person_id_id"], name: "index_people_relationships_on_other_person_id_id"
+    t.index ["person_id_id"], name: "index_people_relationships_on_person_id_id"
   end
 
   create_table "pods", force: :cascade do |t|
