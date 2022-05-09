@@ -8,16 +8,16 @@ Rails.application.routes.draw do
 
     get "people/search", as: :search_people
     resources :people, except: :destroy do
-      resources :school_relationships
+      # resources :school_relationships
     end
 
     get "schools/search", as: :search_schools
     resources :schools, except: :destroy do
-      resources :school_relationships
+      # resources :school_relationships
     end
 
-    resources :hubs, except: :destroy do
-      resources :pods, except: :destroy
-    end
+    # resources :hubs, except: :destroy do
+    #   resources :pods, except: :destroy
+    # end
   end
 end

@@ -30,6 +30,7 @@ namespace :tags do
 
   desc 'Create taggings for people and schools.'
   task build_tags: :enviroment do
+    # builds the audience tags based on data.
     School.all.each do |school|
       # rake task to apply charter tag, then ages served tag to people and schools, everyone a TL, but then apply foundation and RSE/OG (maybe look at hola)
       if school.governance_type == School::Governance::CHARTER
