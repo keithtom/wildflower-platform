@@ -25,8 +25,8 @@ class Person < ApplicationRecord
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
-      hub: hub.name,
-      pod: pod.name,
+      hub: hub&.name,
+      pod: pod&.name,
       email: email,
       personal_email: personal_email,
       name: "#{first_name} #{middle_name} #{last_name}",
@@ -34,7 +34,7 @@ class Person < ApplicationRecord
       roles: role_list.join(" "),
       address_city: address&.city,
       address_state: address&.state,
-      about: about.truncate(500),
+      about: about&.truncate(500),
     }
   end
 end
