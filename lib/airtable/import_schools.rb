@@ -12,8 +12,7 @@ module Airtable
 
     def import
       @csv.each do |row|
-        # assumes unique by name
-        if school = School.find_by(:name => row[:name])
+        if school = School.find_by(:airtable_id => row[:record_id])
           # update
           # Not implementing yet.
         else
@@ -30,8 +29,12 @@ module Airtable
     private
 
     def map_airtable_to_database(airtable_row)
+      hub = Hub.find_by(:name => airtable_row[:hub])
+      pod = Pod.find_by(:name => airtable_row[:pod])
       opened_on = Date.strptime(airtable_row[:opened], "%m/%d/%Y") rescue nil
       {
+        :hub => hub,
+        :pod => pod,
         :name => airtable_row[:name],
         :status => airtable_row[:school_status],
         :website => airtable_row[:website],
