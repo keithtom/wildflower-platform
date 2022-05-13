@@ -27,6 +27,7 @@ module Airtable
           # Not implementing yet.
         else
           person = Person.create!(map_airtable_to_database(row))
+          add_tl_role(person)
           add_languages(person, row)
           add_race_ethnicity(person, row)
           add_relationships(person, row)
@@ -43,7 +44,6 @@ module Airtable
 
       # geocode raw_address to get address object populated
       # load contact info for each person to figure out personal email vs wf email, and phone
-      opened_on = Date.strptime(airtable_row[:opened], "%m/%d/%Y") rescue nil
       {
         :hub => hub,
         :pod => pod,
@@ -70,18 +70,9 @@ module Airtable
       }
     end
 
-    def add_relationships(person, airtable_row)
-      if airtable_row[:assigned_partner_record_id].present?
-        # find that person in table, build relationship
-        # other_person = Person.find_by(:airtable_id => airtable_row[:assigned_partner_record_id])
-
-        # return unless other_person
-
-        # return if PeopleRelationship.exist?(person: person, other_person: other_person, kind: PeopleRelationship::FOUNDATION_PARTNER)
-
-        # PeopleRelationship.create!(person: person, other_person: other_person, kind: PeopleRelationship::FOUNDATION_PARTNER)
-
-      end
+    def add_tl_role(person)
+      person.roles.add("Teacher Leader")
+      person.save!
     end
 
     def add_languages(person, airtable_row)
