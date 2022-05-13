@@ -29,6 +29,8 @@ class Person < ApplicationRecord
       pod: pod&.name,
       email: email,
       personal_email: personal_email,
+      journey_state: journey_state,
+      primary_language: primary_language,
       name: "#{first_name} #{middle_name} #{last_name}",
       audiences: audience_list.join(" "),
       roles: role_list.join(" "),
