@@ -3,7 +3,7 @@
 module V1
   class SchoolSerializer < ApplicationSerializer
     attributes :name, :short_name, :website, :phone, :email, :governance_type, :tuition_assistance_type_list, :ages_served_list, :calendar,
-               :max_enrollment, :facebook, :instagram, :updated_at
+               :max_enrollment, :facebook, :instagram, :status, :timezone, :domain, :logo_url, :raw_address, :opened_on, :updated_at
 
     belongs_to :pod
 
