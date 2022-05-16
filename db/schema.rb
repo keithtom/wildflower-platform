@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_09_201846) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_16_201302) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,6 +28,72 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_09_201846) do
     t.string "external_identifier", null: false
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
     t.index ["external_identifier"], name: "index_addresses_on_external_identifier", unique: true
+  end
+
+  create_table "advice_decisions", force: :cascade do |t|
+    t.bigint "creator_id"
+    t.string "state"
+    t.string "title"
+    t.text "context"
+    t.text "proposal"
+    t.text "links", default: [], array: true
+    t.datetime "decide_by"
+    t.datetime "advice_by"
+    t.string "role"
+    t.text "final_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_advice_decisions_on_creator_id"
+  end
+
+  create_table "advice_events", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.string "originator_type"
+    t.bigint "originator_id"
+    t.string "name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_advice_events_on_decision_id"
+  end
+
+  create_table "advice_messages", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.string "sender_type"
+    t.bigint "sender_id"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_advice_messages_on_decision_id"
+    t.index ["sender_type", "sender_id"], name: "index_advice_messages_on_sender"
+  end
+
+  create_table "advice_records", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.bigint "stakeholder_id"
+    t.text "content"
+    t.string "status"
+    t.string "impede_your_role"
+    t.string "will_do_harm"
+    t.string "harm_hard_to_reverse"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_advice_records_on_decision_id"
+  end
+
+  create_table "advice_stakeholders", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.bigint "person_id"
+    t.string "external_name"
+    t.string "external_email"
+    t.string "external_phone"
+    t.string "external_calendar_url"
+    t.string "external_roles"
+    t.string "external_subroles"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_advice_stakeholders_on_decision_id"
+    t.index ["person_id"], name: "index_advice_stakeholders_on_person_id"
   end
 
   create_table "hubs", force: :cascade do |t|
@@ -69,6 +135,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_09_201846) do
     t.boolean "lgbtqia"
     t.string "pronouns"
     t.string "pronouns_other"
+    t.string "airtable_partner_id"
+    t.string "linkedin_url"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
@@ -137,6 +205,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_09_201846) do
     t.bigint "hub_id"
     t.string "raw_address"
     t.date "opened_on"
+    t.string "facility_type"
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_schools_on_hub_id"

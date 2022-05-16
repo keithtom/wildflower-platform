@@ -30,7 +30,15 @@ Rails.application.routes.draw do
           put :close
 
           resources :messages, only: [:index, :create, :update, :destroy]
-          resources :stakeholders, only: [:index, :create, :destroy]
+          resources :stakeholders, only: [:index, :create, :destroy] do
+            # status update
+            # no objection
+            # an objection is an event, it has a status w/ 4 values, and some sub-optinos if truly objection.
+            # track opens.
+            member do
+              # record
+            end
+          end
         end
       end
 
