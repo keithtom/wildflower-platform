@@ -3,18 +3,18 @@ require 'rails_helper'
 RSpec.describe Advice::Stakeholder, type: :model do
   describe "when the stakeholder is an internal person" do
     let(:person) { build(:person) }
-    subject { build(:stakeholder, person: person)}
-    its(:name) { is_expected.to == person.name }
-    its(:email) { is_expected.to == person.email }
-    its(:phone) { is_expected.to == person.phone }
+    subject { build(:advice_stakeholder, person: person)}
+    its(:name) { is_expected.to be == person.name }
+    its(:email) { is_expected.to be == person.email }
+    its(:phone) { is_expected.to be == person.phone }
     its(:calendar_url) { is_expected.to include("calendar.google.com") }
     its(:calendar_url) { is_expected.to include("add=#{person.email}") }
-    its(:roles) { is_expected.to == person.roles }
-    its(:subroles) { is_expected.to == person.subroles }
+    its(:roles) { is_expected.to be == person.roles }
+    its(:subroles) { is_expected.to be == person.subroles }
   end
 
   describe "when the stakeholder is an external person" do
-    subject { build(:advice_stakeholder,
+    subject { build(:external_advice_stakeholder,
       external_name: "Keith",
       external_email: "keith.tom@gmail.com",
       external_phone: "123-456-7890",
@@ -25,11 +25,11 @@ RSpec.describe Advice::Stakeholder, type: :model do
     }
 
     its(:person) { is_expected.to be_nil }
-    its(:name) { is_expected.to == "Keith" }
-    its(:email) { is_expected.to == "keith.tom@gmail.com" }
-    its(:phone) { is_expected.to == "123-456-7890" }
-    its(:calendar_url) { is_expected.to == "https://calendly.com/keith-tom" }
-    its(:roles) { is_expected.to == ["Software Developer", "Product Manager"] }
-    its(:subroles) { is_expected.to == ["Requirements Gathering", "Development", "QA", "Dev Ops", "Spring Manager", "Architect"] }
+    its(:name) { is_expected.to be == "Keith" }
+    its(:email) { is_expected.to be == "keith.tom@gmail.com" }
+    its(:phone) { is_expected.to be == "123-456-7890" }
+    its(:calendar_url) { is_expected.to be == "https://calendly.com/keith-tom" }
+    its(:roles) { is_expected.to contain_exactly "Software Developer", "Product Manager" }
+    its(:subroles) { is_expected.to contain_exactly "Requirements Gathering", "Development", "QA", "Dev Ops", "Sprint Manager", "Architect" }
   end
 end

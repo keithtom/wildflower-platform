@@ -66,7 +66,7 @@ class School < ApplicationRecord
       audiences: audience_list.join(" "),
       ages_served: ages_served_list.join(" "),
       charter: charter_list.join(" "),
-      tuition_assistance_types: tuition_assistance_type_list.join(" ",)
+      tuition_assistance_types: tuition_assistance_type_list.join(" "),
       address_city: address&.city,
       address_state: address&.state
     }

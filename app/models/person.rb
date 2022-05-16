@@ -43,7 +43,7 @@ class Person < ApplicationRecord
   def subroles
     # for person, need to iterate over TL roles, foundation roles etc.
     # RSE = regional site entrepreneur, OG = operations guide
-    tl_roles + foundation_roles + rse_roles + og_roles
+    tl_role_list + foundation_role_list + rse_role_list + og_role_list
   end
 
   def name

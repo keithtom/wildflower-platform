@@ -28,10 +28,10 @@ class Advice::Stakeholder < ApplicationRecord
     event_title = "[Advice] #{decision.creator.first_name} / #{name}"
     stakeholder_email = email
     event_details = "Hi #{name},
-I am seeking advice for a decision I intend to make in my role as #{role}.
+I am seeking advice for a decision I intend to make in my role as #{decision.role}.
 Please see the link below for additional details.
 
-I need to advice by #{advice_by.strftime("%m/%d")}.
+I need to advice by #{decision.advice_by&.strftime("%m/%d")}.
 
 Thank you,
 #{decision.creator.first_name}
@@ -47,8 +47,9 @@ Proposal
   #{decision.proposal}
 
 Advice URL
-  #{decision.shareable_url}
+  #{decision.title}
 "
+  # change URL to be created from a service and we can use routes there?
     if person
       "https://calendar.google.com/calendar/u/2/r/eventedit?text=#{event_title}&details=#{event_details}&add=#{stakeholder_email}"
     else
