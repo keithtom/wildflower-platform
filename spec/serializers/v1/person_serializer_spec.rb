@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe V1::PersonSerializer do
-  let(:person) { create(:person ) }
+  let(:person) { build(:person ) }
 
   subject { described_class.new(person).serializable_hash }
 

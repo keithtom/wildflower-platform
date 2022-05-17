@@ -3,21 +3,31 @@ class V1::Advice::StakeholderSerializer < ApplicationSerializer
 
   belongs_to :decision, serializer: V1::Advice::DecisionSerializer, id_methodname: :external_identifier
 
+  # we would serialize messages as part of a general api but not needed for now
+  # has_many :messages, serializer: V1::Advice::MessageSerializer, id_methodname: :external_identifier
+
+  # we would never serialize records, it would appear as part of an activity feed?
+  # same argument as for messages.
+
   # formalize concept of activity, feeds event, messages, record
   # and generates a list of 'activity' that has a common interface.
 
   # use last record's status
   attribute :status do |obj|
-    obj.order("created_at DESC").first.status
+    obj.records.order("created_at DESC").first&.status
   end
 
-  # select objects, map to activities, sort by timestamp and group?  group message sequences...?
+  attribute :last_activity do |obj|
+    # activities.last
+  end
+
   def activities
-    decision.events # filter to creator and this stakeholder.
-    + messages + records
+    (decision.events.where(:originator => decision.creator).all
+    + messages.all + records.all).map { |obj| normalize_activity(obj) }.sort_by { |h| h[:timestamp] }.reverse
   end
 
   # normalizes objects into activities interface
+  # this is presentation logic, seems like serializers are closest
   def normalize_activity(activity)
     case activity
     when Advice::Event

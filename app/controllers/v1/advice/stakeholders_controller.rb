@@ -14,5 +14,4 @@ class V1::Advice::StakeholdersController < ApiController
   def records
     head :ok
   end
-
 end
