@@ -19,6 +19,8 @@ class Person < ApplicationRecord
 
   has_one :address, as: :addressable
 
+  has_many :decisions, class_name: "Advice::Decision", foreign_key: :creator_id
+
   # https://github.com/ankane/searchkick#indexing
   scope :search_import, -> { includes([:school_relationships, :schools, :address, {:taggings => :tag}]) }
 

@@ -18,25 +18,22 @@ Rails.application.routes.draw do
 
     namespace :advice do
       resources :people, :only => [] do
-        get "decisions/draft"
-        get "decisions/open"
-        get "decisions/closed"
+        get "decisions/draft", to: 'decisions#index'
+        get "decisions/open", to: 'decisions#index'
+        get "decisions/closed", to: 'decisions#index'
         resources :decisions, only: [:index] # as an API, the state would be a query parameter, if we want to be restful.
       end
 
       resources :decisions, only: [:show, :create, :update] do
         member do
           put :open
+          put :amend
           put :close
 
           resources :messages, only: [:index, :create, :update, :destroy]
           resources :stakeholders, only: [:index, :create, :destroy] do
-            # status update
-            # no objection
-            # an objection is an event, it has a status w/ 4 values, and some sub-optinos if truly objection.
-            # track opens.
             member do
-              # record
+              put :record
             end
           end
         end
