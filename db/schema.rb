@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_16_201302) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_17_175723) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,7 +43,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_16_201302) do
     t.text "final_summary"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "external_identifier", null: false
     t.index ["creator_id"], name: "index_advice_decisions_on_creator_id"
+    t.index ["external_identifier"], name: "index_advice_decisions_on_external_identifier", unique: true
   end
 
   create_table "advice_events", force: :cascade do |t|
@@ -61,11 +63,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_16_201302) do
     t.bigint "decision_id"
     t.string "sender_type"
     t.bigint "sender_id"
+    t.bigint "stakeholder_id"
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "external_identifier", null: false
     t.index ["decision_id"], name: "index_advice_messages_on_decision_id"
-    t.index ["sender_type", "sender_id"], name: "index_advice_messages_on_sender"
+    t.index ["external_identifier"], name: "index_advice_messages_on_external_identifier", unique: true
+    t.index ["stakeholder_id"], name: "index_advice_messages_on_stakeholder_id"
   end
 
   create_table "advice_records", force: :cascade do |t|
@@ -92,8 +97,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_16_201302) do
     t.string "external_subroles"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "external_identifier", null: false
     t.index ["decision_id"], name: "index_advice_stakeholders_on_decision_id"
-    t.index ["person_id"], name: "index_advice_stakeholders_on_person_id"
+    t.index ["external_identifier"], name: "index_advice_stakeholders_on_external_identifier", unique: true
   end
 
   create_table "hubs", force: :cascade do |t|
