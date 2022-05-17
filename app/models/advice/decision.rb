@@ -1,5 +1,7 @@
 # People make decisions and seek out advice from stakeholders.
 class Advice::Decision < ApplicationRecord
+  include ApplicationRecord::ExternalIdentifier
+
   DRAFT = "draft"
   OPEN = "open"
   CLOSED = "closed"

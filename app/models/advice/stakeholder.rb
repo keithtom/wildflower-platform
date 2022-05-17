@@ -5,6 +5,8 @@
 # Technically, a stakeholder can delegate to a Person object but it doesn't have to be someone in the directory.
 # It could be a parent or board member; however, as long as stakeholders can adhere to the same interface, the system should not care.
 class Advice::Stakeholder < ApplicationRecord
+  include ApplicationRecord::ExternalIdentifier
+
   belongs_to :decision
   belongs_to :person, optional: true
 
