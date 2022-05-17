@@ -32,8 +32,11 @@ Rails.application.routes.draw do
 
           resources :messages, only: [:index, :create, :update, :destroy]
           resources :stakeholders, only: [:index, :create, :destroy] do
+            # the resourceful way to do this is
+            # resources :records, only: [:create]
+            # but seems unnecessary to have another controller for this and don't want to deal w/ 3x nested resources.
             member do
-              put :record
+              post :records
             end
           end
         end
