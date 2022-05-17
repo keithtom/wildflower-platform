@@ -6,17 +6,11 @@ class V1::Advice::DecisionSerializer < ApplicationSerializer
 
   has_many :stakeholders, serializer: V1::Advice::StakeholderSerializer, id_methodname: :external_identifier
 
-
   # we would serialize messages as part of a general api but not needed for now
   # has_many :messages, serializer: V1::Advice::MessageSerializer, id_methodname: :external_identifier
 
   # last activity for this decision.  alwys put.
-  attribute :last_activity do |obj|
-    # has an activity feed.  do we need to expose messages on their own?
-    # put more logic in backend.
-
-    # look at events, records, messages
-    # take last one.
-    # put it into json
+  attribute :last_activity do |obj, params|
+    params[:activities].last
   end
 end
