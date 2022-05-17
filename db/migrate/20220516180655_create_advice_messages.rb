@@ -3,6 +3,7 @@ class CreateAdviceMessages < ActiveRecord::Migration[7.0]
     create_table :advice_messages do |t|
       t.belongs_to :decision
       t.belongs_to :sender, polymorphic: true, index: false
+      t.belongs_to :recipient, polymorphic: true, index: false
 
       t.text :content
 
