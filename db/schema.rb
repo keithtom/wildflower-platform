@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_17_175723) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_18_214902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_17_175723) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.string "external_image_url"
     t.index ["decision_id"], name: "index_advice_stakeholders_on_decision_id"
     t.index ["external_identifier"], name: "index_advice_stakeholders_on_external_identifier", unique: true
   end
@@ -143,6 +144,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_17_175723) do
     t.string "pronouns_other"
     t.string "airtable_partner_id"
     t.string "linkedin_url"
+    t.string "image_url"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true

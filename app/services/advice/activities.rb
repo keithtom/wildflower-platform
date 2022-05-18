@@ -9,12 +9,12 @@ class Advice::Activities < BaseService
     if @decisions.is_a?(Array)
       result = {}
       @decisions.each do |decision|
-        result[decision.id] = activities(decision)
+        result[decision.id] = activities_by_decision(decision)
       end
       return result
     else
       decision = @decisions
-      return activities(decision)
+      return activities_by_stakeholder(decision)
       # group by stakeholder, but some events are replicated across stakeholder so this doesn't work
     end
   end
@@ -22,12 +22,37 @@ class Advice::Activities < BaseService
   private
 
   # get activities
-  def activities(decision)
+  def activities_by_decision(decision)
     filtered_events = decision.events.select { |e| e.originator == decision.creator }
     messages = decision.messages
     records = decision.records
     activities = (filtered_events + messages + records).map { |obj| normalize_activity(obj) }
-    activities = activities.sort_by { |h| h[:timestamp] }.reverse
+    activities = activities.compact.sort_by { |h| h[:updated_at] }.reverse
+  end
+
+  def activities_by_stakeholder(decision)
+    creator_events = decision.events.select { |e| e.originator == decision.creator }
+
+    stakeholder_events = decision.events.select { |e| e.originator != decision.creator }
+    stakeholder_messages = decision.messages
+    stakeholder_records = decision.records
+
+    grouped_by_stakeholder = (stakeholder_events + stakeholder_messages + stakeholder_records).group_by do |obj|
+      case obj
+      when Advice::Event
+        obj.originator_id
+      else
+        obj.stakeholder_id
+      end
+    end
+
+    results = {}
+    grouped_by_stakeholder.each do |stakeholder_id, events_messages_records|
+      activities = (events_messages_records + creator_events).map { |o| normalize_activity(o) }
+      results[stakeholder_id] = activities.compact.sort_by { |h| h[:updated_at] }.reverse
+    end
+
+    results
   end
 
 
@@ -37,34 +62,39 @@ class Advice::Activities < BaseService
   def normalize_activity(activity)
     case activity
     when Advice::Event
-      # if its a stakeholder, check if that's a person too.
-      profile_pic = activity.originator.is_a?(Person) ? activity.originator.profile : nil  # external stakeholders don't have profile pics unless we look up gravatar from email
-      {
+      # external stakeholders don't have profile pics unless we look up gravatar from emailprofile_pic = activity.sender.image_url
+      image_url = activity.originator.image_url
+      Advice::Activity.new(
+        id: "n/a",
         type: "event",
-        person: { name: activity.originator.name, profile_pic: profile_pic },
+        person: { name: activity.originator.name, profile_pic: image_url },
         title: activity.name,
         content: activity.description,
         updated_at: activity.updated_at
-      }
+      )
     when Advice::Message
-      # if its a stakeholder, check if that's a person too.
-      profile_pic = activity.sender.is_a?(Person) ? activity.sender.profile : nil  # external stakeholders don't have profile pics unless we look up gravatar from email
-      {
+      # external stakeholders don't have profile pics unless we look up gravatar from emailprofile_pic = activity.sender.image_url
+      image_url = activity.sender.image_url
+      Advice::Activity.new(
+        id: "n/a",
         type: "message",
-        person: { name: activity.sender.name, profile_pic: profile_pic },
+        person: { name: activity.sender.name, image_url: image_url },
+        title: "Message",
         content: activity.content,
         updated_at: activity.updated_at
-      }
+      )
     when Advice::Record
-      # if its a stakeholder, check if that's a person too.
-      profile_pic = activity.stakeholder.person ? activity.stakeholder.person.profile : nil  # external stakeholders don't have profile pics unless we look up gravatar from email
-      {
+      # external stakeholders don't have profile pics unless we look up gravatar from email
+      # https://en.gravatar.com/site/implement/images/
+      image_url = activity.stakeholder.image_url ? activity.stakeholder.image_url : nil
+      Advice::Activity.new(
+        id: "n/a",
         type: "record",
-        person: { name: activity.sender.name, profile_pic: profile_pic },
+        person: { name: activity.stakeholder.name, image_url: image_url },
         title: activity.status,
         content: activity.content,
         updated_at: activity.updated_at
-      }
+      )
     end
   end
 end

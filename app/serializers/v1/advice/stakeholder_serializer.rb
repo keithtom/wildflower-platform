@@ -12,11 +12,15 @@ class V1::Advice::StakeholderSerializer < ApplicationSerializer
     obj.records.order("created_at DESC").first&.status
   end
 
-  has_one :last_activity, serializer: V1::Advice::ActivitySerializer do |obj, params|
-    params[:activities_grouped_by_stakeholder] && params[:activities_grouped_by_stakeholder][obj.id]&.first
+  attribute :last_activity do |obj, params|
+    if params[:activities_grouped_by_stakeholder]
+       V1::Advice::ActivitySerializer.new(params[:activities_grouped_by_stakeholder][obj.id]&.first)
+     end
   end
 
-  has_many :activities, serializer: V1::Advice::ActivitySerializer do |obj, params|
-    params[:activities_grouped_by_stakeholder]
+  attribute :activities do |obj, params|
+    if params[:activities_grouped_by_stakeholder]
+      V1::Advice::ActivitySerializer.new(params[:activities_grouped_by_stakeholder][obj.id])
+    end
   end
 end

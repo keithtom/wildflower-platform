@@ -16,9 +16,10 @@ FactoryBot.define do
         advice_by { (7 + rand(4)).days.from_now }
 
         after :create do |decision|
-          create :advice_event, decision: decision, name: Advice::Decision::OPEN
+          create :advice_event, decision: decision, originator: decision.creator, name: Advice::Decision::OPEN
           stakeholder = create :advice_stakeholder, decision: decision
-          create :advice_message, decision: decision, sender: stakeholder, content: "Hello!"
+          create :advice_message, decision: decision, sender: decision.creator, stakeholder: stakeholder, content: "Hello! How's it going?"
+          create :advice_message, decision: decision, sender: stakeholder, stakeholder: stakeholder, content: "Hi! Well, thank you!"
         end
 
         factory :closed_advice_decision do

@@ -25,6 +25,10 @@ class Advice::Stakeholder < ApplicationRecord
     person&.phone || external_phone
   end
 
+  def image_url
+    person&.image_url || external_image_url
+  end
+
   # move me to a service.
   def calendar_url
     event_title = "[Advice] #{decision.creator.first_name} / #{name}"
