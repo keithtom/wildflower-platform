@@ -10,8 +10,9 @@ class V1::Advice::DecisionsController < ApiController
 
     # each decision has its own last activity.
     # activities needed for 'last activity'
-    activities_grouped_by_decision = Advice::Activities.run(@decisions)
-    render json: V1::Advice::DecisionSerializer.new(@decisions, include: [:stakeholders], params: { activities_grouped_by_decision: activities_grouped_by_decision})
+    activities_grouped_by_decision = Advice::Activities.run(@decisions, :decision)
+    render json: V1::Advice::DecisionSerializer.new(@decisions, include: [:stakeholders],
+      params: { activities_grouped_by_decision: activities_grouped_by_decision})
   end
 
   def open
@@ -45,11 +46,11 @@ class V1::Advice::DecisionsController < ApiController
     @decision = Advice::Decision.includes(:stakeholders, :messages, :events, :records).find_by!(external_identifier: params[:id])
 
     # activities needed for 'last activity'
-    activities_grouped_by_decision = Advice::Activities.run([decision])
+    activities_grouped_by_decision = Advice::Activities.run([@decision], :decision)
 
     # if heavy upfront load option present, we have activities grouped by stakeholder.
     # heavy upfront load use case jsut means eager load activities for each stakeholder.
-    activities_grouped_by_stakeholder = Advice::Activities.run(decision)
+    activities_grouped_by_stakeholder = Advice::Activities.run(@decision, :stakeholder)
 
     render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders],
       params: {

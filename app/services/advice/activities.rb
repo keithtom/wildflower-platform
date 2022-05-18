@@ -1,21 +1,25 @@
 # formalize concept of activity, feeds event, messages, record
 # and generates a list of 'activity' that has a common interface.
 class Advice::Activities < BaseService
-  def initialize(decisions)
+  def initialize(decisions, group_by)
     @decisions = decisions
+    @group_by = group_by
   end
 
   def run
-    if @decisions.is_a?(Array)
+    case @group_by
+    when :decision
       result = {}
       @decisions.each do |decision|
         result[decision.id] = activities_by_decision(decision)
       end
       return result
-    else
+    when :stakeholder
       decision = @decisions
       return activities_by_stakeholder(decision)
       # group by stakeholder, but some events are replicated across stakeholder so this doesn't work
+    else
+      raise "unknown option"
     end
   end
 

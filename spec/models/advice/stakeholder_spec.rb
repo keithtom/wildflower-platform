@@ -8,7 +8,7 @@ RSpec.describe Advice::Stakeholder, type: :model do
     its(:email) { is_expected.to be == person.email }
     its(:phone) { is_expected.to be == person.phone }
     its(:calendar_url) { is_expected.to include("calendar.google.com") }
-    its(:calendar_url) { is_expected.to include("add=#{person.email}") }
+    its(:calendar_url) { is_expected.to include("add=#{CGI.escape(person.email)}") }
     its(:roles) { is_expected.to be == person.roles }
     its(:subroles) { is_expected.to be == person.subroles }
   end
