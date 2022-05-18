@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe V1::SchoolSerializer do
-  let(:school) { create(:school) }
+  let(:school) { build(:school) }
 
   subject { described_class.new(school).serializable_hash }
 

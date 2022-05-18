@@ -8,6 +8,7 @@ class ApplicationRecord < ActiveRecord::Base
 
     included do
       before_create :set_external_identifier
+      attr_readonly :external_identifier
     end
 
     def to_param
