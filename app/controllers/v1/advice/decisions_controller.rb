@@ -1,15 +1,17 @@
 class V1::Advice::DecisionsController < ApiController
 
+  # find a way to figure out if we are /draft/open/clsoed; and convert it into a standard url param.
+  # @person.decisions # filter state if required.
+  # routing should just rename /draft/open/close to a url param.
   def index
     @person = Person.find_by!(external_identifier: params[:person_id])
     # needs options for order and eager loading (messages, events and records)
-    @decisions = @person.decisions.includes(:stakeholders).order("updated_at DESC")
-    # find a way to figure out if we are /draft/open/clsoed; and convert it into a standard url param.
-    # @person.decisions # filter state if required.
-    # routing should just rename /draft/open/close to a url param.
+    @decisions = @person.decisions.includes(:stakeholders, :messages, :events, :records).order("updated_at DESC").all
 
-    # ideally no activities here to keep it light.
-    render json: V1::Advice::DecisionSerializer.new(@decisions, include: [:stakeholders])
+    # each decision has its own last activity.
+    # activities needed for 'last activity'
+    activities_grouped_by_decision = Advice::Activities.run(@decisions)
+    render json: V1::Advice::DecisionSerializer.new(@decisions, include: [:stakeholders], params: { activities_grouped_by_decision: activities_grouped_by_decision})
   end
 
   def open
@@ -21,7 +23,7 @@ class V1::Advice::DecisionsController < ApiController
   def amend
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     Advice::Decisions::Amend.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision)
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders])
   end
 
   def close
@@ -40,15 +42,19 @@ class V1::Advice::DecisionsController < ApiController
   end
 
   def show
-    # heavy upfront load use case jsut means eager load activities for each stakeholder.
-    # stakeholders
-    # activity will be eager loaded?  that's loading a lot more data per stakeholder.
-    # better to just query all objects up front vs 10 stakeholder = 10 queries.
-    # here we need to say include: [{:stakeholders => :activities}]
+    @decision = Advice::Decision.includes(:stakeholders, :messages, :events, :records).find_by!(external_identifier: params[:id])
 
-    # we can pass the param for acitivities in here...
-    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
-    render json: V1::Advice::DecisionSerializer.new(@decision)
+    # activities needed for 'last activity'
+    activities_grouped_by_decision = Advice::Activities.run([decision])
+
+    # if heavy upfront load option present, we have activities grouped by stakeholder.
+    # heavy upfront load use case jsut means eager load activities for each stakeholder.
+    activities_grouped_by_stakeholder = Advice::Activities.run(decision)
+
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders],
+      params: {
+        activities_grouped_by_decision: activities_grouped_by_decision,
+        activities_grouped_by_stakeholder: activities_grouped_by_stakeholder })
   end
 
   def update

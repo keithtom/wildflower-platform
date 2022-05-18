@@ -10,7 +10,7 @@ class V1::Advice::DecisionSerializer < ApplicationSerializer
   # has_many :messages, serializer: V1::Advice::MessageSerializer, id_methodname: :external_identifier
 
   # last activity for this decision.  alwys put.
-  attribute :last_activity do |obj, params|
-    params[:activities].last
+  has_one :last_activity, serializer: V1::Advice::ActivitySerializer do |obj, params|
+    params[:activities_grouped_by_decision] && params[:activities_grouped_by_decision][obj.id]&.first
   end
 end

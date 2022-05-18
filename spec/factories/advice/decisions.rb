@@ -6,21 +6,27 @@ FactoryBot.define do
     factory :draft_advice_decision do
       title { Faker::Lorem.sentence }
       role { "finance" }
-      context { Faker::Lorem.paragraph }
-      proposal { Faker::Lorem.paragraph }
-      links { Array.new(rand(3)).map { Faker::Internet.url } }
+      context { Faker::Lorem.paragraph(sentence_count: 4 + rand(4)) }
+      proposal { Faker::Lorem.paragraph(sentence_count: 4 + rand(4)) }
+      links { Array.new(rand(4)).map { Faker::Internet.url } }
 
       factory :open_advice_decision do
         state { Advice::Decision::OPEN }
         decide_by { (14 + rand(4)).days.from_now }
         advice_by { (7 + rand(4)).days.from_now }
-      end
 
-      factory :closed_advice_decision do
-        state { Advice::Decision::CLOSED }
-        decide_by { (0 + rand(2)).days.ago }
-        advice_by { (7 + rand(4)).days.ago }
-        final_summary { Faker::Lorem.paragraph }
+        after :create do |decision|
+          create :advice_event, decision: decision, name: Advice::Decision::OPEN
+          stakeholder = create :advice_stakeholder, decision: decision
+          create :advice_message, decision: decision, sender: stakeholder, content: "Hello!"
+        end
+
+        factory :closed_advice_decision do
+          state { Advice::Decision::CLOSED }
+          decide_by { (0 + rand(2)).days.ago }
+          advice_by { (7 + rand(4)).days.ago }
+          final_summary { Faker::Lorem.paragraph }
+        end
       end
     end
   end

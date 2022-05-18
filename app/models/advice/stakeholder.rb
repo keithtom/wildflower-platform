@@ -53,7 +53,7 @@ Advice URL
 "
   # change URL to be created from a service and we can use routes there?
     if person
-      "https://calendar.google.com/calendar/u/2/r/eventedit?text=#{event_title}&details=#{event_details}&add=#{stakeholder_email}"
+      "https://calendar.google.com/calendar/u/2/r/eventedit?text=#{CGI.escape(event_title)}&details=#{CGI.escape(event_details)}&add=#{CGI.escape(stakeholder_email)}"
     else
       external_calendar_url
     end
