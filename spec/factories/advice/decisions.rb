@@ -20,6 +20,7 @@ FactoryBot.define do
           stakeholder = create :advice_stakeholder, decision: decision
           create :advice_message, decision: decision, sender: decision.creator, stakeholder: stakeholder, content: "Hello! How's it going?"
           create :advice_message, decision: decision, sender: stakeholder, stakeholder: stakeholder, content: "Hi! Well, thank you!"
+          create :advice_record, decision: decision, stakeholder: stakeholder
         end
 
         factory :closed_advice_decision do
