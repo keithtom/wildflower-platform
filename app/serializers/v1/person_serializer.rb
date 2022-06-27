@@ -8,8 +8,9 @@ module V1
     has_many :schools
     has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer
 
-    has_many :roles, serializer: V1::TagSerializer
-    has_many :audiences, serializer: V1::TagSerializer
+    attribute :role_list
+    # has_many :roles, serializer: V1::TagSerializer
+    # has_many :audiences, serializer: V1::TagSerializer
 
     has_one :address
   end
