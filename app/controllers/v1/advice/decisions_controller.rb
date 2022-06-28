@@ -15,30 +15,13 @@ class V1::Advice::DecisionsController < ApiController
       params: { activities_grouped_by_decision: activities_grouped_by_decision})
   end
 
-  def open
-    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
-    Advice::Decisions::Open.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision)
-  end
-
-  def amend
-    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
-    Advice::Decisions::Amend.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders])
-  end
-
-  def close
-    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
-    Advice::Decisions::Close.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision)
-  end
-
   def create
     # current_user = User.first
     # person = current_user.person || Person.first
-    person = Person.first # just hacking this until we implement auth, it should be current user's person.
+    @person = Person.find_by!(external_identifier: "2a09-fba2") # just hacking this until we implement auth, it should be current user's person.
+
     # replace with a command?
-    @decision = person.decisions.create!(decision_params)
+    @decision = @person.decisions.create!(decision_params.merge(state: "draft"))
     render json: V1::Advice::DecisionSerializer.new(@decision), :status => :created, :location => [:v1, @decision] # v1_advice_decision_url
   end
 
@@ -62,6 +45,24 @@ class V1::Advice::DecisionsController < ApiController
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     # replace with command?
     @decision.update(decision_params)
+    render json: V1::Advice::DecisionSerializer.new(@decision)
+  end
+
+  def open
+    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
+    Advice::Decisions::Open.run(@decision)
+    render json: V1::Advice::DecisionSerializer.new(@decision)
+  end
+
+  def amend
+    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
+    Advice::Decisions::Amend.run(@decision)
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders])
+  end
+
+  def close
+    @decision = Advice::Decision.find_by!(external_identifier: params[:id])
+    Advice::Decisions::Close.run(@decision)
     render json: V1::Advice::DecisionSerializer.new(@decision)
   end
 
