@@ -8,7 +8,6 @@ FactoryBot.define do
       role { "finance" }
       context { Faker::Lorem.paragraph(sentence_count: 4 + rand(4)) }
       proposal { Faker::Lorem.paragraph(sentence_count: 4 + rand(4)) }
-      links { Array.new(rand(4)).map { Faker::Internet.url } }
 
       factory :open_advice_decision do
         state { Advice::Decision::OPEN }
@@ -16,6 +15,7 @@ FactoryBot.define do
         advice_by { (7 + rand(4)).days.from_now }
 
         after :create do |decision|
+          create :document, documentable: decision
           create :advice_event, decision: decision, originator: decision.creator, name: Advice::Decision::OPEN
           stakeholder = create :advice_stakeholder, decision: decision
           create :advice_message, decision: decision, sender: decision.creator, stakeholder: stakeholder, content: "Hello! How's it going?"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_18_214902) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_29_204915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -36,7 +36,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_18_214902) do
     t.string "title"
     t.text "context"
     t.text "proposal"
-    t.text "links", default: [], array: true
     t.datetime "decide_by"
     t.datetime "advice_by"
     t.string "role"
@@ -44,6 +43,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_18_214902) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.text "changes_summary"
     t.index ["creator_id"], name: "index_advice_decisions_on_creator_id"
     t.index ["external_identifier"], name: "index_advice_decisions_on_external_identifier", unique: true
   end
@@ -101,6 +101,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_18_214902) do
     t.string "external_image_url"
     t.index ["decision_id"], name: "index_advice_stakeholders_on_decision_id"
     t.index ["external_identifier"], name: "index_advice_stakeholders_on_external_identifier", unique: true
+  end
+
+  create_table "documents", force: :cascade do |t|
+    t.string "documentable_type"
+    t.bigint "documentable_id"
+    t.string "type"
+    t.string "title"
+    t.string "link"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["documentable_type", "documentable_id"], name: "index_documents_on_documentable"
   end
 
   create_table "hubs", force: :cascade do |t|

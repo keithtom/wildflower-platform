@@ -8,6 +8,8 @@ class Advice::Decision < ApplicationRecord
 
   belongs_to :creator, class_name: "Person"
 
+  has_many :documents, as: :documentable
+
   has_many :stakeholders
   has_many :messages
 
