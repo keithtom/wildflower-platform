@@ -16,6 +16,8 @@ Rails.application.routes.draw do
       # resources :school_relationships
     end
 
+    resources :documents, only: [:create, :destroy]
+
     namespace :advice do
       resources :people, :only => [] do
         get "decisions/draft", to: 'decisions#index'
