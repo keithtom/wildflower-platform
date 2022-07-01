@@ -2,21 +2,23 @@ require 'rails_helper'
 
 RSpec.describe "V1::Advice::Decisions", type: :request do
   let(:creator) { create(:person) }
-  let!(:decision) { create(:advice_decision, creator: creator, state: Advice::Decision::OPEN) }
+  let!(:decision) { create(:open_advice_decision, creator: creator) }
 
   before do
     create(:advice_decision)
-    create(:advice_decision, creator: creator, state: Advice::Decision::DRAFT)
-    create(:advice_decision, creator: creator, state: Advice::Decision::OPEN)
-    create(:advice_decision, creator: creator, state: Advice::Decision::CLOSED)
+    create(:draft_advice_decision, creator: creator)
+    create(:open_advice_decision, creator: creator)
+    create(:closed_advice_decision, creator: creator)
   end
 
   describe "GET /v1/advice/people/1/decisions" do
     it "succeeds" do
       get "/v1/advice/people/#{creator.external_identifier}/decisions", headers: {'ACCEPT' => 'application/json' }
       expect(response).to have_http_status(:success)
-
       expect(json_response['data']).to include(have_type('decision').and have_attribute(:title) )
+      expect(json_response['data'][0]['relationships'].keys).to include("creator", "stakeholders", "documents")
+      expect(json_response['included']).to include(have_type('stakeholder'))
+      expect(json_response['included']).to include(have_type('document'))
       expect(json_response['data'].size).to eql(4)
     end
   end

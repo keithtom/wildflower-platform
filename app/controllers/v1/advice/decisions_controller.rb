@@ -6,12 +6,12 @@ class V1::Advice::DecisionsController < ApiController
   def index
     @person = Person.find_by!(external_identifier: params[:person_id])
     # needs options for order and eager loading (messages, events and records)
-    @decisions = @person.decisions.includes(:stakeholders, :messages, :events, :records).order("updated_at DESC").all
+    @decisions = @person.decisions.includes(:documents, :stakeholders, :messages, :events, :records).order("updated_at DESC").all
 
     # each decision has its own last activity.
     # activities needed for 'last activity'
     activities_grouped_by_decision = Advice::Activities.run(@decisions, :decision)
-    render json: V1::Advice::DecisionSerializer.new(@decisions, include: [:stakeholders],
+    render json: V1::Advice::DecisionSerializer.new(@decisions, include: [:stakeholders, :documents],
       params: { activities_grouped_by_decision: activities_grouped_by_decision})
   end
 
@@ -22,11 +22,11 @@ class V1::Advice::DecisionsController < ApiController
 
     # replace with a command?
     @decision = @person.decisions.create!(decision_params.merge(state: "draft"))
-    render json: V1::Advice::DecisionSerializer.new(@decision), :status => :created, :location => [:v1, @decision] # v1_advice_decision_url
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents]), :status => :created, :location => [:v1, @decision] # v1_advice_decision_url
   end
 
   def show
-    @decision = Advice::Decision.includes(:stakeholders, :messages, :events, :records).find_by!(external_identifier: params[:id])
+    @decision = Advice::Decision.includes(:documents, :stakeholders, :messages, :events, :records).find_by!(external_identifier: params[:id])
 
     # activities needed for 'last activity'
     activities_grouped_by_decision = Advice::Activities.run([@decision], :decision)
@@ -35,7 +35,7 @@ class V1::Advice::DecisionsController < ApiController
     # heavy upfront load use case jsut means eager load activities for each stakeholder.
     activities_grouped_by_stakeholder = Advice::Activities.run(@decision, :stakeholder)
 
-    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders],
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents],
       params: {
         activities_grouped_by_decision: activities_grouped_by_decision,
         activities_grouped_by_stakeholder: activities_grouped_by_stakeholder })
@@ -45,25 +45,25 @@ class V1::Advice::DecisionsController < ApiController
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     # replace with command?
     @decision.update(decision_params)
-    render json: V1::Advice::DecisionSerializer.new(@decision)
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents])
   end
 
   def open
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     Advice::Decisions::Open.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision)
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents])
   end
 
   def amend
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     Advice::Decisions::Amend.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders])
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents])
   end
 
   def close
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     Advice::Decisions::Close.run(@decision)
-    render json: V1::Advice::DecisionSerializer.new(@decision)
+    render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents])
   end
 
   protected
