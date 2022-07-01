@@ -1,10 +1,10 @@
 class V1::Advice::StakeholderSerializer < ApplicationSerializer
   attributes :name, :email, :phone, :calendar_url, :roles, :subroles, :status
 
-  belongs_to :decision, serializer: V1::Advice::DecisionSerializer, id_methodname: :external_identifier
+  belongs_to :decision, serializer: V1::Advice::DecisionSerializer, id_method_name: :external_identifier
 
   # we would serialize messages as part of a general api but not needed for now
-  # has_many :messages, serializer: V1::Advice::MessageSerializer, id_methodname: :external_identifier
+  # has_many :messages, serializer: V1::Advice::MessageSerializer, id_method_name: :external_identifier
   # has_many :records
 
   # use last record's status

@@ -5,6 +5,6 @@ module V1
     attributes :name
 
     belongs_to :hub
-    belongs_to :primary_contact, serializer: V1::PersonSerializer, id_methodname: :external_identifier
+    belongs_to :primary_contact, serializer: V1::PersonSerializer, id_method_name: :external_identifier
   end
 end
