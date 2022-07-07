@@ -13,6 +13,15 @@ class Advice::Stakeholder < ApplicationRecord
   has_many :messages
   has_many :records
 
+  # use last record's status or default to pending
+  def status
+    if record = obj.records.order("created_at DESC").first
+      record.status
+    else
+      "pending"
+    end
+  end
+
   def name
     person&.name || external_name
   end
