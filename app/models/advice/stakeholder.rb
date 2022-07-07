@@ -15,8 +15,8 @@ class Advice::Stakeholder < ApplicationRecord
 
   # use last record's status or default to pending
   def status
-    if record = obj.records.order("created_at DESC").first
-      record.status
+    if last_record = records.order("created_at DESC").first
+      last_record.status
     else
       "pending"
     end
