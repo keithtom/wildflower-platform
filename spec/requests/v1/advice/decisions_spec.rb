@@ -90,22 +90,8 @@ RSpec.describe "V1::Advice::Decisions", type: :request do
 
   describe "PUT /v1/advice/decisions/1/amend" do
     it "succeeds" do
-      put "/v1/advice/decisions/#{decision.external_identifier}/amend", headers: {'ACCEPT' => 'application/json' }
+      put "/v1/advice/decisions/#{decision.external_identifier}/amend", headers: {'ACCEPT' => 'application/json'}, params: { decision: { changes_summary: "This is what changed! Dates are the same." } }
       expect(response).to have_http_status(:success)
-      # should insert event, and record difference, new dates?, and null out people's records
-      # requests advice again for the decision with attributes
     end
   end
 end
-
-# create commands/services for open close request create, update, destroy
-#
-
-# integration test is
-# see drafts, create new draft, see it, update it, see/add/remove stakeholders
-# open advice
-# add messages in stakeholder chat (update, remove if recent)
-# add records for stakeholders
-# close advice
-
-# test request advice again path.
