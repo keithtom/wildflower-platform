@@ -1,21 +1,28 @@
 require 'rails_helper'
 
 describe V1::Advice::StakeholderSerializer do
-  let(:stakeholder) { create(:advice_stakeholder) }
+
+  let(:stakeholder) { create(:advice_stakeholder, external_identifier: "stk396") }
+
   before do
+    stakeholder.decision.external_identifier = "dec941"
     create(:advice_record, stakeholder: stakeholder, decision: stakeholder.decision, status: "Hello")
   end
 
-  subject { described_class.new(stakeholder).serializable_hash }
+  subject { described_class.new(stakeholder).as_json }
 
-  its(%i[data attributes]) { is_expected.to have_key(:name) }
-  its(%i[data relationships]) { is_expected.to have_key(:decision) }
-  its(%i[data relationships]) { is_expected.to_not have_key(:activites) }
+  it "should serialize properly" do
+    expect(json_document['data']).to have_id("stk396")
+    expect(json_document['data']).to have_type("stakeholder")
+    expect(json_document['data']).to have_jsonapi_attributes(:name, :email, :phone, :calendarUrl, :roles, :subroles, :status, :activities, :lastActivity)
+    expect(json_document['data']).to have_relationships(:decision)
+
+    expect(json_document['data']).to have_relationship(:decision).with_data({'id' => 'dec941', 'type' => 'decision'})
+  end
 
   # add ability to do eager loading
   # no activities unless eager loaded
 
-  describe "when activities are included" do
-    # its(%i[data relationships]) { is_expected.to have_key(:activites) }
+  describe "when activities are included" do    
   end
 end

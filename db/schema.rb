@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_29_204915) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_06_211629) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -106,7 +106,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_29_204915) do
   create_table "documents", force: :cascade do |t|
     t.string "documentable_type"
     t.bigint "documentable_id"
-    t.string "type"
+    t.string "inheritance_type"
     t.string "title"
     t.string "link"
     t.string "external_identifier", null: false
@@ -196,6 +196,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_29_204915) do
     t.date "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "external_identifier"
+    t.index ["external_identifier"], name: "index_school_relationships_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_school_relationships_on_person_id"
     t.index ["school_id"], name: "index_school_relationships_on_school_id"
   end

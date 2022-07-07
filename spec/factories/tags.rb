@@ -1,4 +1,9 @@
 FactoryBot.define do
+  factory :tag, class: "ActsAsTaggableOn::Tag" do
+    name { Faker::Lorem.word }
+    description { Faker::Lorem.paragraphs }
+  end
+
   factory :audience do
     name { Faker::Color.color_name.capitalize }
     description { Faker::Lorem.paragraphs }
