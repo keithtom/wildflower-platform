@@ -66,8 +66,9 @@ class V1::Advice::DecisionsController < ApiController
   end
 
   def close
+    # scope to current user
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
-    Advice::Decisions::Close.run(@decision)
+    Advice::Decisions::Close.run(@decision, close_decision_params)
     render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents])
   end
 
@@ -84,4 +85,9 @@ class V1::Advice::DecisionsController < ApiController
   def amend_decision_params
     params.require(:decision).permit(:changes_summary, :decide_by, :advice_by, :role)
   end
+
+  def close_decision_params
+    params.require(:decision).permit(:final_summary, :changes_summary, :role)
+  end
+
 end

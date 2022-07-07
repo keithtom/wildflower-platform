@@ -82,7 +82,7 @@ RSpec.describe "V1::Advice::Decisions", type: :request do
 
   describe "PUT /v1/advice/decisions/1/close" do
     it "succeeds" do
-      put "/v1/advice/decisions/#{decision.external_identifier}/close", headers: {'ACCEPT' => 'application/json' }
+      put "/v1/advice/decisions/#{decision.external_identifier}/close", headers: {'ACCEPT' => 'application/json' }, params: { decision: { final_summary: "Hi!" } }
       expect(response).to have_http_status(:success)
       expect(decision.reload.state).to be == Advice::Decision::CLOSED
     end
