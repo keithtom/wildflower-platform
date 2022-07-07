@@ -4,6 +4,7 @@ class V1::Advice::DecisionsController < ApiController
   # @person.decisions # filter state if required.
   # routing should just rename /draft/open/close to a url param.
   def index
+    # scope to current user
     @person = Person.find_by!(external_identifier: params[:person_id])
     # needs options for order and eager loading (messages, events and records)
     @decisions = @person.decisions.includes(:documents, :stakeholders, :messages, :events, :records).order("updated_at DESC").all
@@ -26,6 +27,7 @@ class V1::Advice::DecisionsController < ApiController
   end
 
   def show
+    # scope to current user
     @decision = Advice::Decision.includes(:documents, :stakeholders, :messages, :events, :records).find_by!(external_identifier: params[:id])
 
     # activities needed for 'last activity'
@@ -42,6 +44,7 @@ class V1::Advice::DecisionsController < ApiController
   end
 
   def update
+    # scope to current user
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
     # replace with command?
     @decision.update(decision_params)
@@ -49,8 +52,9 @@ class V1::Advice::DecisionsController < ApiController
   end
 
   def open
+    # scope to current user
     @decision = Advice::Decision.find_by!(external_identifier: params[:id])
-    Advice::Decisions::Open.run(@decision)
+    result = Advice::Decisions::Open.run(@decision, open_decision_params)
     render json: V1::Advice::DecisionSerializer.new(@decision, include: [:stakeholders, :documents])
   end
 
@@ -68,11 +72,11 @@ class V1::Advice::DecisionsController < ApiController
 
   protected
 
-  def person_id
-    params.permit(:person_id)
+  def decision_params
+    params.require(:decision).permit(:title, :context, :proposal, :role)
   end
 
-  def decision_params
-    params.require(:decision).permit(:title, :context, :proposal, :links, :decide_by, :advice_by, :role, :final_summary)
+  def open_decision_params
+    params.require(:decision).permit(:decide_by, :advice_by, :role)
   end
 end

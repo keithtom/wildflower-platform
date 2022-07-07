@@ -49,7 +49,7 @@ RSpec.describe "V1::Advice::Decisions", type: :request do
 
   describe "POST /v1/advice/decisions" do
     it "succeeds" do
-      person = create(:person) # Normally need to auth here.
+      person = create(:person, external_identifier: "2a09-fba2") # Normally need to auth here.
       post "/v1/advice/decisions", headers: {'ACCEPT' => 'application/json' }, params: { decision: { title: "New Title"} }
       expect(response).to have_http_status(:success)
       expect(Advice::Decision.last.title).to be == "New Title"
@@ -74,7 +74,7 @@ RSpec.describe "V1::Advice::Decisions", type: :request do
 
   describe "PUT /v1/advice/decisions/1/open" do
     it "succeeds" do
-      put "/v1/advice/decisions/#{decision.external_identifier}/open", headers: {'ACCEPT' => 'application/json' }
+      put "/v1/advice/decisions/#{decision.external_identifier}/open", headers: {'ACCEPT' => 'application/json' }, params: { decision: { decide_by: 14.days.from_now, advice_by: 7.days.from_now } }
       expect(response).to have_http_status(:success)
       expect(decision.reload.state).to be == Advice::Decision::OPEN
     end
