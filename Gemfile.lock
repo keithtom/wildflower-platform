@@ -1,3 +1,9 @@
+PATH
+  remote: gems/workflow
+  specs:
+    workflow (0.1.0)
+      rails (>= 7.0.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -369,6 +375,7 @@ DEPENDENCIES
   simple_command
   tzinfo-data
   web-console (>= 4.1.0)
+  workflow!
 
 RUBY VERSION
    ruby 3.0.2p107
