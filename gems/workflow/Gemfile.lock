@@ -115,6 +115,8 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.13.8-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.13.8-x86_64-darwin)
+      racc (~> 1.4)
     racc (1.6.0)
     rack (2.2.4)
     rack-test (2.0.2)
@@ -163,14 +165,8 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.11.0)
-    sprockets (4.1.1)
-      concurrent-ruby (~> 1.0)
-      rack (> 1, < 3)
-    sprockets-rails (3.4.2)
-      actionpack (>= 5.2)
-      activesupport (>= 5.2)
-      sprockets (>= 3.0.0)
-    sqlite3 (1.4.4)
+    sqlite3 (1.5.2-arm64-darwin)
+    sqlite3 (1.5.2-x86_64-darwin)
     strscan (3.0.4)
     thor (1.2.1)
     timeout (0.3.0)
@@ -183,12 +179,12 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  x86_64-darwin-21
 
 DEPENDENCIES
   factory_bot_rails
   faker
   rspec-rails
-  sprockets-rails
   sqlite3
   workflow!
 
