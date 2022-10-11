@@ -2,8 +2,9 @@ module Workflow
   class Definition::Workflow < ApplicationRecord
     has_many :selected_processes
     has_many :processes, through: :selected_processes # these are the nodes
-
     has_many :dependencies # this loads the dependency edges
+    has_many :instances, :class_name => 'Workflow::Instance::Workflow', :foreign_key => 'workflow_definition_workflow_id'
+
 
     # i need a workflow, its dependencies, to ask a processe who its prequisites are.
     # I'm in a workflow.  I have a process.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_06_035158) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_05_150246) do
   create_table "workflow_definition_dependencies", force: :cascade do |t|
     t.integer "workflow_id"
     t.string "workable_type"
@@ -56,11 +56,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_06_035158) do
   end
 
   create_table "workflow_definition_workflows", force: :cascade do |t|
-    t.string "name"
     t.string "version"
+    t.string "name"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "workflow_instance_workflows", force: :cascade do |t|
+    t.integer "workflow_definition_workflow_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workflow_definition_workflow_id"], name: "index_workflow_instance_workflows_on_workflow_def_workflow_id"
   end
 
 end
