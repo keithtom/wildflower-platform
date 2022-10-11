@@ -51,5 +51,8 @@ Rails.application.routes.draw do
     # resources :hubs, except: :destroy do
     #   resources :pods, except: :destroy
     # end
+
+    mount Workflow::Engine => "/workflow"
   end
+
 end
