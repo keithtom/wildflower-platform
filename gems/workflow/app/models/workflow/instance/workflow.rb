@@ -1,7 +1,7 @@
 module Workflow
   class Instance::Workflow < ApplicationRecord
     has_many :processes
-    belongs_to :definition, :class_name => 'Workflow::Definition::Workflow', foreign_key: "workflow_definition_workflow_id"
+    belongs_to :definition, :class_name => 'Workflow::Definition::Workflow', foreign_key: 'workflow_definition_workflow_id'
 
   end
 end
