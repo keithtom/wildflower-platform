@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_12_200632) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
   create_table "taggings", force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -62,10 +62,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_200632) do
     t.string "version"
     t.string "title"
     t.text "description"
-    t.integer "weight"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "effort", default: 0
+    t.integer "position"
   end
 
   create_table "workflow_definition_selected_processes", force: :cascade do |t|
@@ -82,11 +82,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_200632) do
     t.string "title"
     t.text "description"
     t.string "type"
-    t.integer "weight"
     t.string "resource_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "resource_title"
+    t.integer "position"
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
@@ -103,13 +103,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_200632) do
     t.integer "workflow_instance_workflow_id"
     t.string "title"
     t.text "description"
-    t.integer "weight"
     t.integer "effort"
     t.datetime "started_at", precision: nil
     t.datetime "completed_at", precision: nil
     t.integer "assignee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
     t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
     t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
     t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_workflow_inst_workflow_id"
@@ -125,6 +125,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_12_200632) do
     t.string "resource_title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
     t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
     t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
   end

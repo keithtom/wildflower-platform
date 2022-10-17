@@ -22,5 +22,12 @@ module Workflow
     def weight
       super || self.definition.weight
     end
+
+    # TODO
+    def status
+      # to do: no incomplete dependencies
+      # up next: incomplete dependencies
+      # completed: done
+    end
   end
 end
