@@ -10,24 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_11_211841) do
-  create_table "table_workflow_instance_processes", force: :cascade do |t|
-    t.integer "workflow_definition_process_id"
-    t.integer "workflow_instance_workflow_id"
-    t.string "title"
-    t.text "description"
-    t.integer "weight"
-    t.integer "effort", default: 0
-    t.datetime "started_at", precision: nil
-    t.datetime "completed_at", precision: nil
-    t.integer "assignee_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["assignee_id"], name: "index_table_workflow_instance_processes_on_assignee_id"
-    t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
-    t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_workflow_inst_workflow_id"
-  end
-
+ActiveRecord::Schema[7.0].define(version: 2022_10_12_200632) do
   create_table "taggings", force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -57,6 +40,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_11_211841) do
     t.datetime "updated_at", null: false
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
+  create_table "users", force: :cascade do |t|
   end
 
   create_table "workflow_definition_dependencies", force: :cascade do |t|
@@ -93,14 +79,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_11_211841) do
 
   create_table "workflow_definition_steps", force: :cascade do |t|
     t.integer "process_id"
-    t.string "name"
+    t.string "title"
     t.text "description"
-    t.string "kind"
+    t.string "type"
     t.integer "weight"
-    t.string "url"
-    t.text "content"
+    t.string "resource_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "resource_title"
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
@@ -112,6 +98,37 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_11_211841) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "workflow_instance_processes", force: :cascade do |t|
+    t.integer "workflow_definition_process_id"
+    t.integer "workflow_instance_workflow_id"
+    t.string "title"
+    t.text "description"
+    t.integer "weight"
+    t.integer "effort"
+    t.datetime "started_at", precision: nil
+    t.datetime "completed_at", precision: nil
+    t.integer "assignee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
+    t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
+    t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_workflow_inst_workflow_id"
+  end
+
+  create_table "workflow_instance_steps", force: :cascade do |t|
+    t.integer "workflow_instance_process_id"
+    t.integer "workflow_definition_step_id"
+    t.string "title"
+    t.string "type"
+    t.boolean "completed"
+    t.string "resource_url"
+    t.string "resource_title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
+    t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
+  end
+
   create_table "workflow_instance_workflows", force: :cascade do |t|
     t.integer "workflow_definition_workflow_id"
     t.datetime "created_at", null: false
@@ -119,6 +136,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_11_211841) do
     t.index ["workflow_definition_workflow_id"], name: "index_workflow_instance_workflows_on_workflow_def_workflow_id"
   end
 
-  add_foreign_key "table_workflow_instance_processes", "users", column: "assignee_id"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "workflow_instance_processes", "users", column: "assignee_id"
 end

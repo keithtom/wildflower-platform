@@ -3,6 +3,13 @@ module Workflow
     has_many :processes
     belongs_to :definition, :class_name => 'Workflow::Definition::Workflow', foreign_key: 'workflow_definition_workflow_id'
 
+    def name
+      self.definition.name
+    end
+
+    def description
+      self.definition.description
+    end
   end
 end
 # definition, version, it contains the state of completed steps.
