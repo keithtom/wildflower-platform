@@ -81,7 +81,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
     t.integer "process_id"
     t.string "title"
     t.text "description"
-    t.string "type"
+    t.string "kind"
     t.string "resource_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -119,7 +119,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
     t.integer "workflow_instance_process_id"
     t.integer "workflow_definition_step_id"
     t.string "title"
-    t.string "type"
+    t.string "kind"
     t.boolean "completed"
     t.string "resource_url"
     t.string "resource_title"
