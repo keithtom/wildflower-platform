@@ -1,8 +1,19 @@
 module Workflow
   class Instance::Workflow < ApplicationRecord
     has_many :processes
-    belongs_to :definition, :class_name => 'Workflow::Definition::Workflow', foreign_key: "workflow_definition_workflow_id"
+    belongs_to :definition, :class_name => 'Workflow::Definition::Workflow', foreign_key: 'workflow_definition_workflow_id'
 
+    def name
+      self.definition.name
+    end
+
+    def description
+      self.definition.description
+    end
+
+    def url
+      "/v1/workflows/#{self.id}"
+    end
   end
 end
 # definition, version, it contains the state of completed steps.

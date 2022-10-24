@@ -2,6 +2,7 @@ PATH
   remote: gems/workflow
   specs:
     workflow (0.1.0)
+      acts-as-taggable-on (~> 9.0)
       rails (>= 7.0.3)
 
 GEM
