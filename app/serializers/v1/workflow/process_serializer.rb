@@ -4,12 +4,12 @@ class ProcessSerializer
   attributes :title, :effort, :categories, :status, :position #, :assignee
 
   attribute :workflow do |object|
-    WorkflowSerializer.new(object.workflow).serializable_hash
+    { name: object.workflow.name, description: object.workflow.description }
   end
 
   attribute :steps do |object|
     object.steps.map do |step|
-      StepSerializer.new(step).serializable_hash
+      { title: step.title, completed: step.completed, kind: step.kind, resource_url: step.resource_url, position: step.position }
     end
   end
 end
