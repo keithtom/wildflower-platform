@@ -1,10 +1,16 @@
 class WorkflowSerializer
   include JSONAPI::Serializer
 
-  set_type :movie  # optional
-  set_id :owner_id # optional
-  attributes :name, :year
-  has_many :processes
-  belongs_to :owner, record_type: :user
-  belongs_to :movie_type
+  attributes :name, :description
+
+  attribute :processes do |object|
+    object.processes.map do |process|
+      { title: process.title, effort: process.effort, status: process.status, categories: process.categories }
+    end
+  end
+
+  link :url
 end
+
+ w ||= Workflow::Instance::Workflow.last
+ WorkflowSerializer.new(w).serializable_hash
