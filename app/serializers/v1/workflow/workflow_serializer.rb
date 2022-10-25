@@ -11,6 +11,3 @@ class WorkflowSerializer
 
   link :url
 end
-
- w ||= Workflow::Instance::Workflow.last
- WorkflowSerializer.new(w).serializable_hash
