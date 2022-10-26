@@ -14,6 +14,10 @@ module Workflow
     def url
       "/v1/workflows/#{self.id}"
     end
+
+    def version
+      self.definition.version
+    end
   end
 end
 # definition, version, it contains the state of completed steps.
