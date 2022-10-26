@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_26_011432) do
   create_table "taggings", force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -110,7 +110,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.string "external_identifier", null: false
     t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
+    t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
     t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
     t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_workflow_inst_workflow_id"
   end
@@ -126,6 +128,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
     t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
   end
@@ -134,6 +138,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_17_191919) do
     t.integer "workflow_definition_workflow_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "external_identifier", null: false
+    t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
     t.index ["workflow_definition_workflow_id"], name: "index_workflow_instance_workflows_on_workflow_def_workflow_id"
   end
 

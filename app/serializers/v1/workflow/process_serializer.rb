@@ -1,6 +1,4 @@
-class ProcessSerializer
-  include JSONAPI::Serializer
-
+class V1::Workflow::ProcessSerializer < ApplicationSerializer
   attributes :title, :effort, :categories, :status, :position #, :assignee
 
   belongs_to :workflow, record_type: :workflow_instance_workflow, id_method_name: :workflow_instance_workflow_id,
