@@ -3,11 +3,7 @@ class WorkflowSerializer
 
   attributes :name, :description
 
-  attribute :processes do |object|
-    object.processes.map do |process|
-      { title: process.title, effort: process.effort, status: process.status, categories: process.categories }
-    end
-  end
+  has_many :processes, serializer: ProcessSerializer, record_type: :workflow_instance_process
 
   link :url
 end

@@ -3,14 +3,8 @@ class ProcessSerializer
 
   attributes :title, :effort, :categories, :status, :position #, :assignee
 
-  attribute :workflow do |object|
-    { name: object.workflow.name, description: object.workflow.description }
-  end
+  belongs_to :workflow, record_type: :workflow_instance_workflow, id_method_name: :workflow_instance_workflow_id,
+    serializer: WorkflowSerializer
 
-  attribute :steps do |object|
-    object.steps.map do |step|
-      { title: step.title, completed: step.completed, kind: step.kind, resource_url: step.resource_url, position: step.position }
-    end
-  end
+  has_many :steps, serializer: StepSerializer, record_type: :workflow_instance_step
 end
-
