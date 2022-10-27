@@ -1,6 +1,6 @@
 module Workflow
   class Instance::Workflow < ApplicationRecord
-    has_many :processes
+    has_many :processes, :class_name => 'Workflow::Instance::Process', foreign_key: 'workflow_instance_workflow_id'
     belongs_to :definition, :class_name => 'Workflow::Definition::Workflow', foreign_key: 'workflow_definition_workflow_id'
 
     def name
@@ -13,6 +13,10 @@ module Workflow
 
     def url
       "/v1/workflows/#{self.id}"
+    end
+
+    def version
+      self.definition.version
     end
   end
 end

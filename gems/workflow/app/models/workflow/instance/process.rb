@@ -32,5 +32,9 @@ module Workflow
     def workflow_url
       self.workflow.url
     end
+
+    def position
+      super || self.definition.position
+    end
   end
 end

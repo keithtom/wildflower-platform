@@ -1,10 +1,10 @@
-class WorkflowSerializer
-  include JSONAPI::Serializer
+class V1::Workflow::WorkflowSerializer < ApplicationSerializer
+  attributes :name, :description, :version
 
-  set_type :movie  # optional
-  set_id :owner_id # optional
-  attributes :name, :year
-  has_many :processes
-  belongs_to :owner, record_type: :user
-  belongs_to :movie_type
+  has_many :processes, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process, 
+    id_method_name: :external_identifier do |workflow|
+      workflow.processes
+  end
+
+  link :url
 end
