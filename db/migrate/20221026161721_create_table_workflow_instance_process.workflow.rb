@@ -1,3 +1,4 @@
+# This migration comes from workflow (originally 20221011211841)
 class CreateTableWorkflowInstanceProcess < ActiveRecord::Migration[7.0]
   def change
     unless table_exists?(:people)

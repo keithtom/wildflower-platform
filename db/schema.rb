@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_06_211629) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_26_161723) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -281,5 +281,98 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_06_211629) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "workflow_definition_dependencies", force: :cascade do |t|
+    t.bigint "workflow_id"
+    t.string "workable_type"
+    t.bigint "workable_id"
+    t.string "prequisite_workable_type"
+    t.bigint "prequisite_workable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prequisite_workable_type", "prequisite_workable_id"], name: "index_workflow_definition_dependencies_on_prequisite_workable"
+    t.index ["workable_type", "workable_id"], name: "index_workflow_definition_dependencies_on_workable"
+    t.index ["workflow_id"], name: "index_workflow_definition_dependencies_on_workflow_id"
+  end
+
+  create_table "workflow_definition_processes", force: :cascade do |t|
+    t.string "version"
+    t.string "title"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "effort", default: 0
+    t.integer "position"
+  end
+
+  create_table "workflow_definition_selected_processes", force: :cascade do |t|
+    t.bigint "workflow_id"
+    t.bigint "process_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["process_id"], name: "index_workflow_definition_selected_processes_on_process_id"
+    t.index ["workflow_id"], name: "index_workflow_definition_selected_processes_on_workflow_id"
+  end
+
+  create_table "workflow_definition_steps", force: :cascade do |t|
+    t.bigint "process_id"
+    t.string "title"
+    t.text "description"
+    t.string "kind"
+    t.string "resource_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "resource_title"
+    t.integer "position"
+    t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
+  end
+
+  create_table "workflow_definition_workflows", force: :cascade do |t|
+    t.string "version"
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "workflow_instance_processes", force: :cascade do |t|
+    t.bigint "workflow_definition_process_id"
+    t.bigint "workflow_instance_workflow_id"
+    t.string "title"
+    t.text "description"
+    t.integer "effort"
+    t.datetime "started_at", precision: nil
+    t.datetime "completed_at", precision: nil
+    t.bigint "assignee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "position"
+    t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
+    t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
+    t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_wf_inst_wf_id"
+  end
+
+  create_table "workflow_instance_steps", force: :cascade do |t|
+    t.bigint "workflow_instance_process_id"
+    t.bigint "workflow_definition_step_id"
+    t.string "title"
+    t.string "kind"
+    t.boolean "completed"
+    t.string "resource_url"
+    t.string "resource_title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "position"
+    t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
+    t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
+  end
+
+  create_table "workflow_instance_workflows", force: :cascade do |t|
+    t.bigint "workflow_definition_workflow_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workflow_definition_workflow_id"], name: "index_workflow_instance_workflows_on_workflow_def_workflow_id"
+  end
+
   add_foreign_key "taggings", "tags"
+  add_foreign_key "workflow_instance_processes", "people", column: "assignee_id"
 end
