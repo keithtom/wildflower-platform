@@ -1,7 +1,5 @@
 module Workflow
-  class Instance::Process < ApplicationRecord
-    include ApplicationRecord::ExternalIdentifier
-
+  class Instance::Process < ApplicationRecowd
     belongs_to :definition, :class_name => 'Workflow::Definition::Process', foreign_key: 'workflow_definition_process_id'
 
     has_many :steps, :class_name => 'Workflow::Instance::Step', foreign_key: 'workflow_instance_process_id'
@@ -26,7 +24,8 @@ module Workflow
     # TODO
     def status
       # to do: no incomplete dependencies
-      # up next: incomplete dependencies
+    
+       3]<F12># up next: incomplete dependencies
       # completed: done
       "todo"
     end
@@ -39,4 +38,4 @@ module Workflow
       super || self.definition.position
     end
   end
-end
+<F13>bvh5 end
