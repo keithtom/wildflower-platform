@@ -55,8 +55,9 @@ Rails.application.routes.draw do
     # mount Workflow::Engine => "/workflow", potentially for admin
     namespace :workflow do
       resources :workflows, only: [:show]
-      resources :processes, only: [:show]
-      resources :steps, only: [:show]
+      resources :processes, only: [:show] do
+        resources :steps, only: [:show]
+      end
     end
   end
 end

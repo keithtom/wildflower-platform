@@ -1,15 +1,9 @@
-require 'active_support/concern'
-
 module Workflow
   class ApplicationRecord < ActiveRecord::Base
     self.abstract_class = true
 
-    extend ActiveSupport::Concern
-
-    included do
-      before_create :set_external_identifier
-      attr_readonly :external_identifier
-    end
+    before_create :set_external_identifier
+    attr_readonly :external_identifier
 
     def to_param
       external_identifier
@@ -18,12 +12,10 @@ module Workflow
     private
 
     def generate_external_identifier
-      puts "in generate external identifier"
       "#{SecureRandom.hex(2)}-#{SecureRandom.hex(2)}"
     end
 
     def set_external_identifier
-      puts "in set external identifier"
       return if external_identifier.present?
 
       loop do
