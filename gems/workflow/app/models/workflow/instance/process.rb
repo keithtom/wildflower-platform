@@ -1,5 +1,7 @@
 module Workflow
   class Instance::Process < ApplicationRecord
+    include ApplicationRecord::ExternalIdentifier
+
     belongs_to :definition, :class_name => 'Workflow::Definition::Process', foreign_key: 'workflow_definition_process_id'
 
     has_many :steps, :class_name => 'Workflow::Instance::Step', foreign_key: 'workflow_instance_process_id'
