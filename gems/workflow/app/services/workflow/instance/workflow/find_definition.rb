@@ -7,3 +7,11 @@
 #
 
 # across all my workflows, find my startable work, sorted by urgency.
+#
+#
+module Workflow
+  class Instance::Workflow
+    class FindDefinition
+    end
+  end
+end
