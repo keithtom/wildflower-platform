@@ -1,5 +1,5 @@
 module Workflow
-  class Workflow
+  class Instance::Workflow
     class Create
       # stamp out the definition as an instance
       # instance is its own graph and state

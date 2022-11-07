@@ -1,5 +1,5 @@
 module Workflow
-  class Workflow
+  class Instance::Workflow
     class Recompute
       # call when workflow definition has changed
       # compare definition to instances

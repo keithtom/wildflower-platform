@@ -1,5 +1,5 @@
 module Workflow
-  class Step
+  class Instance::Step
     class Start
       #
     end

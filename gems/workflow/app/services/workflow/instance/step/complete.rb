@@ -1,5 +1,5 @@
 module Workflow
-  class Step
+  class Instance::Step
     class Complete
       # track startability of new steps as a metric, e.g. what did we unlock and as of when
       # that way we can see what's waiting in someone's court.

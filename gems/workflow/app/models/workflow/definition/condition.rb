@@ -10,3 +10,11 @@
 
 # process / step are conditional
 # modules: conditionable, startable, completeable
+#
+#
+require 'ostruct'
+
+module Workflow
+  class Definition::Condition < OpenStruct
+  end
+end
