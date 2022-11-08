@@ -6,8 +6,13 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
       process.workflow
     end
 
-  has_many :steps, serializer: V1::Workflow::StepSerializer, record_type: :workflow_instance_step,
-    id_method_name: :external_identifier do |process|
+  has_many :steps, record_type: :workflow_instance_step, id_method_name: :external_identifier,
+    serializer: V1::Workflow::StepSerializer do |process|
       process.steps
     end
+
+  belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
+    serializer: V1::PersonSerializer do |process|
+    process.assignee
+  end
 end
