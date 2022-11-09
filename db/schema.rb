@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_09_192417) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -232,6 +232,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_schools_on_hub_id"
     t.index ["pod_id"], name: "index_schools_on_pod_id"
+  end
+
+  create_table "ssj_workflow_instances", force: :cascade do |t|
+    t.bigint "workflow_instance_workflow_id"
+    t.bigint "person_id"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_ssj_workflow_instances_on_person_id"
+    t.index ["workflow_instance_workflow_id"], name: "index_ssj_workflow_instances_on_workflow_instance_workflow_id"
   end
 
   create_table "taggings", force: :cascade do |t|

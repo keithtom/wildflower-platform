@@ -21,6 +21,8 @@ class Person < ApplicationRecord
 
   has_many :decisions, class_name: "Advice::Decision", foreign_key: :creator_id
 
+  has_many :ssj_workflow_instances, class_name: "SSJ::WorkflowInstance"
+
   # https://github.com/ankane/searchkick#indexing
   scope :search_import, -> { includes([:school_relationships, :schools, :address, {:taggings => :tag}]) }
 

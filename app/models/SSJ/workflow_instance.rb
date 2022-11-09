@@ -1,7 +1,7 @@
-require 'ostruct'
+# frozen_string_literal: true
 
-# just stub this structure
-# the reference to the workflow system?
-
-class SSJ::WorkflowInstance < OpenStruct
+class SSJ::WorkflowInstance < ApplicationRecord
+  include ApplicationRecord::ExternalIdentifier
+	belongs_to :workflow, class_name: 'Workflow::Instance::Workflow', foreign_key: 'workflow_instance_workflow_id'
+	belongs_to :person
 end
