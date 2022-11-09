@@ -1,6 +1,6 @@
 module Workflow
   class Definition::Process < ApplicationRecord
-    has_many :instances, :class_name => 'Workflow::Instance::Process', :foreign_key => 'workflow_definition_process_id'
+    has_many :instances, class_name: 'Workflow::Instance::Process', foreign_key: 'workflow_definition_process_id'
     has_many :steps
     has_many :selected_processes
     has_many :workflows, through: :selected_processes
