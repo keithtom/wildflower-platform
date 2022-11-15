@@ -1,4 +1,13 @@
 class V1::Workflow::StepsController < ApiController
+  def new
+    process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
+    step = process.steps.new
+    render json: V1::Workflow::StepSerializer.new(step)
+  end
+
+  def create
+  end
+
   def show
     # TODO: identify current user, check if process/step id is accessible to user
     process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
