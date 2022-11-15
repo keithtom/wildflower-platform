@@ -7,6 +7,15 @@ module Workflow
 
       # after we complete, we need to see what's unlocked.
       # that's done later since state is changed..
+      def initialize(step)
+        @step = step
+      end
+
+      def run
+        @step.completed =true
+        @step.completed_at =  DateTime.now
+        @step.save!
+      end
     end
   end
 end

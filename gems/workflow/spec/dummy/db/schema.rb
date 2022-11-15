@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_26_011432) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_15_184357) do
   create_table "taggings", force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -129,6 +129,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_26_011432) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
+    t.datetime "completed_at"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
     t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
