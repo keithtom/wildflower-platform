@@ -23,9 +23,18 @@ module Workflow
       super || self.definition.effort
     end
 
-    # TODO
     def status
-      "todo"
+      step_count = self.steps.count
+      completed_count = steps.where(completed: true).count
+
+      case completed_count
+      when 0
+        return "to do"
+      when step_count
+        return "done"
+      else
+        return "in progress"
+      end
     end
 
     def workflow_url
