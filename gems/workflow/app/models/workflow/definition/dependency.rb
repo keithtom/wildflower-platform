@@ -4,6 +4,6 @@ module Workflow
     belongs_to :workflow
 
     belongs_to :workable, polymorphic: true
-    belongs_to :prequisite_workable, polymorphic: true
+    belongs_to :prerequisite_workable, polymorphic: true
   end
 end
