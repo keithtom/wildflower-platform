@@ -110,13 +110,13 @@ GEM
     dotenv-rails (2.7.6)
       dotenv (= 2.7.6)
       railties (>= 3.2)
-    elastic-transport (8.0.1)
-      faraday (~> 1)
+    elasticsearch (7.13.3)
+      elasticsearch-api (= 7.13.3)
+      elasticsearch-transport (= 7.13.3)
+    elasticsearch-api (7.13.3)
       multi_json
-    elasticsearch (8.3.0)
-      elastic-transport (~> 8)
-      elasticsearch-api (= 8.3.0)
-    elasticsearch-api (8.3.0)
+    elasticsearch-transport (7.13.3)
+      faraday (~> 1)
       multi_json
     erubi (1.10.0)
     factory_bot (6.2.1)
@@ -126,7 +126,7 @@ GEM
       railties (>= 5.0.0)
     faker (2.21.0)
       i18n (>= 1.8.11, < 2)
-    faraday (1.10.0)
+    faraday (1.10.2)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
@@ -352,7 +352,7 @@ DEPENDENCIES
   byebug
   database_cleaner-active_record
   dotenv-rails
-  elasticsearch (~> 8.x)
+  elasticsearch (< 7.14)
   factory_bot_rails
   faker
   guard-rspec

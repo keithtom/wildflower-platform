@@ -27,7 +27,8 @@ gem 'oj' # faster serialization
 
 # Search
 gem "searchkick"
-gem "elasticsearch", '~> 8.x'
+gem "elasticsearch", "< 7.14"
+# gem "elasticsearch", '~> 8.x'
 
 # models
 gem 'acts-as-taggable-on'
