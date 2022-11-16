@@ -17,11 +17,20 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     end
   end
 
-  describe "PUT /v1/workflow/processes/6982-2091/steps/bd8f-c3b2" do
+  describe "PUT /v1/workflow/processes/6982-2091/steps/bd8f-c3b2/complete" do
     it "succeeds" do
-      put "/v1/workflow/processes/#{process.external_identifier}/steps/#{step.external_identifier}", headers: headers, params: { step: { completed: true } }
+      put "/v1/workflow/processes/#{process.external_identifier}/steps/#{step.external_identifier}/complete", headers: headers
       expect(response).to have_http_status(:success)
       expect(Workflow::Instance::Step.last.completed).to be true
+    end
+  end
+
+  describe "PUT /v1/workflow/processes/6982-2091/steps/bd8f-c3b2/uncomplete" do
+    it "succeeds" do
+      put "/v1/workflow/processes/#{process.external_identifier}/steps/#{step.external_identifier}/uncomplete", headers: headers
+      expect(response).to have_http_status(:success)
+      expect(Workflow::Instance::Step.last.completed).to be false
+      expect(Workflow::Instance::Step.last.completed_at).to be_nil
     end
   end
 

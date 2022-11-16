@@ -12,8 +12,8 @@ module Workflow
       end
 
       def run
-        @step.completed =true
-        @step.completed_at =  DateTime.now
+        @step.completed = true
+        @step.completed_at = DateTime.now
         @step.save!
       end
     end
