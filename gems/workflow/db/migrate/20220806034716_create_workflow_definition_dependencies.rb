@@ -9,7 +9,7 @@ class CreateWorkflowDefinitionDependencies < ActiveRecord::Migration[7.0]
       t.belongs_to :workflow
 
       t.belongs_to :workable, polymorphic: true
-      t.belongs_to :prequisite_workable, polymorphic: true
+      t.belongs_to :prerequisite_workable, polymorphic: true
 
       t.timestamps
     end

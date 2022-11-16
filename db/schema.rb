@@ -209,7 +209,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.string "phone"
     t.string "email"
     t.string "governance_type"
-    t.string "ages_served"
     t.string "calendar"
     t.integer "max_enrollment"
     t.string "status"
@@ -235,11 +234,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
   end
 
   create_table "taggings", force: :cascade do |t|
-    t.integer "tag_id"
+    t.bigint "tag_id"
     t.string "taggable_type"
-    t.integer "taggable_id"
+    t.bigint "taggable_id"
     t.string "tagger_type"
-    t.integer "tagger_id"
+    t.bigint "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at", precision: nil
     t.string "tenant", limit: 128
@@ -285,11 +284,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.bigint "workflow_id"
     t.string "workable_type"
     t.bigint "workable_id"
-    t.string "prequisite_workable_type"
-    t.bigint "prequisite_workable_id"
+    t.string "prerequisite_workable_type"
+    t.bigint "prerequisite_workable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["prequisite_workable_type", "prequisite_workable_id"], name: "index_workflow_definition_dependencies_on_prequisite_workable"
+    t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_definition_dependencies_on_prerequisite_workable"
     t.index ["workable_type", "workable_id"], name: "index_workflow_definition_dependencies_on_workable"
     t.index ["workflow_id"], name: "index_workflow_definition_dependencies_on_workflow_id"
   end
