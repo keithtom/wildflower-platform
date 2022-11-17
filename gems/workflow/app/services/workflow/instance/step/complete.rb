@@ -12,9 +12,20 @@ module Workflow
       end
 
       def run
+        process = @step.process
+        prev_process_status = process.status
+
         @step.completed = true
         @step.completed_at = DateTime.now
         @step.save!
+
+        if process.status == Workflow::Instance::Process::DONE
+          process.completed_at = DateTime.now
+        end
+
+        if process.status == Workflow::Instance::Process::IN_PROGRESS && prev_process_status == Workflow::Instance::Process::TO_DO
+          process.started_at = DateTime.now
+        end
       end
     end
   end

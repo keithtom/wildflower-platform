@@ -11,6 +11,10 @@ module Workflow
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
 
+    TO_DO = "to do"
+    IN_PROGRESS = "in progress"
+    DONE = "done"
+
     def title
       super || self.definition.title
     end
@@ -23,9 +27,18 @@ module Workflow
       super || self.definition.effort
     end
 
-    # TODO
     def status
-      "todo"
+      step_count = self.steps.count
+      completed_count = steps.where(completed: true).count
+
+      case completed_count
+      when 0
+        return TO_DO
+      when step_count
+        return DONE
+      else
+        return IN_PROGRESS
+      end
     end
 
     def workflow_url
