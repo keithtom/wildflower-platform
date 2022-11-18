@@ -12,12 +12,27 @@ class SSJ::Initialize < BaseService
 
   def run
     wf_instance = @workflow_definition.instances.create!
+
     # TODO: associate to user somehow
     @workflow_definition.processes.each do |process_definition|
-      process_instance = process_definition.instances.create!(workflow_instance_workflow_id: wf_instance.id) #TODO: assign to user
+      process_instance = process_definition.instances.create!(workflow: wf_instance) #TODO: assign to user
       process_definition.steps.each do |step_definition|
-        step_definition.instances.create!(workflow_instance_process_id: process_instance.id)
+        step_definition.instances.create!(process_id: process_instance.id)
       end
     end
+
+    @workflow_definition.dependencies.each do |dependency_definition|
+      process_id = dependency_definition.workable.id
+      prerequisite_process_id = dependency_definition.prerequisite_workable.id
+      instance_workable = wf_instance.processes.where(definition_id: process_id).first
+      instance_prerequisite_workable = wf_instance.processes.where(definition_id: prerequisite_process_id).first
+
+      dependency_instance = dependency_definition.instances.create!(
+        workflow: wf_instance,
+        workable: instance_workable,
+        prerequisite_workable: instance_prerequisite_workable
+      )
+    end
+    wf_instance
   end
 end
