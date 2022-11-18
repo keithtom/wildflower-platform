@@ -1,13 +1,9 @@
 # This migration comes from workflow (originally 20221011211841)
 class CreateTableWorkflowInstanceProcess < ActiveRecord::Migration[7.0]
   def change
-    unless table_exists?(:people)
-      create_table :people
-    end
-
     create_table :workflow_instance_processes do |t|
-      t.belongs_to :workflow_definition_process, index: {:name => "index_table_workflow_inst_processes_on_workflow_def_process_id"}
-      t.belongs_to :workflow_instance_workflow, index: {:name => "index_table_workflow_inst_processes_on_wf_inst_wf_id"}
+      t.belongs_to :definition
+      t.belongs_to :workflow
       t.string :title
       t.text :description
       t.integer :weight # not sure if this should be effort
