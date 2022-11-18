@@ -23,8 +23,6 @@ RSpec.describe "Workflow Feature" do
       let(:instance_process2) { definition_process2.instances.first }
 
       it "should have basic associations" do
-        p definition_workflow.dependencies
-        p instance_workflow.dependencies
         expect(instance_workflow.definition).to eq(definition_workflow)
         expect(instance_process1.prerequisites).to be_blank
         expect(instance_process1.postrequisites).to eq([instance_process2])
