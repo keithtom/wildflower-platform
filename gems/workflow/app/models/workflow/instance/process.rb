@@ -19,6 +19,8 @@ module Workflow
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
 
+    scope :by_position, -> { order("workflow_instance_processes.position ASC") }
+
     def title
       super || self.definition.title
     end
