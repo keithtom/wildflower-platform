@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_18_044323) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -209,7 +209,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
     t.string "phone"
     t.string "email"
     t.string "governance_type"
-    t.string "ages_served"
     t.string "calendar"
     t.integer "max_enrollment"
     t.string "status"
@@ -245,11 +244,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
   end
 
   create_table "taggings", force: :cascade do |t|
-    t.integer "tag_id"
+    t.bigint "tag_id"
     t.string "taggable_type"
-    t.integer "taggable_id"
+    t.bigint "taggable_id"
     t.string "tagger_type"
-    t.integer "tagger_id"
+    t.bigint "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at", precision: nil
     t.string "tenant", limit: 128
@@ -295,11 +294,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
     t.bigint "workflow_id"
     t.string "workable_type"
     t.bigint "workable_id"
-    t.string "prequisite_workable_type"
-    t.bigint "prequisite_workable_id"
+    t.string "prerequisite_workable_type"
+    t.bigint "prerequisite_workable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["prequisite_workable_type", "prequisite_workable_id"], name: "index_workflow_definition_dependencies_on_prequisite_workable"
+    t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_definition_dependencies_on_prerequisite_workable"
     t.index ["workable_type", "workable_id"], name: "index_workflow_definition_dependencies_on_workable"
     t.index ["workflow_id"], name: "index_workflow_definition_dependencies_on_workflow_id"
   end
@@ -344,9 +343,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "workflow_instance_dependencies", force: :cascade do |t|
+    t.bigint "definition_id"
+    t.bigint "workflow_id"
+    t.string "workable_type"
+    t.bigint "workable_id"
+    t.string "prerequisite_workable_type"
+    t.bigint "prerequisite_workable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["definition_id"], name: "index_workflow_instance_dependencies_on_definition_id"
+    t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_instance_dependencies_on_prerequisite_workable"
+    t.index ["workable_type", "workable_id"], name: "index_workflow_instance_dependencies_on_workable"
+    t.index ["workflow_id"], name: "index_workflow_instance_dependencies_on_workflow_id"
+  end
+
   create_table "workflow_instance_processes", force: :cascade do |t|
-    t.bigint "workflow_definition_process_id"
-    t.bigint "workflow_instance_workflow_id"
+    t.bigint "definition_id"
+    t.bigint "workflow_id"
     t.string "title"
     t.text "description"
     t.integer "effort"
@@ -358,14 +372,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
     t.integer "position"
     t.string "external_identifier", null: false
     t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
+    t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
-    t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
-    t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_wf_inst_wf_id"
+    t.index ["workflow_id"], name: "index_workflow_instance_processes_on_workflow_id"
   end
 
   create_table "workflow_instance_steps", force: :cascade do |t|
-    t.bigint "workflow_instance_process_id"
-    t.bigint "workflow_definition_step_id"
+    t.bigint "process_id"
+    t.bigint "definition_id"
     t.string "title"
     t.string "kind"
     t.boolean "completed"
@@ -376,18 +390,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_185702) do
     t.integer "position"
     t.string "external_identifier", null: false
     t.datetime "completed_at"
+    t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
-    t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
-    t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
+    t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
   end
 
   create_table "workflow_instance_workflows", force: :cascade do |t|
-    t.bigint "workflow_definition_workflow_id"
+    t.bigint "definition_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
-    t.index ["workflow_definition_workflow_id"], name: "index_workflow_instance_workflows_on_workflow_def_workflow_id"
   end
 
   add_foreign_key "taggings", "tags"
