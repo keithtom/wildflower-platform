@@ -2,7 +2,7 @@ module Workflow
   class Instance::Process < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
-    belongs_to :definition, class_name: 'Workflow::Definition::Process'
+    belongs_to :definition, class_name: 'Workflow::Definition::Process', optional: true # for manual steps
     belongs_to :workflow
 
     # use a service for this because prerequisites and post requisites is a mixed list of processes and steps.

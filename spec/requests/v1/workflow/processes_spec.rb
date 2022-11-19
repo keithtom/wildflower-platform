@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe "V1::Workflow::Processes", type: :request do
   let(:headers) { {'ACCEPT' => 'application/json'} }
   let(:person) { create(:person) }
-  let (:workflow_definition_workflow) { Workflow::Definition::Workflow.create!(version: "1.0", name: "Visioning", description: "Imagine the school of your dreams") }
-  let (:workflow_instance_workflow) { Workflow::Instance::Workflow.create!(workflow_definition_workflow_id: workflow_definition_workflow.id) }
+  let (:workflow_definition) { Workflow::Definition::Workflow.create!(version: "1.0", name: "Visioning", description: "Imagine the school of your dreams") }
+  let (:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
-  let(:process) { Workflow::Instance::Process.create!(workflow_definition_process_id: process_definition.id, workflow_instance_workflow_id: workflow_instance_workflow.id) }
+  let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
 
   describe "PUT /v1/processes/6823-2341/assign" do
     it "succeeds" do

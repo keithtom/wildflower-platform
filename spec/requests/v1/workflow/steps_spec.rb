@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe "V1::Workflow::Steps", type: :request do
-  let (:workflow_definition_workflow) { Workflow::Definition::Workflow.create!(version: "1.0", name: "Visioning", description: "Imagine the school of your dreams") }
-  let (:workflow_instance_workflow) { Workflow::Instance::Workflow.create!(workflow_definition_workflow_id: workflow_definition_workflow.id) }
+  let (:workflow_definition) { Workflow::Definition::Workflow.create!(version: "1.0", name: "Visioning", description: "Imagine the school of your dreams") }
+  let (:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
-  let(:process) { Workflow::Instance::Process.create!(workflow_definition_process_id: process_definition.id, workflow_instance_workflow_id: workflow_instance_workflow.id) }
-  let(:step_definition) { Workflow::Definition::Step.create!(process_id: process_definition.id, title: "hire accountant") }
-  let(:step) { Workflow::Instance::Step.create!(workflow_instance_process_id: process.id, workflow_definition_step_id: step_definition.id) }
+  let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
+  let(:step_definition) { Workflow::Definition::Step.create!(process: process_definition, title: "hire accountant") }
+  let(:step) { Workflow::Instance::Step.create!(process: process, definition: step_definition) }
   let(:headers) { {'ACCEPT' => 'application/json'} }
 
   describe "GET /v1/workflow/processes/6982-2091/steps/bd8f-c3b2" do
