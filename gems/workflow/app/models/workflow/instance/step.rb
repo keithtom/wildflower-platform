@@ -2,7 +2,7 @@ module Workflow
   class Instance::Step < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
-    belongs_to :definition, class_name: 'Workflow::Definition::Step'
+    belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true
     belongs_to :process, class_name: 'Workflow::Instance::Process'
 
 
