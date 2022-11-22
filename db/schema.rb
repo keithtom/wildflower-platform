@@ -233,16 +233,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_18_044323) do
     t.index ["pod_id"], name: "index_schools_on_pod_id"
   end
 
-  create_table "ssj_workflow_instances", force: :cascade do |t|
-    t.bigint "workflow_instance_workflow_id"
-    t.bigint "person_id"
-    t.string "external_identifier", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["person_id"], name: "index_ssj_workflow_instances_on_person_id"
-    t.index ["workflow_instance_workflow_id"], name: "index_ssj_workflow_instances_on_workflow_instance_workflow_id"
-  end
-
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
     t.string "taggable_type"
@@ -388,8 +378,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_18_044323) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
-    t.string "external_identifier", null: false
     t.datetime "completed_at"
+    t.string "external_identifier", null: false
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
