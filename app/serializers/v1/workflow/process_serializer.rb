@@ -7,6 +7,14 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     status(process)
   end
 
+  attribute :total_steps_count do |process|
+    total_steps_count(process)
+  end
+
+  attribute :completed_steps_count do |process|
+    completed_steps_count(process)
+  end
+
   belongs_to :workflow, record_type: :workflow_instance_workflow, id_method_name: :external_identifier,
     serializer: V1::Workflow::WorkflowSerializer do |process|
       process.workflow

@@ -22,6 +22,8 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
       get "/v1/workflow/processes/#{process.external_identifier}", headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:status)
+      expect(json_response["data"]).to have_type(:process).and have_attribute(:totalStepsCount)
+      expect(json_response["data"]).to have_type(:process).and have_attribute(:completedStepsCount)
     end
   end
 end
