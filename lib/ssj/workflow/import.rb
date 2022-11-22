@@ -1,28 +1,14 @@
-require 'csv'
-
+# Import the national sensible default workflow defintion from Maggie's spreadsheet
 # look at this sheet to understand what's happening
 # https://docs.google.com/spreadsheets/d/1cXGliig-PGosbGyY9Jp30me2WasNN65yitJGvxRGB4k/edit#gid=294865209
-# csv = CSV.parse(File.open('schools.csv'), headers:true, header_converters: [:downcase, :symbol])
-# csv.headers
 
+require 'csv'
 require 'workflow/definition/process'
-
-# Workflow::Definition::Process.destroy_all
-# Workflow::Definition::Workflow.destroy_all
-# workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default", version: Date.today.strftime("%Y-%m-%d-00"), description: "Imported from spreadsheet.  Authored by Maggie Paulin."
-#
-# require 'ssj/workflow/import'
-# visioning = File.open('visioning.csv').read
-# planning = File.open('planning.csv').read
-# startup = File.open('startup.csv').read
-# SSJ::Workflow::Import.new(visioning, workflow_definition).import
-# SSJ::Workflow::Import.new(planning, workflow_definition).import
-# SSJ::Workflow::Import.new(startup, workflow_definition).import
 
 module SSJ
   module Workflow
     class Import
-      def initialize(source_csv, workflow_definition)
+      def initialize(source_csv, workflow_definition, phase_process, phase_tag)
         @source_csv = source_csv
         @csv = CSV.parse(@source_csv)
 
@@ -31,6 +17,8 @@ module SSJ
         @csv.shift
 
         @workflow_definition = workflow_definition
+        @phase_process = phase_process
+        @phase_tag = phase_tag
       end
 
       def import
@@ -84,11 +72,22 @@ module SSJ
           puts "finding dependencies for #{process_title}"
           process_obj = ::Workflow::Definition::Process.find_by!(title: process_title)
 
-          process_prerequisites = row[3]&.split("\n")
-
-          # associate process to workflow, assumes doesn't already exist...
+          # associate process to workflow
           @workflow_definition.selected_processes.create!(process: process_obj)
 
+
+          # add this process as prerequisite to the phase process only if it doesn't have post-requisites (keeps the dependency tree clean)
+          # if process_obj.postrerequisites.blank?
+          if @workflow_definition.dependencies.where(prerequisite_workable: process_obj).empty?
+            @workflow_definition.dependencies.create! workable: @phase_process, prerequisite_workable: process_obj
+          end
+
+          # tag the process with phase_tag
+          process_obj.phase_list = @phase_tag
+          process_obj.save!
+
+          # create dependencies for prerequisites
+          process_prerequisites = row[3]&.split("\n")
           if process_prerequisites.present?
             # find each pre-requisite, create dependencies.
             process_prerequisites.each do |prerequisite_title|
@@ -102,4 +101,33 @@ module SSJ
       end
     end
   end
+end
+
+
+# require 'ssj/workflow/import'
+def create_default_workflow_and_processes
+  require 'open-uri'
+  Workflow::Definition::Process.destroy_all
+  Workflow::Definition::Workflow.destroy_all
+  workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default", version: Date.today.strftime("%Y-%m-%d-00"), description: "Imported from spreadsheet.  Authored by Maggie Paulin."
+
+  visioning_process = workflow_definition.processes.create! title: "End of Visioning", description: "Placeholder process to be a post-prerequisite for all the visioning processes and be a prerequisite for planning processes."
+
+  planning_process = workflow_definition.processes.create! title: "End of Planning", description: "Placeholder process to be a post-prerequisite for all the planning processes and be a prerequisite for startup proccesses."
+  workflow_definition.dependencies.create! workable: planning_process, prerequisite_workable: visioning_process
+
+  startup_process = workflow_definition.processes.create! title: "End of Startup", description: "Placeholder process to be a post-prerequisite for all the startup processes"
+  workflow_definition.dependencies.create! workable: startup_process, prerequisite_workable: planning_process
+
+  # visioning = File.open('visioning.csv').read
+  visioning = URI.open("https://www.dropbox.com/s/mz217l67txci7l6/visioning.csv?dl=1").read
+  SSJ::Workflow::Import.new(visioning, workflow_definition, visioning_process, "visioning").import
+
+  # planning = File.open('planning.csv').read
+  planning = URI.open("https://www.dropbox.com/s/og60xsgaqqs94qn/planning.csv?dl=1").read
+  SSJ::Workflow::Import.new(planning, workflow_definition, planning_process, "planning").import
+
+  # startup = File.open('startup.csv').read
+  startup = URI.open("https://www.dropbox.com/s/x5gelsrogmfoft7/startup.csv?dl=1").read
+  SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, "startup").import
 end
