@@ -18,11 +18,11 @@ module Workflow
         @step.completed_at = DateTime.now
         @step.save!
 
-        if process.steps.where(completed: false).count == 0
+        if process.completed_steps_count == 0
           process.completed_at = DateTime.now
         end
 
-        if process.steps.where(completed: true).count == 1
+        if process.completed_steps_count == 1
           process.started_at = DateTime.now
         end
       end

@@ -22,21 +22,13 @@ module V1::Statusable
       end
     end
 
-    def completed_steps_count(process)
-      process.steps.where(completed: true).count
-    end
-
-    def total_steps_count(process)
-      step_count = process.steps.count
-    end
-
     private
 
     def completion_status(process)
-      case completed_steps_count(process)
+      case process.completed_steps_count
       when 0
         return UNSTARTED
-      when total_steps_count(process)
+      when process.steps_count
         return DONE
       else
         return IN_PROGRESS

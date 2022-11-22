@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_18_044323) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_22_200827) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -371,6 +371,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_18_044323) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
+    t.bigint "steps_count"
+    t.bigint "completed_steps_count"
     t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
