@@ -37,3 +37,9 @@ Setup your local database and schema:
 rake db:create
 rake db:migrate
 ```
+
+## Installing Elasticsearch
+1. Install directly from website, by following directions [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/targz.html#install-macos). Do not use homebrew.
+2. Update the `config/elasticsearch.yml` file such that `xpack.security.enabled` is set to `false`
+3. Run `./bin/elasticsearch` from inside the directory
+4. Test the server is running correctly by running `curl -X GET "localhost:9200/?pretty"`

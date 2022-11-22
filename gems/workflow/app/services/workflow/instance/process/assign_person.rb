@@ -1,6 +1,6 @@
 module Workflow
   class Instance::Process
-    class AssignPerson
+    class AssignPerson < Workflow::Service
       def initialize(process, person)
         @process = process
         @person = person

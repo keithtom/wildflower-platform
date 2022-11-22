@@ -1,8 +1,7 @@
 class V1::Workflow::StepsController < ApiController
   def create
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
-    step_creator = Workflow::Instance::Process::AddManualStep.new(@process, step_params)
-    @step = step_creator.run
+    @step = Workflow::Instance::Process::AddManualStep.run(@process, step_params)
     render json: V1::Workflow::StepSerializer.new(@step)
   end
 
@@ -18,8 +17,7 @@ class V1::Workflow::StepsController < ApiController
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
     @step = @process.steps.find_by!(external_identifier: params[:id])
 
-    completer = Workflow::Instance::Step::Complete.new(@step)
-    completer.run
+    Workflow::Instance::Step::Complete.run(@step)
 
     render json: V1::Workflow::StepSerializer.new(@step)
   end
@@ -29,8 +27,7 @@ class V1::Workflow::StepsController < ApiController
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
     @step = @process.steps.find_by!(external_identifier: params[:id])
 
-    uncompleter = Workflow::Instance::Step::Uncomplete.new(@step)
-    uncompleter.run
+    Workflow::Instance::Step::Uncomplete.run(@step)
 
     render json: V1::Workflow::StepSerializer.new(@step)
   end

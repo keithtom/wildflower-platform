@@ -6,5 +6,11 @@ module Workflow
 
     # given a specific step, query what dependencies must be met
     # query 3rd party work (steps that are avaialble and waiting on not you)
+    def self.run(*args)
+      new(*args).run
+    end
+
+    class Error < StandardError
+    end
   end
 end

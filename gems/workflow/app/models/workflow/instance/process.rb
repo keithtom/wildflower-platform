@@ -21,10 +21,6 @@ module Workflow
 
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
 
-    TO_DO = "to do"
-    IN_PROGRESS = "in progress"
-    DONE = "done"
-
     def title
       super || self.definition.title
     end
@@ -35,20 +31,6 @@ module Workflow
 
     def effort
       super || self.definition.effort
-    end
-
-    def status
-      step_count = self.steps.count
-      completed_count = steps.where(completed: true).count
-
-      case completed_count
-      when 0
-        return TO_DO
-      when step_count
-        return DONE
-      else
-        return IN_PROGRESS
-      end
     end
 
     def workflow_url
