@@ -1,5 +1,11 @@
 class V1::Workflow::ProcessSerializer < ApplicationSerializer
-  attributes :title, :effort, :categories, :status, :position #, :assignee
+  include V1::Statusable
+
+  attributes :title, :effort, :categories, :position #, :assignee
+
+  attribute :status do |process|
+    status(process)
+  end
 
   belongs_to :workflow, record_type: :workflow_instance_workflow, id_method_name: :external_identifier,
     serializer: V1::Workflow::WorkflowSerializer do |process|
