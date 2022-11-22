@@ -2,14 +2,28 @@ module Workflow
   class Instance::Process < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
-    belongs_to :definition, class_name: 'Workflow::Definition::Process', foreign_key: 'workflow_definition_process_id'
+    belongs_to :definition, class_name: 'Workflow::Definition::Process', optional: true # for manual steps
+    belongs_to :workflow
 
-    has_many :steps, class_name: 'Workflow::Instance::Step', foreign_key: 'workflow_instance_process_id'
-    belongs_to :workflow, class_name: 'Workflow::Instance::Workflow', foreign_key: 'workflow_instance_workflow_id'
-    belongs_to :assignee, class_name: 'Person', foreign_key: 'assignee_id', optional: true
+    # use a service for this because prerequisites and post requisites is a mixed list of processes and steps.
+    has_many :workable_dependencies, class_name: 'Workflow::Instance::Dependency', as: :workable # TODO: constrain me to the same workflow
+    has_many :prerequisites, through: :workable_dependencies, source: :prerequisite_workable, source_type: 'Workflow::Instance::Process'
+
+    has_many :prerequisite_dependencies, class_name: 'Workflow::Instance::Dependency', as: :prerequisite_workable
+    has_many :postrequisites, through: :prerequisite_dependencies, source: :workable, source_type: 'Workflow::Instance::Process'
+
+    has_many :steps, class_name: 'Workflow::Instance::Step'
+
+    belongs_to :assignee, class_name: 'Person', optional: true
 
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
+
+    scope :by_position, -> { order("workflow_instance_processes.position ASC") }
+
+    TO_DO = "to do"
+    IN_PROGRESS = "in progress"
+    DONE = "done"
 
     def title
       super || self.definition.title
@@ -29,11 +43,11 @@ module Workflow
 
       case completed_count
       when 0
-        return "to do"
+        return TO_DO
       when step_count
-        return "done"
+        return DONE
       else
-        return "in progress"
+        return IN_PROGRESS
       end
     end
 
