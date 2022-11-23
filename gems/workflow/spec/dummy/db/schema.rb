@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_15_184357) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_22_200449) do
   create_table "taggings", force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -98,6 +98,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_184357) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "workflow_instance_dependencies", force: :cascade do |t|
+    t.integer "definition_id"
+    t.integer "workflow_id"
+    t.string "workable_type"
+    t.integer "workable_id"
+    t.string "prerequisite_workable_type"
+    t.integer "prerequisite_workable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["definition_id"], name: "index_workflow_instance_dependencies_on_definition_id"
+    t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_instance_dependencies_on_prerequisite_workable"
+    t.index ["workable_type", "workable_id"], name: "index_workflow_instance_dependencies_on_workable"
+    t.index ["workflow_id"], name: "index_workflow_instance_dependencies_on_workflow_id"
+  end
+
   create_table "workflow_instance_processes", force: :cascade do |t|
     t.integer "workflow_definition_process_id"
     t.integer "workflow_instance_workflow_id"
@@ -111,6 +126,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_184357) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
+    t.integer "steps_count"
     t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
     t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"

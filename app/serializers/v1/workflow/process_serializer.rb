@@ -1,18 +1,10 @@
 class V1::Workflow::ProcessSerializer < ApplicationSerializer
   include V1::Statusable
 
-  attributes :title, :effort, :categories, :position #, :assignee
+  attributes :title, :effort, :categories, :position, :steps_count, :completed_steps_count #, :assignee
 
   attribute :status do |process|
     status(process)
-  end
-
-  attribute :total_steps_count do |process|
-    total_steps_count(process)
-  end
-
-  attribute :completed_steps_count do |process|
-    completed_steps_count(process)
   end
 
   belongs_to :workflow, record_type: :workflow_instance_workflow, id_method_name: :external_identifier,
