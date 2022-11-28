@@ -4,7 +4,7 @@ module Workflow
 
     belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true
     belongs_to :process, class_name: 'Workflow::Instance::Process', counter_cache: true
-    has_one :document, as: :documentable, required: false
+    has_many :documents, as: :documentable
 
     after_save :update_completed_counter_cache
     after_destroy :update_completed_counter_cache
@@ -21,8 +21,8 @@ module Workflow
       super || self.definition.try(:kind)
     end
 
-    def document
-      super || self.definition.try(:document)
+    def documents
+      super || self.definition.try(:documents)
     end
 
     def position

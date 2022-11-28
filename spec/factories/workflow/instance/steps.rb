@@ -9,7 +9,7 @@ FactoryBot.define do
     title { "Watch Building a Wildflower Budget " }
     kind { "default" }
     position { 100 }
-    after(:create) { |step| create(:document, documentable: step) }
+    after(:build) { |step| create(:document, documentable: step) }
   end
 end
 

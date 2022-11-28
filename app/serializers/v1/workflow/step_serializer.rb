@@ -6,8 +6,8 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.process
   end
 
-  has_one :document, serializer: V1::DocumentSerializer, record_type: :document,
+  has_many :documents, serializer: V1::DocumentSerializer, record_type: :document,
     id_method_name: :external_identifier do |step|
-      step.document
+      step.documents
   end
 end
