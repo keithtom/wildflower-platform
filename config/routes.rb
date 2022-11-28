@@ -51,7 +51,6 @@ Rails.application.routes.draw do
     #   resources :pods, except: :destroy
     # end
 
-    # mount Workflow::Engine => "/workflow", potentially for admin
     namespace :workflow do
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]
