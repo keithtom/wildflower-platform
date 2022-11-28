@@ -1,12 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "V1::Workflow::Steps", type: :request do
-  let (:workflow_definition) { Workflow::Definition::Workflow.create!(version: "1.0", name: "Visioning", description: "Imagine the school of your dreams") }
-  let (:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
-  let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
-  let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
-  let(:step_definition) { Workflow::Definition::Step.create!(process: process_definition, title: "hire accountant") }
-  let(:step) { Workflow::Instance::Step.create!(process: process, definition: step_definition) }
+  let(:step) { create(:workflow_instance_step) }
+  let(:process) { step.process }
   let(:headers) { {'ACCEPT' => 'application/json'} }
 
   describe "GET /v1/workflow/processes/6982-2091/steps/bd8f-c3b2" do
@@ -43,7 +39,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
       expect(json_response["data"]).to have_type(:step).and have_attribute(:title)
       new_step = Workflow::Instance::Step.last
       expect(new_step.title).to eq(title)
-      expect(new_step.position).to eq(100)
+      expect(new_step.position).to eq(200)
     end
   end
 end

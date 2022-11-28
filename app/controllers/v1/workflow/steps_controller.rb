@@ -36,7 +36,7 @@ class V1::Workflow::StepsController < ApiController
 
   def step_options
     options = {}
-    options[:include] = ['process']
+    options[:include] = ['process', 'document']
     return options
   end
 

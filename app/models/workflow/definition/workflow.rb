@@ -1,7 +1,7 @@
 module Workflow
   class Definition::Workflow < ApplicationRecord
     PHASES = ["visioning", "planning", "startup"]
-  
+
     has_many :selected_processes
     has_many :processes, through: :selected_processes # these are the nodes
 
