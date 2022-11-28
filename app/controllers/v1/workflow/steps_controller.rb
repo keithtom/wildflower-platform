@@ -42,6 +42,6 @@ class V1::Workflow::StepsController < ApiController
 
 
   def step_params
-    params.require(:step).permit(:title, :completed, :kind, :position, :resource_url, :resource_title)
+    params.require(:step).permit(:title, :completed, :kind, :position, :document)
   end
 end
