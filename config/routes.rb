@@ -60,11 +60,12 @@ Rails.application.routes.draw do
           put :assign
         end
 
-        resources :steps, only: [:create, :show] do
-          member do
-            put :complete
-            put :uncomplete
-          end
+        resources :steps, only: [:create, :show]
+      end
+      resources :steps, only: [] do
+        member do
+          put :complete
+          put :uncomplete
         end
       end
     end
