@@ -11,7 +11,7 @@ module Workflow
     private
 
     def set_position
-      if self.position.nil?
+      if position.nil?
         self.position = self.process.steps.order(:position).last.try(:position).to_i + DEFAULT_INCREMENT
       end
     end
