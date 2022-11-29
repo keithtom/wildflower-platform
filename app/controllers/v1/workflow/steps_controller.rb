@@ -14,8 +14,12 @@ class V1::Workflow::StepsController < ApiController
 
   def complete
     # TODO: identify current user, check if process/step id is accessible to user
-    @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
-    @step = @process.steps.find_by!(external_identifier: params[:id])
+    if params[:process_id]
+      @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
+      @step = @process.steps.find_by!(external_identifier: params[:id])
+    else
+      @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
+    end
 
     Workflow::Instance::Step::Complete.run(@step)
 
