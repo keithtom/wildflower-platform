@@ -70,6 +70,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
           expect(step.reload.position).to be(500)
         end
       end
+
       context "to the end of the list" do
         let(:step) { create(:workflow_instance_step_manual, position: 1500) }
         let(:after_position) { 3000 }
@@ -80,7 +81,8 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
           expect(step.reload.position).to be(4000)
         end
       end
-      context "between two step" do
+
+      context "between two steps" do
         let(:after_position) { 2000 }
         it "succeeds" do
           put "/v1/workflow/processes/#{process.external_identifier}/steps/#{step.external_identifier}/reorder", headers: headers,
