@@ -54,6 +54,7 @@ Rails.application.routes.draw do
     namespace :workflow do
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]
+        get :resources
       end
       resources :processes, only: [:show] do
         member do
