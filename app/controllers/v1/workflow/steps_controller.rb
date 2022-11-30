@@ -14,12 +14,7 @@ class V1::Workflow::StepsController < ApiController
 
   def complete
     # TODO: identify current user, check if process/step id is accessible to user
-    if params[:process_id]
-      @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
-      @step = @process.steps.find_by!(external_identifier: params[:id])
-    else
-      @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
-    end
+    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
 
     Workflow::Instance::Step::Complete.run(@step)
 
@@ -28,8 +23,7 @@ class V1::Workflow::StepsController < ApiController
 
   def uncomplete
     # TODO: identify current user, check if process/step id is accessible to user
-    @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
-    @step = @process.steps.find_by!(external_identifier: params[:id])
+    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
 
     Workflow::Instance::Step::Uncomplete.run(@step)
 
@@ -37,13 +31,12 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def reorder
-    @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
-    @step = @process.steps.find_by!(external_identifier: params[:id])
-    if Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
-      render json: V1::Workflow::StepSerializer.new(@step)
-    else
-      render status: 422
-    end
+    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
+    Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
+    render json: V1::Workflow::StepSerializer.new(@step)
+
+    rescue Workflow::Instance::Process::ReorderSteps::Error => e
+      render json: {error: e.message}, status: :unprocessable_entity
   end
 
   private

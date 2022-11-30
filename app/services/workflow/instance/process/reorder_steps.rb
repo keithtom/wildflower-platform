@@ -1,6 +1,12 @@
 module Workflow
   class Instance::Process
     class ReorderSteps < BaseService
+      class Error < StandardError
+        def message
+          "Manually created steps cannot be reordered"
+        end
+      end
+
       def initialize(step, after_position)
         @step = step
         @after_position = after_position.to_i
@@ -8,7 +14,7 @@ module Workflow
 
       def run
         unless @step.is_manual?
-          return false
+          raise Error
         end
 
         new_position = nil
