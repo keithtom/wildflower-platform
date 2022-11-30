@@ -40,5 +40,11 @@ module Workflow
     def position
       super || self.definition.position
     end
+
+    def category_list
+      if super.empty?
+        self.definition.category_list
+      end
+    end
   end
 end
