@@ -1,6 +1,6 @@
 module Workflow
   class Instance::Step
-    class Uncomplete < Workflow::Service
+    class Uncomplete < BaseService
       def initialize(step)
         @step = step
       end

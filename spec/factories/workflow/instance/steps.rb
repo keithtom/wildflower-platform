@@ -8,7 +8,7 @@ FactoryBot.define do
     association :process, factory: :workflow_instance_process
     title { "Watch Building a Wildflower Budget " }
     kind { "default" }
-    position { 100 }
+    position { Workflow::Instance::Step::DEFAULT_INCREMENT }
     after(:build) { |step| create(:document, documentable: step) }
   end
 end

@@ -36,6 +36,16 @@ class V1::Workflow::StepsController < ApiController
     render json: V1::Workflow::StepSerializer.new(@step)
   end
 
+  def reorder
+    @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
+    @step = @process.steps.find_by!(external_identifier: params[:id])
+    if Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
+      render json: V1::Workflow::StepSerializer.new(@step)
+    else
+      render status: 422
+    end
+  end
+
   private
 
   def step_options
@@ -46,6 +56,6 @@ class V1::Workflow::StepsController < ApiController
 
 
   def step_params
-    params.require(:step).permit(:title, :completed, :kind, :position, :document)
+    params.require(:step).permit(:title, :completed, :kind, :position, :document, :after_position)
   end
 end

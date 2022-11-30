@@ -1,5 +1,7 @@
 module Workflow
   class Instance::Step < ApplicationRecord
+    DEFAULT_INCREMENT = 1000
+
     include ApplicationRecord::ExternalIdentifier
 
     belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true
@@ -27,6 +29,10 @@ module Workflow
 
     def position
       super || self.definition.try(:position)
+    end
+
+    def is_manual?
+      definition.nil?
     end
 
     private
