@@ -66,6 +66,7 @@ Rails.application.routes.draw do
         member do
           put :complete
           put :uncomplete
+          put :reorder
         end
       end
     end

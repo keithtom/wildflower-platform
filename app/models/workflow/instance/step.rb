@@ -6,8 +6,11 @@ module Workflow
     belongs_to :process, class_name: 'Workflow::Instance::Process', counter_cache: true
     has_many :documents, as: :documentable
 
+    before_create :set_position
     after_save :update_completed_counter_cache
     after_destroy :update_completed_counter_cache
+
+    DEFAULT_INCREMENT = 1000
 
     def title
       super || self.definition.try(:title)
@@ -29,11 +32,21 @@ module Workflow
       super || self.definition.try(:position)
     end
 
+    def is_manual?
+      definition.nil?
+    end
+
     private
 
     def update_completed_counter_cache
       self.process.completed_steps_count = Workflow::Instance::Step.where(completed: true, process_id: process.id).count
       self.process.save
+    end
+
+    def set_position
+      if self.position.nil?
+        self.position = self.process.steps.order(:position).last.try(:position).to_i + DEFAULT_INCREMENT
+      end
     end
   end
 end
