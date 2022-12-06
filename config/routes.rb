@@ -68,6 +68,7 @@ Rails.application.routes.draw do
           put :complete
           put :uncomplete
           put :reorder
+          put :select_option
         end
       end
     end

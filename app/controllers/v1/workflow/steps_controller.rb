@@ -39,6 +39,14 @@ class V1::Workflow::StepsController < ApiController
       render json: {error: e.message}, status: :unprocessable_entity
   end
 
+  def select_option
+    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
+    @decision_option = Workflow::DecisionOption.find_by!(external_identifier: step_params[:selected_option_id])
+
+    Workflow::Instance::Step::SelectDecisionOption.run(@step, @decision_option)
+    render json: V1::Workflow::StepSerializer.new(@step.reload)
+  end
+
   private
 
   def step_options
@@ -49,6 +57,6 @@ class V1::Workflow::StepsController < ApiController
 
 
   def step_params
-    params.require(:step).permit(:title, :completed, :kind, :position, :document, :after_position)
+    params.require(:step).permit(:title, :completed, :kind, :position, :document, :after_position, :selected_option_id)
   end
 end

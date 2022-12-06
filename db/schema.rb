@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_28_154438) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_05_200659) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -280,6 +280,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_28_154438) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "workflow_decision_options", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.string "description"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_workflow_decision_options_on_decision_id"
+    t.index ["external_identifier"], name: "index_workflow_decision_options_on_external_identifier", unique: true
+  end
+
   create_table "workflow_definition_dependencies", force: :cascade do |t|
     t.bigint "workflow_id"
     t.string "workable_type"
@@ -378,9 +388,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_28_154438) do
     t.integer "position"
     t.datetime "completed_at"
     t.string "external_identifier", null: false
+    t.bigint "selected_option_id"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
+    t.index ["selected_option_id"], name: "index_workflow_instance_steps_on_selected_option_id"
   end
 
   create_table "workflow_instance_workflows", force: :cascade do |t|

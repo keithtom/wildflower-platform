@@ -94,4 +94,22 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
       end
     end
   end
+
+  describe "PUT /v1/workflow/steps/:id/select_option" do
+    let(:select_option) { step.definition.decision_options.first }
+
+    before do
+      definition = step.definition
+      3.times do |i|
+        step.definition.decision_options.create(description: "option #{i}")
+      end
+    end
+
+    it "selects an option for a step of kind: decision" do
+      put "/v1/workflow/steps/#{step.external_identifier}/select_option", headers: headers,
+        params: { step: { selected_option_id: select_option.external_identifier } }
+      expect(response).to have_http_status(:success)
+      expect(step.reload.selected_option).to eq(select_option)
+    end
+  end
 end

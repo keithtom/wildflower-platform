@@ -29,3 +29,7 @@ RSpec.describe Workflow::Instance::Step, type: :model do
     its(:position) { is_expected.to be(position) }
   end
 end
+
+# if a step is a manual step, it cannot be of type decision
+# if a step is a decision, it should have multiple options 
+# once user decides which step to take, it should be recorded
