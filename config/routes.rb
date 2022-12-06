@@ -55,6 +55,10 @@ Rails.application.routes.draw do
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]
         get :resources
+
+        collection do
+          post :instantiate
+        end
       end
       resources :processes, only: [:show] do
         member do

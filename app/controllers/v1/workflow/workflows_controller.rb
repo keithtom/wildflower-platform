@@ -1,4 +1,11 @@
 class V1::Workflow::WorkflowsController < ApiController
+  # for testing
+  def instantiate
+    wfd = Workflow::Definition::Workflow.find_by! name: "National, Independent Sensible Default"
+    wfi = SSJ::Initialize.run(wfd)
+    render json: { id: wfi.external_identifier }
+  end
+
   def show
     # TODO: identify current user, check if workflow id is accessible to user
     # figure out which workflows they have with that ID
