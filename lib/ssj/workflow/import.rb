@@ -23,7 +23,7 @@ module SSJ
 
       def import
         import_process_library
-        import_workflow_dependencies
+        import_national_sensible_default_workflow_definition
         nil
       end
 
@@ -48,10 +48,10 @@ module SSJ
             process_description = row[15]&.strip
             process_weight = row[19]&.strip # convert to integer
             process_effort = {"S": 0, "M": 10, "L": 100}[process_weight]
-            process_tag = row[7]&.strip # tag process.
+            process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, effort: process_effort, position: process_position
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, effort: process_effort, position: process_position, category_list: process_category
 
             step_position = 0
           elsif process_title.blank? && step_title.present?
@@ -69,7 +69,8 @@ module SSJ
         end
       end
 
-      def import_workflow_dependencies
+
+      def import_national_sensible_default_workflow_definition
         process_obj = nil
 
         @csv.each do |row|
