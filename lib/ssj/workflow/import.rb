@@ -47,7 +47,7 @@ module SSJ
             puts "creating #{process_title}"
             process_description = row[15]&.strip
             process_weight = row[19]&.strip # convert to integer
-            process_effort = {"S": 0, "M": 10, "L": 100}[process_weight]
+            process_effort = {S: "small", M: "medium", L: "large"}[process_weight.to_s.to_sym]
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
