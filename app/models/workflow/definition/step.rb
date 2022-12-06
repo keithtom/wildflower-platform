@@ -1,12 +1,12 @@
 module Workflow
   class Definition::Step < ApplicationRecord
+    DEFAULT_INCREMENT = 1000
+
     belongs_to :process
     has_many :documents, as: :documentable
     has_many :instances, class_name: 'Workflow::Instance::Step', foreign_key: 'definition_id'
 
     before_create :set_position
-
-    DEFAULT_INCREMENT = 1000
 
     private
 

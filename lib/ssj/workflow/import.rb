@@ -36,6 +36,9 @@ module SSJ
       def import_process_library
         # build processes library, having the admin will help... don't worry about position yet.  leverage the fact it is definition 0.
         process_obj = nil
+        process_position = default_process_position
+        step_position = 0
+
         @csv.each do |row|
           process_title = row[0]&.strip
           step_title = row[1]&.strip
@@ -46,13 +49,18 @@ module SSJ
             process_weight = row[19]&.strip # convert to integer
             process_effort = {"S": 0, "M": 10, "L": 100}[process_weight]
             process_tag = row[7]&.strip # tag process.
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, effort: process_effort
+            process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
+
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, effort: process_effort, position: process_position
+
+            step_position = 0
           elsif process_title.blank? && step_title.present?
             puts "  adding #{process_obj.title}/#{step_title}"
             step_description = row[17]&.strip
             step_type = row[16]&.strip
             # step_content = row[18]&.strip
-            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type)
+            step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
+            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position)
             # create resources for steps.  document attaches via polymorphic.  step needs to have that code injected.
           else
             # empty line
@@ -63,6 +71,7 @@ module SSJ
 
       def import_workflow_dependencies
         process_obj = nil
+
         @csv.each do |row|
           process_title = row[0]&.strip
           step_title = row[1]&.strip
@@ -97,6 +106,17 @@ module SSJ
               @workflow_definition.dependencies.create! workable: process_obj, prerequisite_workable: prerequisite_obj
             end
           end
+        end
+      end
+
+      def default_process_position
+        case @phase_tag.to_s
+        when "visioning"
+          100_000
+        when "planning"
+          200_000
+        when "startup"
+          300_000
         end
       end
     end
