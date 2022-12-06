@@ -8,13 +8,13 @@ class V1::Workflow::ProcessesController < ApiController
       if Workflow::Definition::Workflow::PHASES.include?(params[:phase])
         # find definitions tagged with phase, then load those instances.
         process_ids = workflow.definition.processes.tagged_with(params[:phase], on: :phase).pluck(:id)
-        processes = workflow.processes.where(definition_id: process_ids).by_position
+        processes = workflow.processes.where(definition_id: process_ids)
       else
         render :not_found
         return
       end
     else
-      processes = workflow.processes.by_position
+      processes = workflow.processes.includes(:defintion).by_position
     end
 
 
