@@ -61,6 +61,12 @@ module SSJ
             # step_content = row[18]&.strip
             step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
             step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position)
+
+            step_documents = row[21]&.strip&.split("\n")
+            step_type = row[22]&.strip&.split("\n")
+            step_documents&.each_with_index do |link, i|
+              step.documents.create!(title: step_type[i], link: link)
+            end
             # create resources for steps.  document attaches via polymorphic.  step needs to have that code injected.
           else
             # empty line
