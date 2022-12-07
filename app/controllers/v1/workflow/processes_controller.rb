@@ -14,7 +14,7 @@ class V1::Workflow::ProcessesController < ApiController
         return
       end
     else
-      processes = workflow.processes.includes(:defintion).by_position
+      processes = workflow.processes.includes(:definition).by_position
     end
 
 
