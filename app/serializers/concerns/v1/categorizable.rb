@@ -3,10 +3,10 @@ module V1::Categorizable
 
   class_methods do
     def get_categories(process)
-      if process.class == Workflow::Instance::Process && process.category_list.empty?
-        process.definition.try(:category_list)
+      if process.class == Workflow::Instance::Process && process.categories.empty?
+        process.definition&.categories&.map(&:name)
       else
-        process.category_list
+        process.categories.map(&:name)
       end
     end
   end
