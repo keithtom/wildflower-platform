@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_06_222016) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_13_195841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -124,6 +124,34 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_06_222016) do
     t.index ["entrepreneur_id"], name: "index_hubs_on_entrepreneur_id"
     t.index ["external_identifier"], name: "index_hubs_on_external_identifier", unique: true
     t.index ["name"], name: "index_hubs_on_name", unique: true
+  end
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.bigint "resource_owner_id"
+    t.bigint "application_id", null: false
+    t.string "token", null: false
+    t.string "refresh_token"
+    t.integer "expires_in"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.string "scopes"
+    t.string "previous_refresh_token", default: "", null: false
+    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
+    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
+    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
+    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
+  end
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "uid", null: false
+    t.string "secret", null: false
+    t.text "redirect_uri"
+    t.string "scopes", default: "", null: false
+    t.boolean "confidential", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
   create_table "people", force: :cascade do |t|
@@ -275,9 +303,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_06_222016) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.string "jti", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
+    t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "workflow_decision_options", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.string "description"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_workflow_decision_options_on_decision_id"
+    t.index ["external_identifier"], name: "index_workflow_decision_options_on_external_identifier", unique: true
   end
 
   create_table "workflow_definition_dependencies", force: :cascade do |t|
@@ -378,9 +418,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_06_222016) do
     t.integer "position"
     t.datetime "completed_at"
     t.string "external_identifier", null: false
+    t.bigint "selected_option_id"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
+    t.index ["selected_option_id"], name: "index_workflow_instance_steps_on_selected_option_id"
   end
 
   create_table "workflow_instance_workflows", force: :cascade do |t|
@@ -392,6 +434,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_06_222016) do
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end
 
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "taggings", "tags"
   add_foreign_key "workflow_instance_processes", "people", column: "assignee_id"
 end
