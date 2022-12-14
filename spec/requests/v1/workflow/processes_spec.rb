@@ -7,6 +7,11 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
   let(:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
   let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
+  let(:user) { create(:user) }
+
+  before do
+    sign_in(user)
+  end
 
   describe "PUT /v1/processes/6823-2341/assign" do
     it "succeeds" do

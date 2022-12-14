@@ -3,6 +3,11 @@ require 'rails_helper'
 RSpec.describe "V1::Workflow::Workflows", type: :request do
   let(:headers) { {'ACCEPT' => 'application/json'} }
   let(:workflow) { create(:workflow_instance_workflow) }
+  let(:user) { create(:user) }
+
+  before do
+    sign_in(user)
+  end
 
   describe "GET /v1/workflow/workflows/:id" do
     it "succeeds" do

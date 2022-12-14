@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe "V1::Documents", type: :request do
   let(:decision) { create(:advice_decision) }
+  let(:user) { create(:user) }
+
+  before do
+    sign_in(user)
+  end
 
   describe "POST /v1/documents" do
     it "succeeds" do
