@@ -10,6 +10,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
+  # bug in devise for rails 7 https://github.com/heartcombo/devise/issues/5443
   def sign_up(resource_name, resource)
     sign_in(resource_name, resource, store: false)
   end
