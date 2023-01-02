@@ -1,9 +1,12 @@
 require 'rails_helper'
 
 describe 'API V1 People', type: :request do
+  let(:user) { create(:user) }
+
   before do
     create(:person)
     create(:person)
+    sign_in(user)
   end
 
   describe "GET /v1/people" do

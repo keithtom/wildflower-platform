@@ -4,6 +4,11 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
   let(:step) { create(:workflow_instance_step) }
   let(:process) { step.process }
   let(:headers) { {'ACCEPT' => 'application/json'} }
+  let(:user) { create(:user) }
+
+  before do
+    sign_in(user)
+  end
 
   describe "GET /v1/workflow/processes/6982-2091/steps/bd8f-c3b2" do
     it "succeeds" do

@@ -3,12 +3,14 @@ require 'rails_helper'
 RSpec.describe "V1::Advice::Decisions", type: :request do
   let(:creator) { create(:person) }
   let!(:decision) { create(:open_advice_decision, creator: creator) }
+  let(:user) { create(:user) }
 
   before do
     create(:advice_decision)
     create(:draft_advice_decision, creator: creator)
     create(:open_advice_decision, creator: creator)
     create(:closed_advice_decision, creator: creator)
+    sign_in(user)
   end
 
   describe "GET /v1/advice/people/1/decisions" do
