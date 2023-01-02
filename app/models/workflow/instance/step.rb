@@ -5,6 +5,7 @@ module Workflow
     belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true
     belongs_to :process, class_name: 'Workflow::Instance::Process', counter_cache: true
     has_many :documents, as: :documentable
+    belongs_to :selected_option, class_name: 'Workflow::DecisionOption', optional: true
 
     before_create :set_position
     after_save :update_completed_counter_cache

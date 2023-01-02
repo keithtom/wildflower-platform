@@ -12,4 +12,8 @@ RSpec.describe Workflow::Definition::Step, type: :model do
     subject { create(:workflow_definition_step, position: position) }
     its(:position) { is_expected.to be(position) }
   end
+
+  # describe "when kind is of type decision" do
+    # subject { create(:workflow_definition_step, kind: Workflow::Definition::Step::DECISION) }
+  # end
 end
