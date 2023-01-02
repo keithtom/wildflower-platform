@@ -3,6 +3,11 @@ require 'rails_helper'
 RSpec.describe "V1::Advice::Stakeholders", type: :request do
   let!(:decision) { create(:open_advice_decision) }
   let!(:stakeholder) { create(:advice_stakeholder, decision: decision) }
+  let(:user) { create(:user) }
+
+  before do
+    sign_in(user)
+  end
 
   describe "GET /v1/advice/decisions/1/stakeholders" do
     it "succeeds" do

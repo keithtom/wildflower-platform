@@ -1,9 +1,12 @@
 require 'rails_helper'
 
 describe 'API V1 School', type: :request do
+  let(:user) { create(:user) }
+
   before do
     create(:school)
     create(:school)
+    sign_in(user)
   end
 
   describe "GET /v1/schools" do
