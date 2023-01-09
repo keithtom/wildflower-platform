@@ -15,10 +15,6 @@ module Workflow
       self.definition.description
     end
 
-    def url
-      "/v1/workflows/#{self.id}"
-    end
-
     def version
       self.definition.version
     end
