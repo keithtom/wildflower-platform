@@ -12,7 +12,9 @@ gem 'puma', '~> 5.0'
 #authentication
 gem 'devise'
 gem 'devise-jwt'
-
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
+ 
 # Use Puma as the app server
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
