@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/absolute-boi/devise-jwt-cookie.git
+  remote: https://github.com/styliii/devise-jwt-cookie.git
   revision: fe61416f10cdf196d19a64dd72ee60c5d54d7c0d
   specs:
     devise-jwt-cookie (0.6.0)
