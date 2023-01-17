@@ -1,12 +1,3 @@
-GIT
-  remote: https://github.com/styliii/devise-jwt-cookie.git
-  revision: fe61416f10cdf196d19a64dd72ee60c5d54d7c0d
-  specs:
-    devise-jwt-cookie (0.6.0)
-      devise-jwt (~> 0.10.0)
-      dry-auto_inject
-      dry-configurable
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -359,7 +350,6 @@ DEPENDENCIES
   database_cleaner-active_record
   devise
   devise-jwt
-  devise-jwt-cookie!
   dotenv-rails
   elasticsearch (~> 8.x)
   factory_bot_rails
