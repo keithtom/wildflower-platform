@@ -4,11 +4,22 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
   let(:step) { create(:workflow_instance_step) }
   let(:process) { step.process }
   let(:headers) { {'ACCEPT' => 'application/json'} }
+  let(:person) { create(:person) }
   let(:user) { create(:user) }
 
   before do
     sign_in(user)
   end
+
+  describe "PUT /v1/workflow/processes/6982-2091/steps/bd8f-c3b2/assign" do
+    it "succeeds" do
+      put "/v1/workflow/processes/#{process.external_identifier}/steps/#{step.external_identifier}/assign", headers: headers,
+        params: { step: { assignee_id: person.external_identifier } }
+      expect(response).to have_http_status(:success)
+      expect(step.reload.assignee).to eq(person)
+    end
+  end
+
 
   describe "GET /v1/workflow/processes/6982-2091/steps/bd8f-c3b2" do
     it "succeeds" do

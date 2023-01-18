@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_13_195841) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_18_141003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -304,6 +304,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_195841) do
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
     t.string "jti", null: false
+    t.string "provider"
+    t.string "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
@@ -394,14 +396,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_195841) do
     t.integer "effort"
     t.datetime "started_at", precision: nil
     t.datetime "completed_at", precision: nil
-    t.bigint "assignee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
     t.bigint "steps_count"
     t.bigint "completed_steps_count"
-    t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
     t.index ["workflow_id"], name: "index_workflow_instance_processes_on_workflow_id"
@@ -419,6 +419,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_195841) do
     t.datetime "completed_at"
     t.string "external_identifier", null: false
     t.bigint "selected_option_id"
+    t.bigint "assignee_id"
+    t.index ["assignee_id"], name: "index_workflow_instance_steps_on_assignee_id"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
@@ -436,5 +438,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_13_195841) do
 
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "taggings", "tags"
-  add_foreign_key "workflow_instance_processes", "people", column: "assignee_id"
+  add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
 end

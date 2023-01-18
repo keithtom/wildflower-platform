@@ -2,7 +2,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
-  attributes :title, :effort, :position, :steps_count, :completed_steps_count #, :assignee
+  attributes :title, :effort, :position, :steps_count, :completed_steps_count
 
   attribute :status do |process|
     status(process)
@@ -21,9 +21,4 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     serializer: V1::Workflow::StepSerializer do |process|
       process.steps
     end
-
-  belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
-    serializer: V1::PersonSerializer do |process|
-    process.assignee
-  end
 end
