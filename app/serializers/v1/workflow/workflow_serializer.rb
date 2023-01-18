@@ -1,4 +1,6 @@
 class V1::Workflow::WorkflowSerializer < ApplicationSerializer
+  singleton_class.include Rails.application.routes.url_helpers
+
   attributes :name, :description, :version
 
   has_many :processes, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process, 
@@ -6,5 +8,5 @@ class V1::Workflow::WorkflowSerializer < ApplicationSerializer
       workflow.processes
   end
 
-  link :url
+  link { v1_workflow_workflow_path(:external_identifier) }
 end
