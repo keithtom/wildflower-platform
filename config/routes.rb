@@ -66,11 +66,11 @@ Rails.application.routes.draw do
         get :resources
       end
       resources :processes, only: [:show] do
-        member do
-          put :assign
+        resources :steps, only: [:create, :show] do
+          member do
+            put :assign
+          end
         end
-
-        resources :steps, only: [:create, :show]
       end
       resources :steps, only: [] do
         member do

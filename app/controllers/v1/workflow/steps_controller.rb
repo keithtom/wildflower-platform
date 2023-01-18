@@ -2,7 +2,7 @@ class V1::Workflow::StepsController < ApiController
   def create
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
     @step = Workflow::Instance::Process::AddManualStep.run(@process, step_params)
-    render json: V1::Workflow::StepSerializer.new(@step)
+    render json: V1::Workflow::StepSerializer.new(@step, step_options)
   end
 
   def show
@@ -18,7 +18,7 @@ class V1::Workflow::StepsController < ApiController
 
     Workflow::Instance::Step::Complete.run(@step)
 
-    render json: V1::Workflow::StepSerializer.new(@step)
+    render json: V1::Workflow::StepSerializer.new(@step, step_options)
   end
 
   def uncomplete
@@ -27,13 +27,13 @@ class V1::Workflow::StepsController < ApiController
 
     Workflow::Instance::Step::Uncomplete.run(@step)
 
-    render json: V1::Workflow::StepSerializer.new(@step)
+    render json: V1::Workflow::StepSerializer.new(@step, step_options)
   end
 
   def reorder
     @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
     Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
-    render json: V1::Workflow::StepSerializer.new(@step)
+    render json: V1::Workflow::StepSerializer.new(@step, step_options)
 
     rescue Workflow::Instance::Process::ReorderSteps::Error => e
       render json: {error: e.message}, status: :unprocessable_entity
@@ -44,19 +44,29 @@ class V1::Workflow::StepsController < ApiController
     @decision_option = Workflow::DecisionOption.find_by!(external_identifier: step_params[:selected_option_id])
 
     Workflow::Instance::Step::SelectDecisionOption.run(@step, @decision_option)
-    render json: V1::Workflow::StepSerializer.new(@step.reload)
+    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
+  end
+
+  def assign
+    # TODO: identify current user, check if task id is accessible to user
+    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
+    @person = Person.find_by!(external_identifier: step_params[:assignee_id])
+
+    Workflow::Instance::Step::AssignPerson.run(@step, @person)
+
+    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
   end
 
   private
 
   def step_options
     options = {}
-    options[:include] = ['process', 'documents']
+    options[:include] = ['process', 'documents', 'assignee']
     return options
   end
 
 
   def step_params
-    params.require(:step).permit(:title, :completed, :kind, :position, :document, :after_position, :selected_option_id)
+    params.require(:step).permit(:title, :completed, :kind, :position, :document, :after_position, :selected_option_id, :assignee_id)
   end
 end

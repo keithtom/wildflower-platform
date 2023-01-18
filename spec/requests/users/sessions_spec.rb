@@ -8,7 +8,7 @@ RSpec.describe "Users::Sessions", type: :request do
     it "succeeds" do
       post "/login", headers: headers, params: { user: { email: user.email, password: "password" }}
       expect(response).to have_http_status(:success)
-    
+
       token = response.headers["Authorization"]
       decoded_token = JWT.decode(token.split[1], nil, false)[0]
       expect(decoded_token["sub"]).to eq(user.external_identifier)

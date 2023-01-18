@@ -16,6 +16,11 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.selected_option
   end
 
+  belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
+    serializer: V1::PersonSerializer do |process|
+    process.assignee
+  end
+
   attribute :decision_options do |step|
     unless step.definition.nil? || step.kind != Workflow::Definition::Step::DECISION
       step.definition.decision_options.map {|decision_option| V1::Workflow::DecisionOptionSerializer.new(decision_option).to_json }

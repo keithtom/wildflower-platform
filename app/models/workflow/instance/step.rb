@@ -4,6 +4,7 @@ module Workflow
 
     belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true
     belongs_to :process, class_name: 'Workflow::Instance::Process', counter_cache: true
+    belongs_to :assignee, class_name: 'Person', optional: true
     has_many :documents, as: :documentable
     belongs_to :selected_option, class_name: 'Workflow::DecisionOption', optional: true
 

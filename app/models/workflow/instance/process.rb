@@ -14,7 +14,6 @@ module Workflow
 
     has_many :steps, class_name: 'Workflow::Instance::Step'
 
-    belongs_to :assignee, class_name: 'Person', optional: true
 
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
