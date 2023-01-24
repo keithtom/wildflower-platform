@@ -27,4 +27,11 @@ class V1::Workflow::ProcessesController < ApiController
 
     render json: V1::Workflow::ProcessSerializer.new(@process, include: ['workflow', 'steps'])
   end
+
+  private
+
+  def process_options
+    options = {}
+    options[:include] = ['workflow', 'steps', 'person']
+  end
 end
