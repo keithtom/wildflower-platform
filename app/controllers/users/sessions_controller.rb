@@ -33,10 +33,7 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def respond_with(resource, _opts = {})
-    render json: {
-      status: {code: 200, message: 'Logged in sucessfully.'},
-      # data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-    }, status: :ok
+    render json: V1::UserSerializer.new(resource, user_options), status: :ok
   end
 
   def respond_to_on_destroy
@@ -51,5 +48,11 @@ class Users::SessionsController < Devise::SessionsController
         message: "Couldn't find an active session."
       }, status: :unauthorized
     end
+  end
+
+  def user_options
+    options = {}
+    options[:include] = ['person']
+    return options
   end
 end
