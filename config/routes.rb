@@ -66,11 +66,7 @@ Rails.application.routes.draw do
         get :resources
       end
       resources :processes, only: [:show] do
-        resources :steps, only: [:create, :show] do
-          member do
-            put :assign
-          end
-        end
+        resources :steps, only: [:create, :show]
       end
       resources :steps, only: [] do
         member do
@@ -78,6 +74,8 @@ Rails.application.routes.draw do
           put :uncomplete
           put :reorder
           put :select_option
+          put :assign
+          put :unassign
         end
       end
     end
