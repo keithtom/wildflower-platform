@@ -30,7 +30,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     end
   end
 
-  describe "GET /v1/workflow/steps/bd8f-c3b2" do
+  describe "GET /v1/workflow/processes/6982-2091/steps/bd8f-c3b2" do
     it "succeeds" do
       get "/v1/workflow/processes/#{process.external_identifier}/steps/#{step.external_identifier}", headers: headers
       expect(response).to have_http_status(:success)
@@ -55,7 +55,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     end
   end
 
-  describe "POST /v1/workflow/steps" do
+  describe "POST /v1/workflow/processes/6982-2091/steps" do
     it "succeeds" do
       title = "copy visioning template"
       post "/v1/workflow/processes/#{process.external_identifier}/steps", headers: headers,
