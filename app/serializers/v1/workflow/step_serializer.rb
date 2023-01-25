@@ -26,4 +26,11 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.definition.decision_options.map {|decision_option| V1::Workflow::DecisionOptionSerializer.new(decision_option).to_json }
     end
   end
+
+  # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
+  attribute :assignee_info do |step|
+    if assignee = step.assignee
+      { id: assignee.id, image_url: assignee.image_url }
+    end
+  end
 end

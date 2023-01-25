@@ -32,6 +32,6 @@ class V1::Workflow::ProcessesController < ApiController
 
   def process_options
     options = {}
-    options[:include] = ['workflow', 'steps', 'person']
+    options[:include] = ['workflow', 'steps']
   end
 end
