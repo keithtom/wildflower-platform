@@ -17,8 +17,12 @@ class V1::Workflow::ProcessesController < ApiController
       processes = workflow.processes.eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
     end
 
+    options = {include: ['workflow', 'steps']}
+    if params[:assigned_to_me]
+      options[:params] = { assignee_id: current_user.person_id }
+    end
 
-    render json: V1::Workflow::ProcessSerializer.new(processes, include: ['workflow', 'steps'])
+    render json: V1::Workflow::ProcessSerializer.new(processes, options)
   end
 
   def show
