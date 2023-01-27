@@ -19,6 +19,9 @@ class V1::Workflow::ProcessesController < ApiController
 
     options = {include: ['workflow', 'steps']}
     if params[:assigned_to_me]
+      processes = processes.select do |process|
+        process.steps.where(assignee_id: current_user.person_id).count > 0
+      end
       options[:params] = { assignee_id: current_user.person_id }
     end
 
