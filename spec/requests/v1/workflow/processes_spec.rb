@@ -28,7 +28,7 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
     let!(:unassigned_step) { create(:workflow_instance_step_manual, process_id: process.id) }
 
     it "succeeds" do
-      get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?assigned_to_me=true", headers: headers
+      get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?self_assigned=true", headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response["data"][0]).to have_type(:process).and have_attribute(:status)
       expect(json_response["data"][0]).to have_type(:process).and have_attribute(:stepsCount)
