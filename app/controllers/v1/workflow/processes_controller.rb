@@ -17,8 +17,16 @@ class V1::Workflow::ProcessesController < ApiController
       processes = workflow.processes.eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
     end
 
+    options = {include: ['workflow', 'steps']}
 
-    render json: V1::Workflow::ProcessSerializer.new(processes, include: ['workflow', 'steps'])
+    if params[:self_assigned]
+      processes = processes.select do |process|
+        process.steps.where(assignee_id: current_user.person_id, completed: false).count > 0
+      end
+      options[:params] = { assignee_id: current_user.person_id }
+    end
+
+    render json: V1::Workflow::ProcessSerializer.new(processes, options)
   end
 
   def show
@@ -32,6 +40,6 @@ class V1::Workflow::ProcessesController < ApiController
 
   def process_options
     options = {}
-    options[:include] = ['workflow', 'steps', 'person']
+    options[:include] = ['workflow', 'steps']
   end
 end

@@ -18,7 +18,11 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     end
 
   has_many :steps, record_type: :workflow_instance_step, id_method_name: :external_identifier,
-    serializer: V1::Workflow::StepSerializer do |process|
-      process.steps
+    serializer: V1::Workflow::StepSerializer do |process, params|
+      if params[:assignee_id]
+        process.steps.where(assignee_id: params[:assignee_id])
+      else
+        process.steps
+      end
     end
 end
