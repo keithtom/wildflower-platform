@@ -17,7 +17,7 @@ class V1::Workflow::ProcessesController < ApiController
       processes = workflow.processes.eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
     end
 
-    options = {include: ['workflow', 'steps']}
+    options = {include: ['workflow', 'steps', 'steps.documents']}
 
     if params[:self_assigned]
       processes = processes.select do |process|
@@ -33,7 +33,7 @@ class V1::Workflow::ProcessesController < ApiController
     # TODO: identify current user, check if process id is accessible to user
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:id])
 
-    render json: V1::Workflow::ProcessSerializer.new(@process, include: ['workflow', 'steps'])
+    render json: V1::Workflow::ProcessSerializer.new(@process, include: ['workflow', 'steps', 'steps.documents'])
   end
 
   private
