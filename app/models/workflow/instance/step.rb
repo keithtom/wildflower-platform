@@ -27,7 +27,7 @@ module Workflow
     end
 
     def documents
-      super || self.definition.try(:documents)
+      super.empty? ? self.definition.try(:documents) : super
     end
 
     def position
