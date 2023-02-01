@@ -24,6 +24,20 @@ class Users::SessionsController < Devise::SessionsController
   #   super
   # end
 
+  # link takes ppl to a front end.  id.wildflowerschools.org.  here this page sends a request and creates a persistent session?
+  # create a session via token
+  def token
+    if authenticated_user = Users::AuthenticateViaToken.call(params[:token])
+      sign_in(authenticated_user)
+      respond_with(authenticated_user)
+    else
+      render json: {
+        status: 401,
+        message: "Invalid token."
+      }, status: :unauthorized
+    end
+  end
+
   # protected
 
   # If you have extra params to permit, append them to the sanitizer.

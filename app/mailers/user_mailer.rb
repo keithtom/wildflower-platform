@@ -9,7 +9,7 @@ class UserMailer < ApplicationMailer
   # cc ops guide?
   def invite(user)
     @user = user # the ETL who is being invited
-    @invite_url = user_token_url(token: user.authentication_token)
+    @invite_url = "https://id.wildflowerschools.org/token?token=#{user.authentication_token}"
 
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end

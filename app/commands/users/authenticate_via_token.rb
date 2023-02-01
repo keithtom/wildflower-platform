@@ -11,9 +11,7 @@ class Users::AuthenticateViaToken < BaseCommand
 
     burn_token
 
-    # authetnicate user?  how to create a session w/ devise.  that's sign_in in controller.
-    # return a valid auth token??
-    true
+    @user
   end
 
   private
