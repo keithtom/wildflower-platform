@@ -1,4 +1,4 @@
-class Users::SendInviteEmail < BaseService
+class Users::SendInviteEmail < BaseCommand
   def initialize(user)
     @user = user
   end
