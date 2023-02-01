@@ -3,12 +3,16 @@ class Users::SendInviteEmail < BaseCommand
     @user = user
   end
 
-  def run
-    # generate single click token for user with short expiry
-    # send invite email
+  def call
+    generate_user_token
+    send_invite_email
   end
 
   private
+
+  def generate_user_token
+    Users::GenerateToken.call(@user)
+  end
 
   def send_invite_email
     UserMailer.with(user: @user).invite.deliver_later

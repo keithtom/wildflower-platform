@@ -7,9 +7,9 @@ class UserMailer < ApplicationMailer
   #
   # from should ideally come from their operations guide or the platform?
   # cc ops guide?
-  def invite
-    @user = User.first #  params[:user] # the ETL who is being invited
-    @invite_url = "#" # generate a special user specific login link.
+  def invite(user)
+    @user = user # the ETL who is being invited
+    @invite_url = user_token_url(token: user.authentication_token)
 
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
