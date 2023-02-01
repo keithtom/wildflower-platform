@@ -3,8 +3,8 @@ class Users::GenerateToken < BaseCommand
     @user = user
   end
 
+  # generate single click auth token for user with short expiry
   def call
-    # generate single click token for user with short expiry
     @user.authentication_token = generate_unique_token
     @user.authentication_token_at = Time.now
     @user.save!

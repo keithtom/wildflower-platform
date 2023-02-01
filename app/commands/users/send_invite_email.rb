@@ -3,6 +3,7 @@ class Users::SendInviteEmail < BaseCommand
     @user = user
   end
 
+  # sends an email to invite the user to the system; contains a single-click login link.
   def call
     generate_user_token
     send_invite_email

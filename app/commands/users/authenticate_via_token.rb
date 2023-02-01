@@ -1,11 +1,13 @@
 class Users::AuthenticateViaToken < BaseCommand
+  EXPIRATION_WINDOW = 60.minutes.ago
+
   def initialize(token)
     @token = token
   end
 
+  # returns an authenticated user or false
   def call
     return false unless @user = find_user_by_token
-
 
     burn_token and return false unless valid_timestamp?
 
@@ -21,7 +23,7 @@ class Users::AuthenticateViaToken < BaseCommand
   end
 
   def valid_timestamp?
-    @user.authentication_token_at.between?(60.minutes.ago, Time.now)
+    @user.authentication_token_at.between?(EXPIRATION_WINDOW, Time.now)
   end
 
   def burn_token

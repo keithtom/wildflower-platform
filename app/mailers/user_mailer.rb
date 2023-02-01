@@ -5,10 +5,13 @@ class UserMailer < ApplicationMailer
   #
   #   en.user_mailer.invite.subject
   #
-  # from should ideally come from their operations guide or the platform?
-  # cc ops guide?
+  # from: should ideally come from their operations guide or the platform?
+  # cc: ops guide?
   def invite(user)
     @user = user # the ETL who is being invited
+
+    # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
+    # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
     @invite_url = "https://id.wildflowerschools.org/token?token=#{user.authentication_token}"
 
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
