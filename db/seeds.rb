@@ -26,8 +26,8 @@ hub2 = FactoryBot.create(:hub)
 person1 = FactoryBot.create(:person)
 person2 = FactoryBot.create(:person)
 
-user1 = FactoryBot.create(:user, :person => person1)
-user2 = FactoryBot.create(:user, :person => person2)
+user1 = FactoryBot.create(:user, :person => person1, email: "test1@example.com", password: "test")
+user2 = FactoryBot.create(:user, :person => person2, email: "test2@example.com", password: "test")
 
 pod1 = FactoryBot.create(:pod, hub: hub1)
 school1 = FactoryBot.create(:school, :pod => pod1)
