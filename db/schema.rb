@@ -126,34 +126,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_161428) do
     t.index ["name"], name: "index_hubs_on_name", unique: true
   end
 
-  create_table "oauth_access_tokens", force: :cascade do |t|
-    t.bigint "resource_owner_id"
-    t.bigint "application_id", null: false
-    t.string "token", null: false
-    t.string "refresh_token"
-    t.integer "expires_in"
-    t.datetime "revoked_at"
-    t.datetime "created_at", null: false
-    t.string "scopes"
-    t.string "previous_refresh_token", default: "", null: false
-    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
-    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
-    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
-    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
-  end
-
-  create_table "oauth_applications", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "uid", null: false
-    t.string "secret", null: false
-    t.text "redirect_uri"
-    t.string "scopes", default: "", null: false
-    t.boolean "confidential", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
-  end
-
   create_table "people", force: :cascade do |t|
     t.string "email"
     t.string "first_name"
@@ -304,8 +276,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_161428) do
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
     t.string "jti", null: false
-    t.string "provider"
-    t.string "uid"
+    t.string "authentication_token", limit: 30
+    t.datetime "authentication_token_at"
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
@@ -437,7 +410,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_161428) do
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end
 
-  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "taggings", "tags"
   add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
 end
