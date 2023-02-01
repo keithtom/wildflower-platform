@@ -15,7 +15,7 @@ class User < ApplicationRecord
   end
 
   def name
-    "#{first_name} #{last_name}".strip if first_name
+    "#{person.first_name} #{person.last_name}".strip if person
   end
 
   # use external identifier in JWT, intead of the default id
