@@ -415,6 +415,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
   pg (~> 1.1)
+  pry
   puma (~> 5.0)
   rack-cors
   rack-mini-profiler (~> 2.0)

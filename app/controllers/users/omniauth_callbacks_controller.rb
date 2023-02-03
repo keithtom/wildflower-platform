@@ -4,6 +4,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def google_oauth2
     puts "################### i am in here"
+    binding.pry
     puts request.inspect
     @user = User.from_omniauth(request.env["omniauth.auth"])
 

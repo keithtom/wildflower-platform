@@ -29,9 +29,13 @@ module WildflowerPlatform
     config.api_only = true
     # needed for omniauth
 
-    config.session_store :cookie_store, key: "_shepherd_session"
-    config.middleware.use ActionDispatch::Cookies # Required for all session management
-    config.middleware.use ActionDispatch::Session::CookieStore, config.session_options
+    config.session_store :cookie_store, key: '_wf_session'
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use config.session_store, config.session_options
+
+    # config.session_store :cookie_store, key: "_shepherd_session"
+    # config.middleware.use ActionDispatch::Cookies # Required for all session management
+    # config.middleware.use ActionDispatch::Session::CookieStore, config.session_options
     # https://stackoverflow.com/questions/38424133/getting-error-omniauthnosessionerror-with-rails-5-api
     # config.middleware.use ActionDispatch::Cookies
     # config.middleware.use ActionDispatch::Session::CookieStore

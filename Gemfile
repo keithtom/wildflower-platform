@@ -69,6 +69,7 @@ group :development do
   gem 'rubocop-rspec', require: false
 
   gem 'rails-erd'
+  gem 'pry'
 end
 
 group :production do
