@@ -11,7 +11,7 @@ module V1::Statusable
   STATUS = [TO_DO, UP_NEXT, DONE]
 
   class_methods do
-    def status(process)
+    def process_status(process)
       case completion_status(process)
       when UNSTARTED
         return prerequisites_completed?(process) ? TO_DO : UP_NEXT
@@ -21,6 +21,7 @@ module V1::Statusable
         return DONE
       end
     end
+
 
     private
 

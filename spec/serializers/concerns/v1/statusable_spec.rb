@@ -34,10 +34,10 @@ RSpec.describe V1::Statusable, type: :concern do
 
         expect(process.prerequisites.count).to_not eq(0)
         process.prerequisites.each do |prereq|
-          expect(StatusableFakeSerializer.status(prereq)).to eq(V1::Statusable::TO_DO)
+          expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::UP_NEXT)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
       end
     end
 
@@ -53,7 +53,7 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'to do' status" do
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
       end
     end
   end
@@ -76,10 +76,10 @@ RSpec.describe V1::Statusable, type: :concern do
       it "has 'to do' status" do
         expect(process.prerequisites.count).to_not eq(0)
         process.prerequisites.each do |prereq|
-          expect(StatusableFakeSerializer.status(prereq)).to eq(V1::Statusable::TO_DO)
+          expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
       end
     end
 
@@ -95,7 +95,7 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'to do' status" do
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
       end
     end
   end
@@ -119,10 +119,10 @@ RSpec.describe V1::Statusable, type: :concern do
       it "has 'done' status" do
         expect(process.prerequisites.count).to_not eq(0)
         process.prerequisites.each do |prereq|
-          expect(StatusableFakeSerializer.status(prereq)).to eq(V1::Statusable::TO_DO)
+          expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::DONE)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
       end
     end
 
@@ -138,7 +138,7 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'done' status" do
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::DONE)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
       end
     end
   end

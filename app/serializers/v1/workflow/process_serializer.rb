@@ -5,7 +5,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   attributes :title, :effort, :position, :steps_count, :completed_steps_count, :description
 
   attribute :status do |process|
-    status(process)
+    process_status(process)
   end
 
   attribute :categories do |process|

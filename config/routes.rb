@@ -61,6 +61,7 @@ Rails.application.routes.draw do
     # end
 
     namespace :workflow do
+      get "ssj/dashboard", to: "ssj#dashboard"
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]
         get :resources
