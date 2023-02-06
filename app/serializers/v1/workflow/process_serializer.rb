@@ -12,6 +12,10 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     get_categories(process)
   end
 
+  attribute :steps_assigned_count do |process|
+    process.steps.where.not(assignee_id: nil).count
+  end
+
   belongs_to :workflow, record_type: :workflow_instance_workflow, id_method_name: :external_identifier,
     serializer: V1::Workflow::WorkflowSerializer do |process|
       process.workflow
