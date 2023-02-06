@@ -1,9 +1,8 @@
 class V1::Workflow::SsjController < ApiController
-  def dashboard
+  def progress
     workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
-    processes = workflow.processes.eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]])
-
-    render json: V1::Workflow::ProcessByStatusSerializer.new(processes, {include: ['workflow', 'steps', 'steps.documents']})
+    processes = workflow.processes.eager_load(:prerequisites, definition: [:phase, :categories])
+    render json: V1::Workflow::ProcessProgressSerializer.new(processes)
   end
 end
 

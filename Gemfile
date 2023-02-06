@@ -49,6 +49,8 @@ group :development, :test do
   gem 'jsonapi-rspec'
 
   gem 'database_cleaner-active_record'
+
+  gem 'bullet'
 end
 
 gem 'factory_bot_rails' # move to development after initial testing done; needed for production seeding

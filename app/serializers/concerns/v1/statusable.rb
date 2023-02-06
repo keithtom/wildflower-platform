@@ -26,13 +26,23 @@ module V1::Statusable
     private
 
     def completion_status(process)
+      assigned = process.steps.where.not(assignee_id: nil).length > 0
+
       case process.completed_steps_count
       when 0
-        return UNSTARTED
+        if assigned
+          return IN_PROGRESS
+        else
+          return UNSTARTED
+        end
       when process.steps_count
         return DONE
       else
-        return IN_PROGRESS
+        if assigned
+          return IN_PROGRESS
+        else
+          return TO_DO
+        end
       end
     end
 
