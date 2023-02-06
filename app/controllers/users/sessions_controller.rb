@@ -25,9 +25,10 @@ class Users::SessionsController < Devise::SessionsController
   # end
 
   # create a session via token
+  # /users/sessions/token
   def token
     if authenticated_user = Users::AuthenticateViaToken.call(params[:token])
-      sign_in(authenticated_user)
+      sign_in(resource_name, authenticated_user, store: false)
       respond_with(authenticated_user)
     else
       render json: {
