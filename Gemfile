@@ -3,16 +3,16 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.2'
+ruby '3.1.2'
 
-gem 'rails', '~> 7.0.1'
+gem 'rails', '~> 7.1.0'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 5.0'
 
 #authentication
 gem 'devise'
 gem 'devise-jwt'
- 
+
 # Use Puma as the app server
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
@@ -31,7 +31,7 @@ gem 'oj' # faster serialization
 
 # Search
 gem "searchkick"
-gem "elasticsearch", '~> 8.x'
+gem "elasticsearch", '~> 7.x'
 
 # models
 gem 'acts-as-taggable-on'
@@ -79,4 +79,3 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
-
