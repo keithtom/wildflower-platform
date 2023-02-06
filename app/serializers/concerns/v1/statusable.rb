@@ -16,7 +16,11 @@ module V1::Statusable
       when UNSTARTED
         return prerequisites_completed?(process) ? TO_DO : UP_NEXT
       when IN_PROGRESS
-        return TO_DO
+        if assigned_and_incomplete?(process)
+          return IN_PROGRESS
+        else
+          return TO_DO
+        end
       else
         return DONE
       end
@@ -26,11 +30,9 @@ module V1::Statusable
     private
 
     def completion_status(process)
-      assigned = process.steps.where.not(assignee_id: nil).length > 0
-
       case process.completed_steps_count
       when 0
-        if assigned
+        if assigned_and_incomplete?(process)
           return IN_PROGRESS
         else
           return UNSTARTED
@@ -38,12 +40,12 @@ module V1::Statusable
       when process.steps_count
         return DONE
       else
-        if assigned
-          return IN_PROGRESS
-        else
-          return TO_DO
-        end
+        return IN_PROGRESS
       end
+    end
+
+    def assigned_and_incomplete?(process)
+      process.steps.where.not(assignee_id: nil).where(completed: false).length > 0
     end
 
     def prerequisites_completed?(process)

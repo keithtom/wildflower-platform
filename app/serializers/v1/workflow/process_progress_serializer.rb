@@ -49,6 +49,8 @@ class V1::Workflow::ProcessProgressSerializer < ApplicationSerializer
   end
 
   def status_hash
+    # sorted by this order
+    # done, in progress, todo, upnext
     status_hash = {total: 0}
     V1::Statusable::STATUS.each do |status|
       status_hash[status.parameterize(separator: '_').to_sym] = 0
