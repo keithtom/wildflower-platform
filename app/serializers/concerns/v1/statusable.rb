@@ -8,7 +8,7 @@ module V1::Statusable
   UP_NEXT = "up next"
 
   COMPLETION_STATUS = [TO_DO, IN_PROGRESS, DONE]
-  STATUS = [TO_DO, UP_NEXT, DONE]
+  STATUS = [DONE, IN_PROGRESS, TO_DO, UP_NEXT]
 
   class_methods do
     def process_status(process)

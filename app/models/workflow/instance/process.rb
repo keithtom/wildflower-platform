@@ -14,6 +14,7 @@ module Workflow
 
     has_many :steps, class_name: 'Workflow::Instance::Step'
 
+    acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
 
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
@@ -40,10 +41,6 @@ module Workflow
 
     def phase
       self.definition.phase
-    end
-
-    def categories
-      self.definition.categories
     end
   end
 end
