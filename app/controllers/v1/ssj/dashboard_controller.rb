@@ -14,10 +14,16 @@ class V1::Ssj::DashboardController < ApiController
     render json: V1::Ssj::ResourcesByCategorySerializer.new(documents)
   end
 
-  def assigned_tasks
+  def assigned_steps
     workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
     process_ids = Workflow::Instance::Process.where(workflow_id: workflow.id).pluck(:id)
-    steps = Workflow::Instance::Step.where(process_id: process_ids).where.not(assignee_id: nil)
+    steps = Workflow::Instance::Step.where(process_id: process_ids, completed: false).where.not(assignee_id: nil).
+      includes(:process, :documents, :selected_option, :assignee, definition: [:documents]).
+      group_by{|step| step.assignee.external_identifier }
+
+    options = {}
+    options[:include] = ['documents', 'assignee']
+    render json: V1::Ssj::AssignedStepsSerializer.new(steps, options)
   end
 end
 
