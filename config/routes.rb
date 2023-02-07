@@ -63,6 +63,7 @@ Rails.application.routes.draw do
     namespace :ssj do
       get "dashboard/progress", to: "dashboard#progress"
       get 'dashboard/resources', to: 'dashboard#resources'
+      get 'dashboard/assigned_tasks', to: 'dashboard#assigned_tasks'
     end
 
     namespace :workflow do

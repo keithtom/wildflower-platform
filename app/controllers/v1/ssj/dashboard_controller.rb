@@ -1,5 +1,4 @@
 class V1::Ssj::DashboardController < ApiController
-<<<<<<< HEAD
 
   def progress
     workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
@@ -19,7 +18,6 @@ class V1::Ssj::DashboardController < ApiController
     workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
     process_ids = Workflow::Instance::Process.where(workflow_id: workflow.id).pluck(:id)
     steps = Workflow::Instance::Step.where(process_id: process_ids).where.not(assignee_id: nil)
-
   end
 end
 
