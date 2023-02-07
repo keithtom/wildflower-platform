@@ -388,7 +388,7 @@ DEPENDENCIES
   puma (~> 5.0)
   rack-cors
   rack-mini-profiler (~> 2.0)
-  rails (~> 7.0.1)
+  rails (~> 7.0.4)
   rails-erd
   rspec-its
   rspec-rails
@@ -402,7 +402,7 @@ DEPENDENCIES
   web-console (>= 4.1.0)
 
 RUBY VERSION
-   ruby 3.0.2p107
+   ruby 3.2.0p0
 
 BUNDLED WITH
    2.2.31
