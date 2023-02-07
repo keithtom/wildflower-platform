@@ -17,7 +17,7 @@ class V1::Workflow::ProcessProgressSerializer < ApplicationSerializer
     grouped_processes = {}
     processes.each do |process|
       if process.phase.empty?
-        puts "##### process phase doesn't exist, id: #{process.id}"
+        Rails.logger.warn("process phase doesn't exist, id: #{process.id}")
         next
       end
 

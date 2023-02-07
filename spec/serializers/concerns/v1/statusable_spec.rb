@@ -98,7 +98,7 @@ RSpec.describe V1::Statusable, type: :concern do
           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process.reload)).to eq(V1::Statusable::TO_DO)
       end
     end
 

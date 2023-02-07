@@ -16,8 +16,10 @@ module Workflow
 
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
+    enum completion_status: { unstarted: 0, to_do: 1, in_progress: 2, done: 3 }
 
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
+
 
     def title
       super || self.definition.title
@@ -41,6 +43,10 @@ module Workflow
 
     def phase
       self.definition.phase
+    end
+
+    def assigned_and_incomplete?
+      steps.where.not(assignee_id: nil).where(completed: false).length > 0
     end
   end
 end

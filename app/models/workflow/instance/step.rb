@@ -9,8 +9,8 @@ module Workflow
     belongs_to :selected_option, class_name: 'Workflow::DecisionOption', optional: true
 
     before_create :set_position
-    after_save :update_completed_counter_cache
-    after_destroy :update_completed_counter_cache
+    after_save :update_process
+    after_destroy :update_completed_counter_cache, :update_process
 
     DEFAULT_INCREMENT = 1000
 
@@ -40,9 +40,29 @@ module Workflow
 
     private
 
-    def update_completed_counter_cache
+    def update_process
+      update_process_completed_counter_cache
+      update_process_completion_status
+    end
+
+    def update_process_completed_counter_cache
       self.process.completed_steps_count = Workflow::Instance::Step.where(completed: true, process_id: process.id).count
       self.process.save
+    end
+
+    def update_process_completion_status
+      case process.completed_steps_count
+      when 0
+        if process.assigned_and_incomplete?
+          self.process.in_progress!
+        else
+          self.process.unstarted!
+        end
+      when process.steps_count
+        self.process.done!
+      else
+        self.process.in_progress!
+      end
     end
 
     def set_position
