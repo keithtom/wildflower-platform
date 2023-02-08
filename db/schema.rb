@@ -401,7 +401,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_161428) do
     t.integer "position"
     t.string "external_identifier", null: false
     t.bigint "steps_count"
-    t.bigint "completed_steps_count"
+    t.integer "completed_steps_count", default: 0, null: false
     t.integer "completion_status", default: 0
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
