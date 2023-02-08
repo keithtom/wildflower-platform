@@ -10,7 +10,7 @@ module Workflow
 
     before_create :set_position
     after_save :update_process
-    after_destroy :update_completed_counter_cache, :update_process
+    after_destroy :update_process
 
     DEFAULT_INCREMENT = 1000
 
