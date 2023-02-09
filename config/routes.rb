@@ -59,6 +59,9 @@ Rails.application.routes.draw do
     # resources :hubs, except: :destroy do
     #   resources :pods, except: :destroy
     # end
+    namespace :ssj do
+      get 'dashboard/resources', to: 'dashboard#resources'
+    end
 
     namespace :workflow do
       resources :workflows, only: [:show] do
