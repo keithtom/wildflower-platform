@@ -34,10 +34,10 @@ RSpec.describe V1::Statusable, type: :concern do
 
         expect(process.prerequisites.count).to_not eq(0)
         process.prerequisites.each do |prereq|
-          expect(StatusableFakeSerializer.status(prereq)).to eq(V1::Statusable::TO_DO)
+          expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::UP_NEXT)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
       end
     end
 
@@ -53,7 +53,7 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'to do' status" do
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
       end
     end
   end
@@ -63,6 +63,7 @@ RSpec.describe V1::Statusable, type: :concern do
     let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
     let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
     let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }
+    let(:person) { create(:person) }
 
     before do
       prerequisite.steps.create!
@@ -73,13 +74,31 @@ RSpec.describe V1::Statusable, type: :concern do
     end
 
     context "prerequisites unmet" do
+      context "has incomplete steps that are assigned" do
+        before do
+          # assign incomplete step
+          step = process.steps.where(completed: false).first
+          step.assignee_id = person.id
+          step.save!
+        end
+
+        it "has 'in progress' status" do
+          expect(process.prerequisites.count).to_not eq(0)
+          process.prerequisites.each do |prereq|
+            expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
+          end
+
+          expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
+        end
+      end
+
       it "has 'to do' status" do
         expect(process.prerequisites.count).to_not eq(0)
         process.prerequisites.each do |prereq|
-          expect(StatusableFakeSerializer.status(prereq)).to eq(V1::Statusable::TO_DO)
+          expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process.reload)).to eq(V1::Statusable::TO_DO)
       end
     end
 
@@ -95,7 +114,7 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'to do' status" do
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::TO_DO)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
       end
     end
   end
@@ -119,10 +138,10 @@ RSpec.describe V1::Statusable, type: :concern do
       it "has 'done' status" do
         expect(process.prerequisites.count).to_not eq(0)
         process.prerequisites.each do |prereq|
-          expect(StatusableFakeSerializer.status(prereq)).to eq(V1::Statusable::TO_DO)
+          expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::DONE)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
       end
     end
 
@@ -138,7 +157,7 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'done' status" do
-        expect(StatusableFakeSerializer.status(process)).to eq(V1::Statusable::DONE)
+        expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
       end
     end
   end

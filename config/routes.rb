@@ -60,6 +60,7 @@ Rails.application.routes.draw do
     #   resources :pods, except: :destroy
     # end
     namespace :ssj do
+      get "dashboard/progress", to: "dashboard#progress"
       get 'dashboard/resources', to: 'dashboard#resources'
     end
 
