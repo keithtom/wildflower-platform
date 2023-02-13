@@ -12,8 +12,8 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     get_categories(process)
   end
 
-  attribute :phase_list do |process|
-    process.definition.phase_list
+  attribute :phase do |process|
+    process.definition.phase_list.first
   end
 
 
