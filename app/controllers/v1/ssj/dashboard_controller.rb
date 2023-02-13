@@ -5,8 +5,6 @@ class V1::Ssj::DashboardController < ApiController
     processes = workflow.processes.eager_load(:prerequisites, :steps, :categories, definition: [:phase, :categories])
     render json: V1::Ssj::ProcessProgressSerializer.new(processes)
   end
-end
-
 
   def resources
     workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
