@@ -2,7 +2,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
-  attributes :title, :effort, :position, :steps_count, :completed_steps_count, :description, :phase
+  attributes :title, :effort, :position, :steps_count, :completed_steps_count, :description
 
   attribute :status do |process|
     process_status(process)
@@ -11,6 +11,11 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   attribute :categories do |process|
     get_categories(process)
   end
+
+  attribute :phase_list do |process|
+    process.definition.phase_list
+  end
+
 
   attribute :steps_assigned_count do |process|
     process.steps.where.not(assignee_id: nil).count
