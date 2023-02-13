@@ -24,6 +24,20 @@ class Users::SessionsController < Devise::SessionsController
   #   super
   # end
 
+  # create a session via token
+  # /users/sessions/token
+  def token
+    if authenticated_user = Users::AuthenticateViaToken.call(params[:token])
+      sign_in(resource_name, authenticated_user, store: false)
+      respond_with(authenticated_user)
+    else
+      render json: {
+        status: 401,
+        message: "Invalid token."
+      }, status: :unauthorized
+    end
+  end
+
   # protected
 
   # If you have extra params to permit, append them to the sanitizer.
