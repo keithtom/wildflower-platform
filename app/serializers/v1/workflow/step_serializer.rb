@@ -17,8 +17,10 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   end
 
   belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
-    serializer: V1::PersonSerializer do |process|
-    process.assignee
+    serializer: V1::PersonSerializer do |process, params|
+      unless params[:basic]
+        process.assignee
+      end
   end
 
   attribute :decision_options do |step|

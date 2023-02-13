@@ -1,5 +1,6 @@
 class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
   def serializable_hash
+    # assignee id => { info: , steps: []}
     @resource.map do |assignee_id, steps|
       [assignee_id, serialized_steps(steps)]
     end.to_h
@@ -19,7 +20,7 @@ class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
 
   def serialized_steps(steps)
     steps.map do |process|
-      V1::Workflow::StepSerializer.new(process, root: false, include: @includes)
+      V1::Workflow::StepSerializer.new(process, params: {basic: true})
     end
   end
 end
