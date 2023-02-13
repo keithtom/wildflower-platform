@@ -413,6 +413,7 @@ DEPENDENCIES
   jsonapi-serializer
   listen (~> 3.3)
   oj
+  omniauth
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
   pg (~> 1.1)

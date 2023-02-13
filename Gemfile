@@ -14,6 +14,7 @@ gem 'devise'
 gem 'devise-jwt'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
+gem 'omniauth'
  
 # Use Puma as the app server
 # Use Redis adapter to run Action Cable in production
