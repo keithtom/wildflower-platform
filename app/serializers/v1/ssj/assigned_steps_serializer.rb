@@ -1,8 +1,8 @@
 class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
   def serializable_hash
-    # assignee id => { info: , steps: []}
+    # assignee id => { info: {}, steps: []}
     @resource.map do |assignee_id, steps|
-      [assignee_id, serialized_steps(steps)]
+      [assignee_id, { assignee_info: assignee_info(steps), steps: serialized_steps(steps)}]
     end.to_h
   end
 
@@ -19,8 +19,13 @@ class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
   private
 
   def serialized_steps(steps)
-    steps.map do |process|
-      V1::Workflow::StepSerializer.new(process, params: {basic: true})
+    steps.map do |step|
+      V1::Workflow::StepSerializer.new(step, {params: {basic: true}, include: ['documents']})
     end
+  end
+
+  def assignee_info(steps)
+    assignee = steps.first.assignee
+    { id: assignee.external_identifier, imageUrl: assignee.image_url, email: assignee.email }
   end
 end
