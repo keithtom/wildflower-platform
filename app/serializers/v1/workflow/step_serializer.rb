@@ -1,5 +1,5 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
-  attributes :title, :completed, :kind, :position, :completed_at, :description, :min_worktime, :max_worktime
+  attributes :title, :completed, :kind, :position, :completed_at, :description
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process,
     id_method_name: :external_identifier do |step|
@@ -25,6 +25,14 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     unless step.definition.nil? || step.kind != Workflow::Definition::Step::DECISION
       step.definition.decision_options.map {|decision_option| V1::Workflow::DecisionOptionSerializer.new(decision_option).to_json }
     end
+  end
+
+  attribute :min_worktime do |step|
+    step.definition&.min_worktime
+  end
+
+  attribute :max_worktime do |step|
+    step.definition&.max_worktime
   end
 
   # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer

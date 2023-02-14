@@ -15,7 +15,7 @@ describe V1::Workflow::StepSerializer do
 
   it "should serialize properly" do
     expect(json_document['data']).to have_relationships(:process, :documents)
-    expect(json_document['data']).to have_jsonapi_attributes(:completed, :completedAt, :decisionOptions, :kind, :position, :title, :min_worktime, :max_worktime)
+    expect(json_document['data']).to have_jsonapi_attributes(:completed, :completedAt, :decisionOptions, :kind, :position, :title, :minWorktime, :maxWorktime)
     expect(json_document['data']). to have_jsonapi_attributes(:assigneeInfo)
   end
 end
