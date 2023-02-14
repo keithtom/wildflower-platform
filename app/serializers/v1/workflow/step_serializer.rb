@@ -27,6 +27,14 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     end
   end
 
+  attribute :min_worktime do |step|
+    step.definition&.min_worktime
+  end
+
+  attribute :max_worktime do |step|
+    step.definition&.max_worktime
+  end
+
   # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
   attribute :assignee_info do |step|
     if assignee = step.assignee

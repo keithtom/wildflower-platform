@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_13_195704) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -314,7 +314,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_195704) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "effort"
     t.integer "position"
     t.boolean "start_considering", default: false
   end
@@ -336,6 +335,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_195704) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.integer "min_worktime", default: 0
+    t.integer "max_worktime", default: 0
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
@@ -367,7 +368,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_195704) do
     t.bigint "workflow_id"
     t.string "title"
     t.text "description"
-    t.integer "effort"
     t.datetime "started_at", precision: nil
     t.datetime "completed_at", precision: nil
     t.datetime "created_at", null: false
