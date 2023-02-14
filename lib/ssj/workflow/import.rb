@@ -45,7 +45,7 @@ module SSJ
           process_title = row[0]&.strip
           step_title = row[1]&.strip
 
-          if process_title.present?
+          if process_title.present? # refactor to import_process
             puts "creating #{process_title}"
             process_description = row[15]&.strip
             process_start_considering = row[5]&.strip.present?
@@ -55,7 +55,7 @@ module SSJ
             process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, category_list: process_category, start_considering: process_start_considering
 
             step_position = 0
-          elsif process_title.blank? && step_title.present?
+          elsif process_title.blank? && step_title.present? # refactor to import_step
             puts "  adding #{process_obj.title}/#{step_title}"
             step_description = row[17]&.strip
             step_type = row[16]&.strip
