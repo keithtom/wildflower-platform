@@ -2,6 +2,8 @@
 # look at this sheet to understand what's happening
 # https://docs.google.com/spreadsheets/d/1cXGliig-PGosbGyY9Jp30me2WasNN65yitJGvxRGB4k/edit#gid=294865209
 
+# To make updates, you have to update the dropbox links at the bottom and run #create_default_workflow_and_processes.
+
 require 'csv'
 require 'workflow/definition/process'
 
@@ -34,7 +36,7 @@ module SSJ
       end
 
       def import_process_library
-        # build processes library, having the admin will help... don't worry about position yet.  leverage the fact it is definition 0.
+        # build processes library, having the admin UI will help but using importer for now.
         process_obj = nil
         process_position = default_process_position
         step_position = 0
@@ -46,12 +48,13 @@ module SSJ
           if process_title.present?
             puts "creating #{process_title}"
             process_description = row[15]&.strip
+            process_start_considering = row[5]&.strip.present?
             process_weight = row[19]&.strip # convert to integer
             process_effort = {S: "small", M: "medium", L: "large"}[process_weight.to_s.to_sym]
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, effort: process_effort, position: process_position, category_list: process_category
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, effort: process_effort, position: process_position, category_list: process_category, start_considering: process_start_considering
 
             step_position = 0
           elsif process_title.blank? && step_title.present?

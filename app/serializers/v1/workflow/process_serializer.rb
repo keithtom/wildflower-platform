@@ -12,6 +12,11 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     get_categories(process)
   end
 
+  attribute :phase do |process|
+    process.definition.phase_list.first
+  end
+
+
   attribute :steps_assigned_count do |process|
     process.steps.where.not(assignee_id: nil).count
   end
