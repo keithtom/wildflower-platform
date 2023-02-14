@@ -134,9 +134,9 @@ module SSJ
         return 0 if value.blank?
         return 0 if unit.blank?
 
-        if unit.contains?("min")
+        if unit.include?("min")
           value.to_i
-        elsif unit.contains?("hour")
+        elsif unit.include?("hour")
           value.to_i * 60
         else
           raise "unknown time unit #{unit}"

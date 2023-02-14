@@ -1,5 +1,5 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
-  attributes :title, :completed, :kind, :position, :completed_at, :description
+  attributes :title, :completed, :kind, :position, :completed_at, :description, :min_worktime, :max_worktime
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process,
     id_method_name: :external_identifier do |step|
