@@ -49,13 +49,10 @@ module SSJ
             puts "creating #{process_title}"
             process_description = row[15]&.strip
             process_start_considering = row[5]&.strip.present?
-            process_min_worktime = convert_to_minutes(row[19]&.strip, row[21]&.strip)
-            process_max_worktime = convert_to_minutes(row[20]&.strip, row[21]&.strip)
-
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, min_worktime: process_min_worktime, max_worktime: process_max_worktime, position: process_position, category_list: process_category, start_considering: process_start_considering
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, category_list: process_category, start_considering: process_start_considering
 
             step_position = 0
           elsif process_title.blank? && step_title.present?
@@ -64,7 +61,9 @@ module SSJ
             step_type = row[16]&.strip
             # step_content = row[18]&.strip
             step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
-            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position)
+            step_min_worktime = convert_to_minutes(row[19]&.strip, row[21]&.strip)
+            step_max_worktime = convert_to_minutes(row[20]&.strip, row[21]&.strip)
+            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position, min_worktime: step_min_worktime, max_worktime: step_max_worktime)
 
             step_document_titles = row[23]&.strip&.split("\n") || []
             step_document_links = row[24]&.strip&.split("\n") || []

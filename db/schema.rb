@@ -316,8 +316,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.boolean "start_considering", default: false
-    t.integer "min_worktime", default: 0
-    t.integer "max_worktime", default: 0
   end
 
   create_table "workflow_definition_selected_processes", force: :cascade do |t|
@@ -337,6 +335,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.integer "min_worktime", default: 0
+    t.integer "max_worktime", default: 0
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
