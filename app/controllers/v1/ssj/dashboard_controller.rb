@@ -25,5 +25,13 @@ class V1::Ssj::DashboardController < ApiController
     options[:include] = ['documents']
     render json: V1::Ssj::AssignedStepsSerializer.new(steps, options)
   end
+
+  def team
+    if team = current_user&.person&.ssj_team
+      render json: V1::Ssj::TeamSerializer.new(team.people)
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
 end
 

@@ -24,4 +24,22 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
       expect(json_response["finance"]).to_not be_nil
     end
   end
+
+  describe "GET /v1/ssj/dashboard/team" do
+    let(:workflow) { create(:workflow_instance_workflow) }
+
+    before do
+      team = SSJ::Team.new
+      team.workflow = workflow
+      team.people << person
+      team.save!
+    end
+
+    it "succeeds" do
+      get "/v1/ssj/dashboard/team", headers: headers
+      expect(response).to have_http_status(:success)
+      puts json_response
+      expect(json_response["hasPartner"]).to be false
+    end
+  end
 end
