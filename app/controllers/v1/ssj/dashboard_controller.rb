@@ -1,13 +1,13 @@
 class V1::Ssj::DashboardController < ApiController
 
   def progress
-    workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
+    workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
     processes = workflow.processes.eager_load(:prerequisites, :steps, :categories, definition: [:phase, :categories])
     render json: V1::Ssj::ProcessProgressSerializer.new(processes)
   end
 
   def resources
-    workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
+    workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
     process_ids = Workflow::Instance::Process.where(workflow_id: workflow.id).pluck(:id)
     steps = Workflow::Instance::Step.where(process_id: process_ids).includes(:documents, definition: [:documents, :process])
     documents = steps.map{|step| step.documents}.flatten
@@ -15,7 +15,7 @@ class V1::Ssj::DashboardController < ApiController
   end
 
   def assigned_steps
-    workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
+    workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
     process_ids = Workflow::Instance::Process.where(workflow_id: workflow.id).pluck(:id)
     steps = Workflow::Instance::Step.where(process_id: process_ids, completed: false).where.not(assignee_id: nil).
       includes(:process, :documents, :selected_option, :assignee, definition: [:documents]).
@@ -32,6 +32,12 @@ class V1::Ssj::DashboardController < ApiController
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def workflow_id
+    current_user&.person&.ssj_team&.workflow_id
   end
 end
 
