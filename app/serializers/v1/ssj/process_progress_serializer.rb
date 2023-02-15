@@ -30,7 +30,7 @@ class V1::Ssj::ProcessProgressSerializer < ApplicationSerializer
     end
 
     grouped_processes.each do |phase, status_info|
-      status_info[:statuses] = status_info[:statuses].sort_by{|status| V1::Statusable::STATUS.index(status)}
+      status_info[:statuses] = status_info[:statuses].sort_by{|status| V1::Statusable::STATUS.index(status) * -1}
     end
     return grouped_processes.values
   end
