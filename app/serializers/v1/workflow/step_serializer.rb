@@ -18,7 +18,7 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
 
   belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
     serializer: V1::PersonSerializer do |process|
-    process.assignee
+      process.assignee
   end
 
   attribute :decision_options do |step|
@@ -36,8 +36,8 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   end
 
   # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
-  attribute :assignee_info do |step|
-    if assignee = step.assignee
+  attribute :assignee_info do |step, params|
+    if assignee = step.assignee && !params[:basic]
       { id: assignee.external_identifier, imageUrl: assignee.image_url }
     end
   end
