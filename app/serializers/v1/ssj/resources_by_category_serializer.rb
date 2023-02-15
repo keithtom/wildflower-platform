@@ -17,7 +17,9 @@ class V1::Ssj::ResourcesByCategorySerializer < ApplicationSerializer
       end
     end
 
-    return grouped_documents
+    grouped_documents.map do |key, value|
+      {key => value}
+    end
   end
 
   def get_categories(process)
