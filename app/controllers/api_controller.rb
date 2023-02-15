@@ -6,4 +6,8 @@ class ApiController < ActionController::API
   def not_found
     head :not_found
   end
+
+  def workflow_id
+    current_user&.person&.ssj_team&.workflow_id
+  end
 end

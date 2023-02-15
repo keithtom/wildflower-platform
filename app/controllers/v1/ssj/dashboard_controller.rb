@@ -1,5 +1,4 @@
 class V1::Ssj::DashboardController < ApiController
-
   def progress
     workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
     processes = workflow.processes.eager_load(:prerequisites, :steps, :categories, definition: [:phase, :categories])
@@ -32,12 +31,6 @@ class V1::Ssj::DashboardController < ApiController
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
-  end
-
-  private
-
-  def workflow_id
-    current_user&.person&.ssj_team&.workflow_id
   end
 end
 
