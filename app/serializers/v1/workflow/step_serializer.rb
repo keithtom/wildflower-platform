@@ -37,7 +37,7 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
 
   # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
   attribute :assignee_info do |step, params|
-    if assignee = step.assignee && !params[:basic]
+    if assignee = !params[:basic] && step.assignee
       { id: assignee.external_identifier, imageUrl: assignee.image_url }
     end
   end
