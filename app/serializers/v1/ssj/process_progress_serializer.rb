@@ -15,14 +15,15 @@ class V1::Ssj::ProcessProgressSerializer < ApplicationSerializer
 
   def grouped_by_phase(processes)
     grouped_processes = {}
+
+    Workflow::Definition::Process::PHASES.each do |phase|
+      grouped_processes[phase] = {name: phase, total: 0, statuses: []}
+    end
+
     processes.each do |process|
       if process.phase.empty?
         Rails.logger.warn("process phase doesn't exist, id: #{process.id}")
         next
-      end
-
-      if grouped_processes[process.phase.first.name].nil?
-        grouped_processes[process.phase.first.name] = {name: process.phase.first.name, total: 0, statuses: []}
       end
 
       grouped_processes[process.phase.first.name][:total] += 1
@@ -30,21 +31,22 @@ class V1::Ssj::ProcessProgressSerializer < ApplicationSerializer
     end
 
     grouped_processes.each do |phase, status_info|
-      status_info[:statuses] = status_info[:statuses].sort_by{|status| V1::Statusable::STATUS.index(status) * -1}
+      status_info[:statuses] = status_info[:statuses].sort_by{|status| V1::Statusable::STATUS.index(status)}
     end
     return grouped_processes.values
   end
 
   def grouped_by_category(processes)
     grouped_processes = {}
+
+    ActsAsTaggableOn::Tag.for_context(:categories).sort_by{|tag| tag.name.downcase}.each do |category|
+      category_name = category.name.parameterize(separator: '_')
+      grouped_processes[category_name] = {name: category.name, total: 0, statuses: []}
+    end
+
     processes.each do |process|
       process_categories(process).each do |category|
         category_name = category.parameterize(separator: '_')
-
-        if grouped_processes[category_name].nil?
-          grouped_processes[category_name] = {name: category, total: 0, statuses: []}
-        end
-
         grouped_processes[category_name][:total] += 1
         grouped_processes[category_name][:statuses] << process_status(process)
       end

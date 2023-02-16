@@ -1,6 +1,11 @@
 module Workflow
   class Definition::Process < ApplicationRecord
     DEFAULT_INCREMENT = 100
+    PHASES = [
+      VISIONING = "visioning",
+      PLANNING = "planning",
+      STARTUP = "startup"
+    ]
 
     has_many :instances, class_name: 'Workflow::Instance::Process', foreign_key: 'definition_id'
 
