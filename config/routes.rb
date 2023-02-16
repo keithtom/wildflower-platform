@@ -1,7 +1,16 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-
+  devise_for :users, path: '', path_names: {
+    sign_in: 'login',
+    sign_out: 'logout',
+    registration: 'signup'
+  },
+  controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
+  post "/users/token" => "users/sessions#token", as: :user_token
 
   namespace :v1 do
     resources :users, except: [:index, :destroy]
@@ -51,12 +60,29 @@ Rails.application.routes.draw do
     # resources :hubs, except: :destroy do
     #   resources :pods, except: :destroy
     # end
+    namespace :ssj do
+      get "dashboard/progress", to: "dashboard#progress"
+      get 'dashboard/resources', to: 'dashboard#resources'
+      get 'dashboard/assigned_steps', to: 'dashboard#assigned_steps'
+    end
 
-    # mount Workflow::Engine => "/workflow", potentially for admin
     namespace :workflow do
-      resources :workflows, only: [:show]
+      resources :workflows, only: [:show] do
+        resources :processes, only: [:index]
+        get :resources
+      end
       resources :processes, only: [:show] do
-        resources :steps, only: [:show]
+        resources :steps, only: [:create, :show]
+      end
+      resources :steps, only: [] do
+        member do
+          put :complete
+          put :uncomplete
+          put :reorder
+          put :select_option
+          put :assign
+          put :unassign
+        end
       end
     end
   end

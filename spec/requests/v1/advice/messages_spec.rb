@@ -3,9 +3,11 @@ require 'rails_helper'
 RSpec.describe "V1::Advice::Messages", type: :request do
   let!(:decision) { create(:advice_decision) }
   let!(:message) { create(:advice_message, decision: decision) }
+  let(:user) { create(:user) }
 
   before do
     create(:advice_message, decision: decision)
+    sign_in(user)
   end
 
   describe "GET /v1/advice/decisions/1/messages" do

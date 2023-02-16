@@ -3,11 +3,15 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.0.2'
+ruby '3.2.0'
 
-gem 'rails', '~> 7.0.1'
+gem 'rails', '~> 7.0.4'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 5.0'
+
+#authentication
+gem 'devise'
+gem 'devise-jwt'
 
 # Use Puma as the app server
 # Use Redis adapter to run Action Cable in production
@@ -27,7 +31,7 @@ gem 'oj' # faster serialization
 
 # Search
 gem "searchkick"
-gem "elasticsearch", '~> 8.x'
+gem "elasticsearch", '~> 7.x'
 
 # models
 gem 'acts-as-taggable-on'
@@ -45,6 +49,7 @@ group :development, :test do
   gem 'jsonapi-rspec'
 
   gem 'database_cleaner-active_record'
+  gem 'bullet'
 end
 
 gem 'factory_bot_rails' # move to development after initial testing done; needed for production seeding
@@ -75,5 +80,3 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
-
-gem 'workflow', path: 'gems/workflow'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -275,9 +275,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.string "jti", null: false
+    t.string "authentication_token", limit: 30
+    t.datetime "authentication_token_at"
+    t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
+    t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "workflow_decision_options", force: :cascade do |t|
+    t.bigint "decision_id"
+    t.string "description"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["decision_id"], name: "index_workflow_decision_options_on_decision_id"
+    t.index ["external_identifier"], name: "index_workflow_decision_options_on_external_identifier", unique: true
   end
 
   create_table "workflow_definition_dependencies", force: :cascade do |t|
@@ -299,8 +314,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "effort", default: 0
     t.integer "position"
+    t.boolean "start_considering", default: false
   end
 
   create_table "workflow_definition_selected_processes", force: :cascade do |t|
@@ -317,11 +332,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.string "title"
     t.text "description"
     t.string "kind"
-    t.string "resource_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "resource_title"
     t.integer "position"
+    t.integer "min_worktime", default: 0
+    t.integer "max_worktime", default: 0
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
@@ -333,51 +348,69 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_155049) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "workflow_instance_dependencies", force: :cascade do |t|
+    t.bigint "definition_id"
+    t.bigint "workflow_id"
+    t.string "workable_type"
+    t.bigint "workable_id"
+    t.string "prerequisite_workable_type"
+    t.bigint "prerequisite_workable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["definition_id"], name: "index_workflow_instance_dependencies_on_definition_id"
+    t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_instance_dependencies_on_prerequisite_workable"
+    t.index ["workable_type", "workable_id"], name: "index_workflow_instance_dependencies_on_workable"
+    t.index ["workflow_id"], name: "index_workflow_instance_dependencies_on_workflow_id"
+  end
+
   create_table "workflow_instance_processes", force: :cascade do |t|
-    t.bigint "workflow_definition_process_id"
-    t.bigint "workflow_instance_workflow_id"
+    t.bigint "definition_id"
+    t.bigint "workflow_id"
     t.string "title"
     t.text "description"
-    t.integer "effort"
     t.datetime "started_at", precision: nil
     t.datetime "completed_at", precision: nil
-    t.bigint "assignee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
-    t.index ["assignee_id"], name: "index_workflow_instance_processes_on_assignee_id"
+    t.bigint "steps_count"
+    t.integer "completed_steps_count", default: 0, null: false
+    t.integer "completion_status", default: 0
+    t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
-    t.index ["workflow_definition_process_id"], name: "index_table_workflow_inst_processes_on_workflow_def_process_id"
-    t.index ["workflow_instance_workflow_id"], name: "index_table_workflow_inst_processes_on_wf_inst_wf_id"
+    t.index ["workflow_id"], name: "index_workflow_instance_processes_on_workflow_id"
   end
 
   create_table "workflow_instance_steps", force: :cascade do |t|
-    t.bigint "workflow_instance_process_id"
-    t.bigint "workflow_definition_step_id"
+    t.bigint "process_id"
+    t.bigint "definition_id"
     t.string "title"
     t.string "kind"
-    t.boolean "completed"
-    t.string "resource_url"
-    t.string "resource_title"
+    t.boolean "completed", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
+    t.datetime "completed_at"
     t.string "external_identifier", null: false
+    t.bigint "selected_option_id"
+    t.bigint "assignee_id"
+    t.index ["assignee_id"], name: "index_workflow_instance_steps_on_assignee_id"
+    t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
-    t.index ["workflow_definition_step_id"], name: "index_table_workflow_inst_processes_on_workflow_def_step_id"
-    t.index ["workflow_instance_process_id"], name: "index_table_workflow_inst_processes_on_workflow_ins_process_id"
+    t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
+    t.index ["selected_option_id"], name: "index_workflow_instance_steps_on_selected_option_id"
   end
 
   create_table "workflow_instance_workflows", force: :cascade do |t|
-    t.bigint "workflow_definition_workflow_id"
+    t.bigint "definition_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
-    t.index ["workflow_definition_workflow_id"], name: "index_workflow_instance_workflows_on_workflow_def_workflow_id"
   end
 
   add_foreign_key "taggings", "tags"
-  add_foreign_key "workflow_instance_processes", "people", column: "assignee_id"
+  add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
 end
