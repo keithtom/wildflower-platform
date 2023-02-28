@@ -32,5 +32,20 @@ class V1::Ssj::DashboardController < ApiController
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
   end
+
+  def start_date
+    if team = current_user&.person&.ssj_team
+      team.update!(team_params)
+      render json: V1::Ssj::TeamSerializer.new(team)
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
+
+  protected
+
+  def team_params
+    params.require(:team).permit(:expected_start_date)
+  end
 end
 
