@@ -21,6 +21,8 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
       expect(json_response["data"]).to have_type(:process).and have_attribute(:status)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:stepsCount)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:completedStepsCount)
+      step_obj = json_response["included"].select{|obj| obj["type"] == "step"}.last
+      expect(step_obj).to have_attribute(:assigneeInfo)
     end
   end
 
