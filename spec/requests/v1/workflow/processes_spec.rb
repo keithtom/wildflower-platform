@@ -37,6 +37,8 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
       expect(steps.length).to eq(1)
       expect(steps[0]["id"]).to_not eq(unassigned_step.external_identifier)
       expect(steps[0]["id"]).to eq(assigned_step.external_identifier)
+      step_obj = json_response["included"].select{|obj| obj["type"] == "step"}.last
+      expect(step_obj).not_to have_attribute(:assigneeInfo)
     end
   end
 end

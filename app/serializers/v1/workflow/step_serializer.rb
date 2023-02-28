@@ -35,10 +35,10 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     step.definition&.max_worktime
   end
 
+
   # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
-  attribute :assignee_info do |step, params|
-    if assignee = !params[:basic] && step.assignee
-      { id: assignee.external_identifier, imageUrl: assignee.image_url }
-    end
+  attribute :assignee_info, if: Proc.new {|step, params| !params[:self_assigned] && !params[:basic] && step.assignee } do |step|
+    assignee = step.assignee
+    { id: assignee.external_identifier, imageUrl: assignee.image_url }
   end
 end
