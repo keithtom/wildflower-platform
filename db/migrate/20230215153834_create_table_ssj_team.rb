@@ -3,6 +3,7 @@ class CreateTableSsjTeam < ActiveRecord::Migration[7.0]
     create_table :ssj_teams do |t|
       t.string :external_identifier, null: false
       t.references :workflow, foreign_key: { to_table: :workflow_instance_workflows }
+      t.date :expected_start_date
       t.timestamps
     end
 

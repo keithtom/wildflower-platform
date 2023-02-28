@@ -266,6 +266,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
   create_table "ssj_teams", force: :cascade do |t|
     t.string "external_identifier", null: false
     t.bigint "workflow_id"
+    t.date "expected_start_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["workflow_id"], name: "index_ssj_teams_on_workflow_id"
