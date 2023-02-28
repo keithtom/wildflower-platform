@@ -41,12 +41,12 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     end
   end
 
-  describe "PUT /v1/ssj/dashboard/start_date" do
+  describe "PUT /v1/ssj/dashboard/team" do
     let(:workflow) { create(:workflow_instance_workflow) }
     let(:new_start_date) { "2023-03-01" }
 
     it "succeeds" do
-      put "/v1/ssj/dashboard/start_date", headers: headers, params: { team: { expected_start_date: new_start_date }}
+      put "/v1/ssj/dashboard/team", headers: headers, params: { team: { expected_start_date: new_start_date }}
       expect(response).to have_http_status(:success)
       expect(json_response["expectedStartDate"]).to eq(new_start_date)
       expect(user.person.ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)

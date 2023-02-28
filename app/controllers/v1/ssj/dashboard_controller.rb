@@ -33,7 +33,7 @@ class V1::Ssj::DashboardController < ApiController
     end
   end
 
-  def start_date
+  def update_team
     if team = current_user&.person&.ssj_team
       team.update!(team_params)
       render json: V1::Ssj::TeamSerializer.new(team)
