@@ -23,7 +23,7 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     end
 
     it "succeeds" do
-      get "/v1/ssj/dashboard/resources", headers: headers, params: { workflow_id: step.process.workflow.external_identifier }
+      get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response["finance"]).to_not be_nil
     end
