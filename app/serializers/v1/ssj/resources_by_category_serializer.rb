@@ -2,7 +2,10 @@ class V1::Ssj::ResourcesByCategorySerializer < ApplicationSerializer
   include V1::Categorizable
 
   def serializable_hash
-    grouped_by_category(@resource)
+    {
+      by_phase: grouped_by_phase(@resource),
+      by_category: grouped_by_category(@resource)
+    }
   end
 
   def grouped_by_category(documents)
@@ -14,6 +17,23 @@ class V1::Ssj::ResourcesByCategorySerializer < ApplicationSerializer
           grouped_documents[category] = []
         end
         grouped_documents[category] << V1::Workflow::ResourceSerializer.new(document, root: false, include: @includes)
+      end
+    end
+
+    grouped_documents.map do |key, value|
+      {key => value}
+    end
+  end
+
+  def grouped_by_phase(documents)
+    grouped_documents = {}
+    Workflow::Definition::Process::PHASES.each do |phase|
+      grouped_documents[phase] = []
+    end
+
+    documents.each do |document|
+      document.documentable.process.phase.each do |phase|
+        grouped_documents[phase.name] << V1::Workflow::ResourceSerializer.new(document, root: false, include: @includes)
       end
     end
 
