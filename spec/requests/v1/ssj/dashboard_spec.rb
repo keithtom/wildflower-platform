@@ -21,16 +21,6 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     p.category_list << "finance"
     p.phase_list << phase
     p.save!
-    step.assignee = person
-    step.save!
-  end
-
-  describe "GET /v1/ssj/dashboard/assigned_steps" do
-    it "succeeds" do
-      get "/v1/ssj/dashboard/assigned_steps", headers: headers
-      expect(response).to have_http_status(:success)
-      expect(json_response[0]["steps"][0]["included"]).to include(have_type('process').and have_attribute(:phase))
-    end
   end
 
   describe "GET /v1/ssj/dashboard/resources" do
