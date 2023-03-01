@@ -7,6 +7,8 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
   let!(:step) { create(:workflow_instance_step) }
   let(:workflow) { step.process.workflow }
   let(:expected_start_date) { Date.today + 7.days }
+  let(:partner) { create(:person) }
+  let(:partner_user_account) { create(:user, person_id: partner.id) }
 
   before do
     sign_in(user)

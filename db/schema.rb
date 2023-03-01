@@ -191,7 +191,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_people_on_hub_id"
     t.index ["pod_id"], name: "index_people_on_pod_id"
-    t.index ["ssj_team_id"], name: "index_people_on_ssj_team_id"
+    t.index ["ssj_team_id"], name: "index_people_on_ssj_team_id", unique: true
   end
 
   create_table "people_relationships", force: :cascade do |t|
@@ -269,6 +269,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
     t.date "expected_start_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["external_identifier"], name: "index_ssj_teams_on_external_identifier", unique: true
     t.index ["workflow_id"], name: "index_ssj_teams_on_workflow_id"
   end
 
