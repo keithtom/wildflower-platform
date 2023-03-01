@@ -28,7 +28,7 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response["finance"]).to_not be_nil
+      expect(json_response.first["finance"]).to_not be_nil
     end
   end
 

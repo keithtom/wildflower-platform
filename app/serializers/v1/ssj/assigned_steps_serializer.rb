@@ -1,9 +1,8 @@
 class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
   def serializable_hash
-    # assignee id => { info: {}, steps: []}
     @resource.map do |assignee_id, steps|
-      [assignee_id, { assignee_info: assignee_info(steps), steps: serialized_steps(steps)}]
-    end.to_h
+      { assignee_info: assignee_info(steps), steps: serialized_steps(steps)}
+    end
   end
 
   has_many :documents, serializer: V1::DocumentSerializer, record_type: :document,
