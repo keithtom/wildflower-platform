@@ -1,7 +1,6 @@
-require 'ostruct'
+class SSJ::Team < ApplicationRecord
+  include ApplicationRecord::ExternalIdentifier
 
-# just stub this structure
-# has your OG, RSE, partner, others
-
-class SSJ::Team < OpenStruct
+  has_many :people, foreign_key: :ssj_team_id
+  belongs_to :workflow, class_name: "Workflow::Instance::Workflow"
 end
