@@ -11,15 +11,21 @@ class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
   end
 
   belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
-    serializer: V1::PersonSerializer do |process|
-    process.assignee
+    serializer: V1::PersonSerializer do |step|
+    step.assignee
   end
+
+  belongs_to :process, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process,
+    id_method_name: :external_identifier do |step|
+      step.process
+  end
+
 
   private
 
   def serialized_steps(steps)
     steps.map do |step|
-      V1::Workflow::StepSerializer.new(step, {params: {basic: true}, include: ['documents']})
+      V1::Workflow::StepSerializer.new(step, {params: {basic: true}, include: ['documents', 'process']})
     end
   end
 

@@ -21,7 +21,7 @@ class V1::Ssj::DashboardController < ApiController
       group_by{|step| step.assignee.external_identifier }
 
     options = {}
-    options[:include] = ['documents']
+    options[:include] = ['documents', 'process']
     render json: V1::Ssj::AssignedStepsSerializer.new(steps, options)
   end
 
