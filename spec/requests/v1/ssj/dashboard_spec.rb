@@ -9,6 +9,7 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
   let(:expected_start_date) { Date.today + 7.days }
   let(:partner) { create(:person) }
   let(:partner_user_account) { create(:user, person_id: partner.id) }
+  let(:phase) { Workflow::Definition::Process::PHASES.first }
 
   before do
     sign_in(user)
@@ -21,6 +22,8 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     p.save!
     step.assignee = person
     step.save!
+    p.phase_list << phase
+    p.save!
   end
 
   describe "GET /v1/ssj/dashboard/assigned_steps" do
@@ -35,7 +38,8 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response.first["finance"]).to_not be_nil
+      expect(json_response["by_category"].first["finance"]).to_not be_nil
+      expect(json_response["by_phase"].first[phase]).to_not be_nil
     end
   end
 
