@@ -1,22 +1,22 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
   attributes :title, :completed, :kind, :position, :completed_at, :description
 
-  belongs_to :process, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process,
+  belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
     id_method_name: :external_identifier do |step|
       step.process
   end
 
-  has_many :documents, serializer: V1::DocumentSerializer, record_type: :document,
+  has_many :documents, serializer: V1::DocumentSerializer,
     id_method_name: :external_identifier do |step|
       step.documents
   end
 
-  belongs_to :selected_option, serializer: V1::Workflow::DecisionOptionSerializer, record_type: :workflow_decision_option,
+  belongs_to :selected_option, serializer: V1::Workflow::DecisionOptionSerializer,
     id_method_name: :external_identifier do |step|
       step.selected_option
   end
 
-  belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
+  belongs_to :assignee, id_method_name: :external_identifier,
     serializer: V1::PersonSerializer do |process|
       process.assignee
   end
