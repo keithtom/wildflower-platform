@@ -55,7 +55,6 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
   end
 
   describe "PUT /v1/ssj/dashboard/team" do
-    let(:workflow) { create(:workflow_instance_workflow) }
     let(:new_start_date) { "2023-03-01" }
 
     it "succeeds" do
@@ -63,6 +62,16 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
       expect(response).to have_http_status(:success)
       expect(json_response["expectedStartDate"]).to eq(new_start_date)
       expect(user.person.ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
+    end
+  end
+
+  describe "PUT /v1/ssj/dashboard/add_partner" do
+    let(:email) { Faker::Internet.unique.email  }
+
+    it "succeeds" do
+      put "/v1/ssj/dashboard/add_partner", headers: headers, params: { email: email }
+      expect(response).to have_http_status(:success)
+      expect(json_response["hasPartner"]).to eq(true)
     end
   end
 end

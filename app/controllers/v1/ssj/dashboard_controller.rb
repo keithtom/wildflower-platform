@@ -42,6 +42,15 @@ class V1::Ssj::DashboardController < ApiController
     end
   end
 
+  def add_partner
+    if team = current_user&.person&.ssj_team
+      SSJ::AddPartner.run(params[:email], team)
+      render json: V1::Ssj::TeamSerializer.new(team)
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
+
   protected
 
   def team_params
