@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -126,6 +126,34 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.index ["name"], name: "index_hubs_on_name", unique: true
   end
 
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.bigint "resource_owner_id"
+    t.bigint "application_id", null: false
+    t.string "token", null: false
+    t.string "refresh_token"
+    t.integer "expires_in"
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.string "scopes"
+    t.string "previous_refresh_token", default: "", null: false
+    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
+    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
+    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
+    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
+  end
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "uid", null: false
+    t.string "secret", null: false
+    t.text "redirect_uri"
+    t.string "scopes", default: "", null: false
+    t.boolean "confidential", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
   create_table "people", force: :cascade do |t|
     t.string "email"
     t.string "first_name"
@@ -157,11 +185,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.string "airtable_partner_id"
     t.string "linkedin_url"
     t.string "image_url"
+    t.bigint "ssj_team_id"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_people_on_hub_id"
     t.index ["pod_id"], name: "index_people_on_pod_id"
+    t.index ["ssj_team_id"], name: "index_people_on_ssj_team_id", unique: true
   end
 
   create_table "people_relationships", force: :cascade do |t|
@@ -233,6 +263,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.index ["pod_id"], name: "index_schools_on_pod_id"
   end
 
+  create_table "ssj_teams", force: :cascade do |t|
+    t.string "external_identifier", null: false
+    t.bigint "workflow_id"
+    t.date "expected_start_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_identifier"], name: "index_ssj_teams_on_external_identifier", unique: true
+    t.index ["workflow_id"], name: "index_ssj_teams_on_workflow_id"
+  end
+
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
     t.string "taggable_type"
@@ -276,6 +316,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
     t.string "jti", null: false
+    t.string "provider"
+    t.string "uid"
     t.string "authentication_token", limit: 30
     t.datetime "authentication_token_at"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
@@ -411,6 +453,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_13_233618) do
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end
 
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "people", "ssj_teams"
+  add_foreign_key "ssj_teams", "workflow_instance_workflows", column: "workflow_id"
   add_foreign_key "taggings", "tags"
   add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
 end

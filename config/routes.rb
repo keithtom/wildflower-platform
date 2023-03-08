@@ -64,6 +64,8 @@ Rails.application.routes.draw do
       get "dashboard/progress", to: "dashboard#progress"
       get 'dashboard/resources', to: 'dashboard#resources'
       get 'dashboard/assigned_steps', to: 'dashboard#assigned_steps'
+      get 'dashboard/team', to: 'dashboard#team'
+      put 'dashboard/team', to: 'dashboard#update_team'
     end
 
     namespace :workflow do

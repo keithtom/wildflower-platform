@@ -1,7 +1,7 @@
 class V1::Workflow::ProcessesController < ApiController
   def index
-    # find the current_user's workflow, or load by :workflow_id
-    workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id])
+    query = params[:workflow_id] ? { external_identifier: params[:workflow_id] } : { id: workflow_id }
+    workflow = Workflow::Instance::Workflow.find_by!(query)
 
     processes = nil
     if params[:phase]
@@ -14,7 +14,6 @@ class V1::Workflow::ProcessesController < ApiController
 
         process_ids = phase_process_ids + start_considering_process_ids
         processes = workflow.processes.where(definition_id: process_ids).eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
-        
       else
         render :not_found
         return
@@ -29,7 +28,7 @@ class V1::Workflow::ProcessesController < ApiController
       processes = processes.select do |process|
         process.steps.where(assignee_id: current_user.person_id, completed: false).count > 0
       end
-      options[:params] = { assignee_id: current_user.person_id }
+      options[:params] = { assignee_id: current_user.person_id, self_assigned: true }
     end
 
     render json: V1::Workflow::ProcessSerializer.new(processes, options)
