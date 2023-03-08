@@ -1,19 +1,20 @@
 class SSJ::AddPartner < BaseService
-  def initialize(email, team)
-    @email = email
+  def initialize(person_params, team)
+    @person_params = person_params
     @team = team
   end
 
   def run
-    person = Person.create!(email: @email)
-    user = User.create!(email: @email, person: person)
-    # TODO: set role on person?
-
-    puts "TEAM ID: #{@team.id}"
-    @team.people << user.person
+    person = Person.find_or_create_by!(email: @person_params[:email])
+    person.update!(@person_params)
+    @team.people << person
     @team.save!
 
-    UserMailer.invite(user)
-  end
+    unless user = User.find_by(person_id: person.id)
+      user = User.create!(email: person.email, person_id: person.id)
+      Users::GenerateToken.run(user)
+    end
 
+    PartnerMailer.invite(user)
+  end
 end

@@ -69,7 +69,13 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     let(:email) { Faker::Internet.unique.email  }
 
     it "succeeds" do
-      put "/v1/ssj/dashboard/add_partner", headers: headers, params: { email: email }
+      put "/v1/ssj/dashboard/add_partner", headers: headers, params: {
+        person: {
+          email: email, full_name: Faker::Name.name, journey_state: "Massachusetts", primary_language: "English",
+          race_ethnicity_other: "Asian, White", lgbtqia: true, gender: "Gender Non-Conforming", pronouns: "They/Them/Theirs",
+          household_income: "Middle income"
+        }
+      }
       expect(response).to have_http_status(:success)
       expect(json_response["hasPartner"]).to eq(true)
     end

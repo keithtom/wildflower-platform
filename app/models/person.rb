@@ -25,6 +25,9 @@ class Person < ApplicationRecord
   # https://github.com/ankane/searchkick#indexing
   scope :search_import, -> { includes([:school_relationships, :schools, :address, {:taggings => :tag}]) }
 
+  attr_accessor :full_name
+  before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
+
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
@@ -51,5 +54,16 @@ class Person < ApplicationRecord
 
   def name
     "#{first_name} #{middle_name} #{last_name}"
+  end
+
+  private
+
+  def set_name
+    names = full_name.split
+    self.first_name = names.first
+    self.last_name = names.last
+    if names.length == 3
+      self.middle_name = names[1]
+    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_06_185920) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -191,7 +191,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_people_on_hub_id"
     t.index ["pod_id"], name: "index_people_on_pod_id"
-    t.index ["ssj_team_id"], name: "index_people_on_ssj_team_id", unique: true
+    t.index ["ssj_team_id"], name: "index_people_on_ssj_team_id"
   end
 
   create_table "people_relationships", force: :cascade do |t|
