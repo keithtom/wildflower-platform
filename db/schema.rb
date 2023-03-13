@@ -270,10 +270,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "ops_guide_id"
-    t.bigint "regional_growth_guide_id"
+    t.bigint "regional_growth_lead_id"
     t.index ["external_identifier"], name: "index_ssj_teams_on_external_identifier", unique: true
     t.index ["ops_guide_id"], name: "index_ssj_teams_on_ops_guide_id"
-    t.index ["regional_growth_guide_id"], name: "index_ssj_teams_on_regional_growth_guide_id"
+    t.index ["regional_growth_lead_id"], name: "index_ssj_teams_on_regional_growth_lead_id"
     t.index ["workflow_id"], name: "index_ssj_teams_on_workflow_id"
   end
 
@@ -460,7 +460,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "people", "ssj_teams"
   add_foreign_key "ssj_teams", "people", column: "ops_guide_id"
-  add_foreign_key "ssj_teams", "people", column: "regional_growth_guide_id"
+  add_foreign_key "ssj_teams", "people", column: "regional_growth_lead_id"
   add_foreign_key "ssj_teams", "workflow_instance_workflows", column: "workflow_id"
   add_foreign_key "taggings", "tags"
   add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
