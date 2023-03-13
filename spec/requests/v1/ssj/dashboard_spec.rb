@@ -15,8 +15,8 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     sign_in(user)
     team = SSJ::Team.new(expected_start_date: expected_start_date)
     team.workflow = workflow
-    team.partners << person
     team.save!
+    SSJ::TeamMember.create!(ssj_team: team, person: person, current: true, role: "partner")
     p = step.definition.process
     p.category_list << "finance"
     p.save!
@@ -61,15 +61,16 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
       put "/v1/ssj/dashboard/team", headers: headers, params: { team: { expected_start_date: new_start_date }}
       expect(response).to have_http_status(:success)
       expect(json_response["expectedStartDate"]).to eq(new_start_date)
-      expect(user.person.ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
+      ssj_team = SSJ::TeamMember.find_by(person_id: user.person_id).ssj_team
+      expect(ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
     end
   end
 
-  describe "PUT /v1/ssj/dashboard/add_partner" do
+  describe "PUT /v1/ssj/dashboard/invite_partner" do
     let(:email) { Faker::Internet.unique.email  }
 
     it "succeeds" do
-      put "/v1/ssj/dashboard/add_partner", headers: headers, params: {
+      put "/v1/ssj/dashboard/invite_partner", headers: headers, params: {
         person: {
           email: email, full_name: Faker::Name.name, primary_language: "English",
           race_ethnicity_other: "Asian, White", lgbtqia: true, gender: "Gender Non-Conforming", pronouns: "They/Them/Theirs",

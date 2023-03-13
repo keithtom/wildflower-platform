@@ -9,7 +9,6 @@ class Person < ApplicationRecord
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
-  belongs_to :ssj_team, optional: true, class_name: "SSJ::Team"
 
   has_many :people_relationships
   # has_one :foundation_partner, through: :school_relationships, -> { where(kind: PeopleRelationship::FOUNDATION_PARTNER) }

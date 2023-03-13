@@ -10,7 +10,7 @@ class PartnerMailer < ApplicationMailer
   def invite(user, inviter)
     @user = user
     @inviter = inviter
-    @ops_guide = inviter&.person&.ssj_team&.ops_guide
+    @ops_guide = SSJ::TeamMember.find_by!(person_id: inviter&.person&.id, current: true)&.ssj_team.ops_guide
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
     # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
