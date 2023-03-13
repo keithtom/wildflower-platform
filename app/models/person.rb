@@ -19,6 +19,7 @@ class Person < ApplicationRecord
   has_many :schools, through: :school_relationships
 
   has_one :address, as: :addressable
+  accepts_nested_attributes_for :address
 
   has_many :decisions, class_name: "Advice::Decision", foreign_key: :creator_id
 
@@ -27,6 +28,7 @@ class Person < ApplicationRecord
 
   attr_accessor :full_name
   before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
+
 
   # https://github.com/ankane/searchkick#indexing
   def search_data

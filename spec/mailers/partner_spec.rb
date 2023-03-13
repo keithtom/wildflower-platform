@@ -4,7 +4,8 @@ RSpec.describe PartnerMailer, type: :mailer do
   describe "invite" do
     let(:user) { build(:user, authentication_token: Devise.friendly_token) }
     let(:inviter) { build(:user, person: person) }
-    let(:person) { build(:person) }
+    let(:person) { build(:person, ssj_team: team) }
+    let(:team) { build(:ssj_team) }
     let(:mail) { PartnerMailer.invite(user, inviter) }
 
     it "renders the headers" do

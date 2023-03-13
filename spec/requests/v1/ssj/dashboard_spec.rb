@@ -15,7 +15,7 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     sign_in(user)
     team = SSJ::Team.new(expected_start_date: expected_start_date)
     team.workflow = workflow
-    team.people << person
+    team.partners << person
     team.save!
     p = step.definition.process
     p.category_list << "finance"
@@ -71,9 +71,9 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     it "succeeds" do
       put "/v1/ssj/dashboard/add_partner", headers: headers, params: {
         person: {
-          email: email, full_name: Faker::Name.name, journey_state: "Massachusetts", primary_language: "English",
+          email: email, full_name: Faker::Name.name, primary_language: "English",
           race_ethnicity_other: "Asian, White", lgbtqia: true, gender: "Gender Non-Conforming", pronouns: "They/Them/Theirs",
-          household_income: "Middle income"
+          household_income: "Middle income", address_attributes: {city: 'Boston', state: 'Massachusetts'}
         }
       }
       expect(response).to have_http_status(:success)
