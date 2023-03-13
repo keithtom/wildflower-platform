@@ -7,8 +7,9 @@ class PartnerMailer < ApplicationMailer
   #
   # from: should ideally come from their operations guide or the platform?
   # cc: ops guide?
-  def invite(user)
-    @user = user # the ETL who is being invited
+  def invite(user, inviter)
+    @user = user
+    @inviter = inviter
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
     # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
@@ -18,3 +19,4 @@ class PartnerMailer < ApplicationMailer
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
 end
+

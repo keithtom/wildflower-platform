@@ -1,7 +1,8 @@
 class SSJ::AddPartner < BaseService
-  def initialize(person_params, team)
+  def initialize(person_params, team, inviter)
     @person_params = person_params
     @team = team
+    @inviter = inviter
   end
 
   def run
@@ -12,9 +13,9 @@ class SSJ::AddPartner < BaseService
 
     unless user = User.find_by(person_id: person.id)
       user = User.create!(email: person.email, person_id: person.id)
-      Users::GenerateToken.run(user)
     end
+    Users::GenerateToken.call(user)
 
-    PartnerMailer.invite(user)
+    PartnerMailer.invite(user, @inviter)
   end
 end

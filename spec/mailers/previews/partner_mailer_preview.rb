@@ -1,7 +1,7 @@
 # Preview all emails at http://localhost:3000/rails/mailers/user
-class UserMailerPreview < ActionMailer::Preview
+class PartnerMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/user_mailer/invite
   def invite
-    UserMailer.invite(User.first)
+    PartnerMailer.invite(User.last, User.first)
   end
 end
