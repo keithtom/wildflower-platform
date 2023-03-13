@@ -5,17 +5,17 @@ class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
     end
   end
 
-  has_many :documents, serializer: V1::DocumentSerializer, record_type: :document,
+  has_many :documents, serializer: V1::DocumentSerializer,
     id_method_name: :external_identifier do |step|
       step.documents
   end
 
-  belongs_to :assignee, record_type: :people, id_method_name: :external_identifier,
+  belongs_to :assignee, id_method_name: :external_identifier,
     serializer: V1::PersonSerializer do |step|
     step.assignee
   end
 
-  belongs_to :process, serializer: V1::Workflow::ProcessSerializer, record_type: :workflow_instance_process,
+  belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
     id_method_name: :external_identifier do |step|
       step.process
   end
