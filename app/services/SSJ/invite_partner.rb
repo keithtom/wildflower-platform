@@ -14,6 +14,6 @@ class SSJ::InvitePartner < BaseService
     end
     Users::GenerateToken.call(user)
 
-    PartnerMailer.invite(user, @inviter)
+    SSJMailer.invite(user, @inviter)
   end
 end

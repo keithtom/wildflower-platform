@@ -1,12 +1,12 @@
 require "rails_helper"
 
-RSpec.describe PartnerMailer, type: :mailer do
+RSpec.describe SSJMailer, type: :mailer do
   describe "invite" do
     let(:user) { build(:user, authentication_token: Devise.friendly_token) }
     let(:inviter) { build(:user, person: person) }
     let(:person) { build(:person) }
     let(:team) { create(:ssj_team) }
-    let(:mail) { PartnerMailer.invite(user, inviter) }
+    let(:mail) { SSJMailer.invite(user, inviter) }
 
     before do
       SSJ::TeamMember.create(person: person, ssj_team: team, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
