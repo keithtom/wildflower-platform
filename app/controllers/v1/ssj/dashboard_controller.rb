@@ -70,9 +70,5 @@ class V1::SSJ::DashboardController < ApiController
     params.require(:person).permit(:email, :full_name, :primary_language, :race_ethnicity_other, :lgbtqia,
                                    :gender, :pronouns, :household_income, :image_url, address_attributes: [:city, :state])
   end
-
-  def find_team
-    current_user&.person&.ssj_team
-  end
 end
 
