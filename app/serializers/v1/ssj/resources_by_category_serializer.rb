@@ -1,4 +1,4 @@
-class V1::Ssj::ResourcesByCategorySerializer < ApplicationSerializer
+class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
   include V1::Categorizable
 
   def serializable_hash

@@ -1,4 +1,4 @@
-class V1::Ssj::TeamSerializer < ApplicationSerializer
+class V1::SSJ::TeamSerializer < ApplicationSerializer
   # method override
   def serializable_hash
     {

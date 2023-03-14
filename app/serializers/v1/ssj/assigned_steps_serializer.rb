@@ -1,4 +1,4 @@
-class V1::Ssj::AssignedStepsSerializer < ApplicationSerializer
+class V1::SSJ::AssignedStepsSerializer < ApplicationSerializer
   def serializable_hash
     @resource.map do |assignee_id, steps|
       { assignee_info: assignee_info(steps), steps: serialized_steps(steps)}

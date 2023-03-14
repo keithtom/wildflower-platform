@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "V1::Ssj::Dashboard", type: :request do
+RSpec.describe "V1::SSJ::Dashboard", type: :request do
   let(:headers) { {'ACCEPT' => 'application/json'} }
   let(:person) { create(:person) }
   let(:user) { create(:user, person_id: person.id) }

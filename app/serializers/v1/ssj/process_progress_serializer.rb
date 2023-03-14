@@ -1,4 +1,4 @@
-class V1::Ssj::ProcessProgressSerializer < ApplicationSerializer
+class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
