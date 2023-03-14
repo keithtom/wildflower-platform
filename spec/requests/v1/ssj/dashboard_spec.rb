@@ -80,7 +80,7 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
       expect(response).to have_http_status(:success)
       expect(json_response["hasPartner"]).to eq(false)
       person = user.person
-      team = person.ssj_teams.first
+      team = person.ssj_team
       expect(SSJ::TeamMember.where(ssj_team_id: team.id, status: SSJ::TeamMember::INVITED)).to_not be_empty
     end
   end

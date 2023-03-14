@@ -72,7 +72,7 @@ class V1::Ssj::DashboardController < ApiController
   end
 
   def find_team
-    current_user&.person&.ssj_teams&.first
+    current_user&.person&.ssj_team
   end
 end
 

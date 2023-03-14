@@ -8,6 +8,6 @@ class ApiController < ActionController::API
   end
 
   def workflow_id
-    current_user&.person&.ssj_teams&.first&.workflow_id
+    current_user&.person&.ssj_team&.workflow_id
   end
 end
