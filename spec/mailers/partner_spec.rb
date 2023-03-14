@@ -5,11 +5,13 @@ RSpec.describe PartnerMailer, type: :mailer do
     let(:user) { build(:user, authentication_token: Devise.friendly_token) }
     let(:inviter) { build(:user, person: person) }
     let(:person) { build(:person) }
-    let(:team) { create(:ssj_team, workflow: build(:workflow_instance_workflow)) }
+    let(:team) { create(:ssj_team) }
     let(:mail) { PartnerMailer.invite(user, inviter) }
 
     before do
-      SSJ::TeamMember.create(person: person, ssj_team: team, current: true)
+      SSJ::TeamMember.create(person: person, ssj_team: team, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
+      SSJ::TeamMember.create(person_id: team.ops_guide_id, ssj_team: team, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::OPS_GUIDE)
+      SSJ::TeamMember.create(person_id: team.regional_growth_lead_id, ssj_team: team, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::RGL)
     end
 
     it "renders the headers" do

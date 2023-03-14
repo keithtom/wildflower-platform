@@ -26,7 +26,7 @@ class V1::Ssj::DashboardController < ApiController
   end
 
   def team
-    if team = SSJ::TeamMember.find_by!(person_id: current_user&.person.id, current: true, role: 'partner')&.ssj_team
+    if team = find_team
       render json: V1::Ssj::TeamSerializer.new(team)
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
@@ -34,7 +34,7 @@ class V1::Ssj::DashboardController < ApiController
   end
 
   def update_team
-    if team = SSJ::TeamMember.find_by!(person_id: current_user&.person.id, current: true, role: 'partner')&.ssj_team
+    if team = find_team
       team.update!(team_params)
       render json: V1::Ssj::TeamSerializer.new(team)
     else
@@ -43,7 +43,7 @@ class V1::Ssj::DashboardController < ApiController
   end
 
   def invite_partner
-    if team = SSJ::TeamMember.find_by!(person_id: current_user&.person.id, current: true, role: 'partner')&.ssj_team
+    if team = find_team
       SSJ::InvitePartner.run(person_params, team, current_user)
       render json: V1::Ssj::TeamSerializer.new(team)
     else
@@ -69,6 +69,10 @@ class V1::Ssj::DashboardController < ApiController
   def person_params
     params.require(:person).permit(:email, :full_name, :primary_language, :race_ethnicity_other, :lgbtqia,
                                    :gender, :pronouns, :household_income, :image_url, address_attributes: [:city, :state])
+  end
+
+  def find_team
+    current_user&.person&.ssj_teams&.first
   end
 end
 

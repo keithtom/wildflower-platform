@@ -28,6 +28,9 @@ class Person < ApplicationRecord
   attr_accessor :full_name
   before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
 
+  has_many :ssj_team_members, class_name: "SSJ::TeamMember", foreign_key: 'person_id'
+  has_many :ssj_teams, through: :ssj_team_members
+
 
   # https://github.com/ankane/searchkick#indexing
   def search_data

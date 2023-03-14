@@ -6,12 +6,12 @@ class SSJ::Team < ApplicationRecord
 
   has_many :ssj_team_members, class_name: "SSJ::TeamMember", foreign_key: 'ssj_team_id'
   has_many :people, through: :ssj_team_members do
-    def current
-      where('ssj_team_members.current = ?', true)
+    def active
+      where('ssj_team_members.status = ?', SSJ::TeamMember::ACTIVE)
     end
 
     def partners
-      where('ssj_team_members.role = ?', 'partner')
+      where('ssj_team_members.role = ?', SSJ::TeamMember::PARTNER)
     end
   end
 

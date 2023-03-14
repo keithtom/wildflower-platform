@@ -8,8 +8,6 @@ class ApiController < ActionController::API
   end
 
   def workflow_id
-    SSJ::TeamMember.find_by!(
-      person_id: current_user&.person.id, current: true, role: 'partner'
-    )&.ssj_team&.workflow_id
+    current_user&.person&.ssj_teams&.first&.workflow_id
   end
 end

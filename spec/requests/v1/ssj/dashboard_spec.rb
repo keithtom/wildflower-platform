@@ -16,7 +16,7 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
     team = SSJ::Team.new(expected_start_date: expected_start_date)
     team.workflow = workflow
     team.save!
-    SSJ::TeamMember.create!(ssj_team: team, person: person, current: true, role: "partner")
+    SSJ::TeamMember.create!(ssj_team: team, person: person, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
     p = step.definition.process
     p.category_list << "finance"
     p.save!
@@ -78,7 +78,10 @@ RSpec.describe "V1::Ssj::Dashboard", type: :request do
         }
       }
       expect(response).to have_http_status(:success)
-      expect(json_response["hasPartner"]).to eq(true)
+      expect(json_response["hasPartner"]).to eq(false)
+      person = user.person
+      team = person.ssj_teams.first
+      expect(SSJ::TeamMember.where(ssj_team_id: team.id, status: SSJ::TeamMember::INVITED)).to_not be_empty
     end
   end
 end

@@ -264,8 +264,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
   create_table "ssj_team_members", force: :cascade do |t|
     t.bigint "person_id"
     t.bigint "ssj_team_id"
-    t.boolean "current"
     t.string "role"
+    t.string "status"
     t.index ["person_id"], name: "index_ssj_team_members_on_person_id"
     t.index ["ssj_team_id"], name: "index_ssj_team_members_on_ssj_team_id"
   end
