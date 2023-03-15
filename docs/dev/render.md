@@ -10,6 +10,9 @@ brew tap render-oss/render
 brew install render
 ```
 
+## Deploy
+
+Merging to the `production` branch will deploy to render.
 
 ## Configure SSH Keys
 
