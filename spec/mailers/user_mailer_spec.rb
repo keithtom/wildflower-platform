@@ -8,7 +8,8 @@ RSpec.describe UserMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq("Welcome to the School Startup Journey!")
       expect(mail.to).to eq([user.email])
-      expect(mail.from).to eq(["platform@wildflowerschools.org"])
+      expect(mail.from).to eq(["platform@email.wildflowerschools.org"])
+      expect(mail.reply_to).to eq(["support@wildflowerschools.org"])
     end
 
     it "renders the body" do

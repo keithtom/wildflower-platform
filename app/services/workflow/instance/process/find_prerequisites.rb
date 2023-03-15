@@ -8,7 +8,7 @@ module Workflow
         end
 
         def run
-          dependency_ids = ::Workflow::Instance::Dependency.where(workflow_id: @process.workflow_id, workable_type: "Process", prerequisite_workable_type: "Process", workable_id: @process.id).pluck(:prerequisite_workable_id)
+          dependency_ids = ::Workflow::Instance::Dependency.where(workflow_id: @process.workflow_id, workable_type: "Workflow::Instance::Process", prerequisite_workable_type: "Workflow::Instance::Process", workable_id: @process.id).pluck(:prerequisite_workable_id)
           # TODO: check for for step dependencies
           prerequisites = ::Workflow::Instance::Process.where(id: dependency_ids)
         end

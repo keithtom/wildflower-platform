@@ -36,7 +36,7 @@ RSpec.describe V1::Statusable, type: :concern do
         ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
-
+        
         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
       end
     end
@@ -136,7 +136,7 @@ RSpec.describe V1::Statusable, type: :concern do
 
     context "prerequisites unmet" do
       it "has 'done' status" do
-        expect(process.prerequisites.count).to_not eq(0)
+        expect(::Workflow::Instance::Process::FindPrerequisites.run(process).count).to_not eq(0)
         ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
