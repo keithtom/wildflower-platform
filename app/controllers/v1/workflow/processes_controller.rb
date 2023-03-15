@@ -38,7 +38,7 @@ class V1::Workflow::ProcessesController < ApiController
     # TODO: identify current user, check if process id is accessible to user
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:id])
 
-    render json: V1::Workflow::ProcessSerializer.new(@process, include: ['workflow', 'steps', 'steps.documents'])
+    render json: V1::Workflow::ProcessSerializer.new(@process, params: { prerequisites: true }, include: ['workflow', 'steps', 'steps.documents', 'prerequisite_processes'])
   end
 
   private
