@@ -32,8 +32,8 @@ RSpec.describe V1::Statusable, type: :concern do
           expect(step.completed).to be_falsey
         end
 
-        expect(process.prerequisites.count).to_not eq(0)
-        process.prerequisites.each do |prereq|
+        expect(::Workflow::Instance::Process::FindPrerequisites.run(process).count).to_not eq(0)
+        ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
@@ -43,7 +43,7 @@ RSpec.describe V1::Statusable, type: :concern do
 
     context "all prerequisites met" do
       before do
-        process.prerequisites.each do |prereq|
+        ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           prereq.steps.each do |step|
             step.completed = true
             step.completed_at = DateTime.now
@@ -83,8 +83,8 @@ RSpec.describe V1::Statusable, type: :concern do
         end
 
         it "has 'in progress' status" do
-          expect(process.prerequisites.count).to_not eq(0)
-          process.prerequisites.each do |prereq|
+          expect(::Workflow::Instance::Process::FindPrerequisites.run(process).count).to_not eq(0)
+          ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
             expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
           end
 
@@ -93,8 +93,8 @@ RSpec.describe V1::Statusable, type: :concern do
       end
 
       it "has 'to do' status" do
-        expect(process.prerequisites.count).to_not eq(0)
-        process.prerequisites.each do |prereq|
+        expect(::Workflow::Instance::Process::FindPrerequisites.run(process).count).to_not eq(0)
+        ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
@@ -104,7 +104,7 @@ RSpec.describe V1::Statusable, type: :concern do
 
     context "all prerequisites met" do
       before do
-        process.prerequisites.each do |prereq|
+        ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           prereq.steps.each do |step|
             step.completed = true
             step.completed_at = DateTime.now
@@ -137,7 +137,7 @@ RSpec.describe V1::Statusable, type: :concern do
     context "prerequisites unmet" do
       it "has 'done' status" do
         expect(process.prerequisites.count).to_not eq(0)
-        process.prerequisites.each do |prereq|
+        ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
         end
 
@@ -147,7 +147,7 @@ RSpec.describe V1::Statusable, type: :concern do
 
     context "all prerequisites met" do
       before do
-        process.prerequisites.each do |prereq|
+        ::Workflow::Instance::Process::FindPrerequisites.run(process).each do |prereq|
           prereq.steps.each do |step|
             step.completed = true
             step.completed_at = DateTime.now

@@ -1,7 +1,7 @@
 class V1::Ssj::DashboardController < ApiController
   def progress
     workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
-    processes = workflow.processes.eager_load(:prerequisites, :steps, :categories, definition: [:phase, :categories])
+    processes = workflow.processes.eager_load(:steps, :categories, definition: [:phase, :categories])
     render json: V1::Ssj::ProcessProgressSerializer.new(processes)
   end
 

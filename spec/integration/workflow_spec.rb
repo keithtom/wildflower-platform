@@ -24,10 +24,10 @@ RSpec.describe "Workflow Feature" do
 
       it "should have basic associations" do
         expect(instance_workflow.definition).to eq(definition_workflow)
-        expect(instance_process1.prerequisites).to be_blank
-        expect(instance_process1.postrequisites).to eq([instance_process2])
-        expect(instance_process2.prerequisites).to eq([instance_process1])
-        expect(instance_process2.postrequisites).to be_blank
+        expect(::Workflow::Instance::Process::FindPrerequisites.run(instance_process1)).to be_blank
+        expect(::Workflow::Instance::Process::FindPostrequisites.run(instance_process1)).to eq([instance_process2])
+        expect(::Workflow::Instance::Process::FindPrerequisites.run(instance_process2)).to eq([instance_process1])
+        expect(::Workflow::Instance::Process::FindPostrequisites.run(instance_process2)).to be_blank
       end
     end
   end

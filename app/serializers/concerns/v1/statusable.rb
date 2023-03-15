@@ -29,7 +29,7 @@ module V1::Statusable
 
     def prerequisites_completed?(process)
       completed = true
-      process.prerequisites.each do |prerequisite|
+      Workflow::Instance::Process::FindPrerequisites.run(process).each do |prerequisite|
         unless prerequisite.done?
           completed = false
         end
