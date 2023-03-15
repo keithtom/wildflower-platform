@@ -20,17 +20,20 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     process.steps.where.not(assignee_id: nil).count
   end
 
-  belongs_to :workflow, id_method_name: :external_identifier,
-    serializer: V1::Workflow::WorkflowSerializer do |process|
-      process.workflow
-    end
+  belongs_to :workflow, serializer: V1::Workflow::WorkflowSerializer, id_method_name: :external_identifier do |process|
+    process.workflow
+  end
 
-  has_many :steps, id_method_name: :external_identifier,
-    serializer: V1::Workflow::StepSerializer do |process, params|
-      if params[:assignee_id]
-        process.steps.where(assignee_id: params[:assignee_id], completed: false)
-      else
-        process.steps
-      end
+  has_many :steps, serializer: V1::Workflow::StepSerializer, id_method_name: :external_identifier do |process, params|
+    if params[:assignee_id]
+      process.steps.where(assignee_id: params[:assignee_id], completed: false)
+    else
+      process.steps
     end
+  end
+
+  has_many :prerequisite_processes, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
+    Workflow::Instance::Process::FindPrequisites.run(process)
+  end
+  
 end
