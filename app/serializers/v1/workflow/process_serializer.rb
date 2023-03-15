@@ -32,7 +32,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     end
   end
 
-  has_many :prerequisite_processes, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
+  has_many :prerequisite_processes, if: Proc.new { |process, params| params && params[:prerequisites] }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
     ::Workflow::Instance::Process::FindPrerequisites.run(process)
   end
   
