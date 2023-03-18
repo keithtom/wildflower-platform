@@ -31,6 +31,12 @@ brew install postgres
 
 Upon successful install, read the instructions for starting your postgres database.
 
+
+## Initializing your local Rails environment
+
+Get the `config/master.key` secret in a safe and secure manner from a developer.
+This is required to decrypt secret environment variables.
+
 Setup your local database and schema:
 
 ```console

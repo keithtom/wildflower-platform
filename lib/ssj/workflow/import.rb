@@ -61,13 +61,14 @@ module SSJ
             step_type = row[16]&.strip
             # step_content = row[18]&.strip
             step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
-            step_min_worktime = convert_to_minutes(row[19]&.strip, row[21]&.strip)
-            step_max_worktime = convert_to_minutes(row[20]&.strip, row[21]&.strip)
+            
+            step_min_worktime = convert_to_minutes(row[20]&.strip, row[22]&.strip)
+            step_max_worktime = convert_to_minutes(row[21]&.strip, row[22]&.strip)
             step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position, min_worktime: step_min_worktime, max_worktime: step_max_worktime)
 
-            step_document_titles = row[23]&.strip&.split("\n") || []
-            step_document_links = row[24]&.strip&.split("\n") || []
-            step_document_types = row[25]&.strip&.split("\n") || []
+            step_document_titles = row[24]&.strip&.split("\n") || []
+            step_document_links = row[25]&.strip&.split("\n") || []
+            step_document_types = row[26]&.strip&.split("\n") || []
             step_document_links&.each_with_index do |link, i|
               step.documents.create!(title: step_document_titles[i] || step_document_types[i], link: link)
             end
@@ -150,7 +151,10 @@ end
 # require 'ssj/workflow/import'
 def create_default_workflow_and_processes
   require 'open-uri'
+  Workflow::Definition::Step.destroy_all
+  Workflow::Definition::SelectedProcess.destroy_all
   Workflow::Definition::Process.destroy_all
+  Workflow::Definition::Dependency.destroy_all
   Workflow::Definition::Workflow.destroy_all
   workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default", version: Date.today.strftime("%Y-%m-%d-00"), description: "Imported from spreadsheet.  Authored by Maggie Paulin."
 

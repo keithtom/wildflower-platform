@@ -13,15 +13,15 @@ Rails.application.routes.draw do
   post "/users/token" => "users/sessions#token", as: :user_token
 
   namespace :v1 do
-    resources :users, except: [:index, :destroy]
+    resources :users, except: [:index, :create, :destroy]
 
     get "people/search", as: :search_people
-    resources :people, except: :destroy do
+    resources :people, except: [:create, :destroy] do
       # resources :school_relationships
     end
 
     get "schools/search", as: :search_schools
-    resources :schools, except: :destroy do
+    resources :schools, except: [:create, :destroy] do
       # resources :school_relationships
     end
 
