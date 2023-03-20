@@ -32,9 +32,13 @@ module V1
 
     attribute :ssj do |user|
       if person = user.person
-        ssj_team = person.ssj_teams.first
-
-
+        ssj_team = person.ssj_teams
+        workflow = ssj_team.workflow
+        {
+          current_phase: workflow.current_phase,
+          ops_guide: V1::PersonSerializer.new(ssj_team.ops_guide),
+          regional_growth_lead: V1::PersonSerializer.new(ssj_team.regional_growth_lead)
+        }
       end
     end
   end
