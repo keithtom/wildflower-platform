@@ -37,8 +37,7 @@ module V1
         {
           currentPhase: workflow.current_phase,
           opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
-          regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
-          expectedStartDate: ssj_team.expected_start_date
+          regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead)
         }
       end
     end
