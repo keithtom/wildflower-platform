@@ -1,4 +1,4 @@
-class CreateTableSsjTeam < ActiveRecord::Migration[7.0]
+class CreateTableSSJTeam < ActiveRecord::Migration[7.0]
   def change
     create_table :ssj_teams do |t|
       t.string :external_identifier, null: false, index: { unique: true }
