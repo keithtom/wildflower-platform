@@ -72,7 +72,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       put "/v1/ssj/dashboard/invite_partner", headers: headers, params: {
         person: {
-          email: email, full_name: Faker::Name.name, primary_language: "English",
+          email: email, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, primary_language: "English",
           race_ethnicity_other: "Asian, White", lgbtqia: true, gender: "Gender Non-Conforming", pronouns: "They/Them/Theirs",
           household_income: "Middle income", address_attributes: {city: 'Boston', state: 'Massachusetts'}
         }
