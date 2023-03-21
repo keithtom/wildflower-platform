@@ -67,7 +67,7 @@ class V1::SSJ::DashboardController < ApiController
   end
 
   def person_params
-    params.require(:person).permit(:email, :full_name, :primary_language, :race_ethnicity_other, :lgbtqia,
+    params.require(:person).permit(:email, :first_name, :last_name, :primary_language, :race_ethnicity_other, :lgbtqia,
                                    :gender, :pronouns, :household_income, :image_url, address_attributes: [:city, :state])
   end
 end
