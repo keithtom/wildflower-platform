@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -185,13 +185,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
     t.string "airtable_partner_id"
     t.string "linkedin_url"
     t.string "image_url"
-    t.bigint "ssj_team_id"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_people_on_hub_id"
     t.index ["pod_id"], name: "index_people_on_pod_id"
-    t.index ["ssj_team_id"], name: "index_people_on_ssj_team_id", unique: true
   end
 
   create_table "people_relationships", force: :cascade do |t|
@@ -263,13 +261,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
     t.index ["pod_id"], name: "index_schools_on_pod_id"
   end
 
+  create_table "ssj_team_members", force: :cascade do |t|
+    t.bigint "person_id"
+    t.bigint "ssj_team_id"
+    t.string "role"
+    t.string "status"
+    t.index ["person_id"], name: "index_ssj_team_members_on_person_id"
+    t.index ["ssj_team_id"], name: "index_ssj_team_members_on_ssj_team_id"
+  end
+
   create_table "ssj_teams", force: :cascade do |t|
     t.string "external_identifier", null: false
     t.bigint "workflow_id"
     t.date "expected_start_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "ops_guide_id"
+    t.bigint "regional_growth_lead_id"
     t.index ["external_identifier"], name: "index_ssj_teams_on_external_identifier", unique: true
+    t.index ["ops_guide_id"], name: "index_ssj_teams_on_ops_guide_id"
+    t.index ["regional_growth_lead_id"], name: "index_ssj_teams_on_regional_growth_lead_id"
     t.index ["workflow_id"], name: "index_ssj_teams_on_workflow_id"
   end
 
@@ -454,7 +465,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_15_153834) do
   end
 
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
-  add_foreign_key "people", "ssj_teams"
+  add_foreign_key "ssj_team_members", "ssj_teams"
+  add_foreign_key "ssj_teams", "people", column: "ops_guide_id"
+  add_foreign_key "ssj_teams", "people", column: "regional_growth_lead_id"
   add_foreign_key "ssj_teams", "workflow_instance_workflows", column: "workflow_id"
   add_foreign_key "taggings", "tags"
   add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"

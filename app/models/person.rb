@@ -9,7 +9,6 @@ class Person < ApplicationRecord
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
-  belongs_to :ssj_team, optional: true, class_name: "SSJ::Team"
 
   has_many :people_relationships
   # has_one :foundation_partner, through: :school_relationships, -> { where(kind: PeopleRelationship::FOUNDATION_PARTNER) }
@@ -19,11 +18,19 @@ class Person < ApplicationRecord
   has_many :schools, through: :school_relationships
 
   has_one :address, as: :addressable
+  accepts_nested_attributes_for :address
 
   has_many :decisions, class_name: "Advice::Decision", foreign_key: :creator_id
 
   # https://github.com/ankane/searchkick#indexing
   scope :search_import, -> { includes([:school_relationships, :schools, :address, {:taggings => :tag}]) }
+
+  attr_accessor :full_name
+  before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
+
+  has_one :ssj_team_member, class_name: "SSJ::TeamMember", foreign_key: 'person_id'
+  has_one :ssj_team, through: :ssj_team_member
+
 
   # https://github.com/ankane/searchkick#indexing
   def search_data
@@ -51,5 +58,16 @@ class Person < ApplicationRecord
 
   def name
     "#{first_name} #{middle_name} #{last_name}"
+  end
+
+  private
+
+  def set_name
+    names = full_name.split
+    self.first_name = names.first
+    self.last_name = names.last
+    if names.length == 3
+      self.middle_name = names[1]
+    end
   end
 end

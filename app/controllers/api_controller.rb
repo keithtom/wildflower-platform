@@ -7,7 +7,11 @@ class ApiController < ActionController::API
     head :not_found
   end
 
+  def find_team
+    current_user&.person&.ssj_team
+  end
+
   def workflow_id
-    current_user&.person&.ssj_team&.workflow_id
+    find_team&.workflow_id
   end
 end

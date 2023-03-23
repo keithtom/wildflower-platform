@@ -1,4 +1,4 @@
-class UserMailer < ApplicationMailer
+class SSJMailer < ApplicationMailer
 
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
@@ -7,6 +7,19 @@ class UserMailer < ApplicationMailer
   #
   # from: should ideally come from their operations guide or the platform?
   # cc: ops guide?
+  def invite_partner(user, inviter)
+    @user = user
+    @inviter = inviter
+    @ops_guide = SSJ::TeamMember.find_by!(status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::OPS_GUIDE)&.person
+
+    # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
+    # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
+    link = CGI.escape("https://platform.wildflowerschools.org/welcome/existing-tl")
+    @invite_url = "https://platform.wildflowerschools.org/token?token=#{user.authentication_token}&redirect=#{link}"
+
+    mail to: @user.email, subject: "Welcome to the School Startup Journey!"
+  end
+
   def invite(user)
     @user = user # the ETL who is being invited
 
@@ -18,3 +31,4 @@ class UserMailer < ApplicationMailer
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
 end
+
