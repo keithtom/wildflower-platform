@@ -2,9 +2,12 @@ module Workflow
   class Instance::Step < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
-    belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true
-    belongs_to :process, class_name: 'Workflow::Instance::Process', counter_cache: true
-    belongs_to :assignee, class_name: 'Person', optional: true
+    belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true # for manual steps.
+    belongs_to :process, counter_cache: true
+
+    has_many :step_assignments
+    has_many :assignees, through: :step_assignments, source: :assignee
+    
     has_many :documents, as: :documentable
     belongs_to :selected_option, class_name: 'Workflow::DecisionOption', optional: true
 

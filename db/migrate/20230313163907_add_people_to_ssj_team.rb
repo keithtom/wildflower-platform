@@ -11,9 +11,5 @@ class AddPeopleToSSJTeam < ActiveRecord::Migration[7.0]
       t.string :role
       t.string :status
     end
-
-    person = User.find_by(email: 'test@test.com').person
-    team = SSJ::Team.last
-    SSJ::TeamMember.create(person: person, ssj_team: team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
   end
 end
