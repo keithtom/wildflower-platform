@@ -28,11 +28,11 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   end
 
   attribute :min_worktime do |step|
-    step.definition&.min_worktime
+    distance_of_time_in_words(step.definition.min_worktime.hours) if step.definition&.min_worktime
   end
 
   attribute :max_worktime do |step|
-    step.definition&.max_worktime
+    distance_of_time_in_words(step.definition.max_worktime.hours) if step.definition&.max_worktime
   end
 
 
