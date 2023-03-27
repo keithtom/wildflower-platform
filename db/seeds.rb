@@ -55,3 +55,8 @@ school3.address = FactoryBot.create(:address)
 
 # new discovery user
 user3 = FactoryBot.create(:user)  # hasn't yet associated personal profile yet
+
+# SSJ Team
+ssj_team = SSJ::Team.create
+SSJ::TeamMember.create(person: person1, ssj_team: team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+SSJ::TeamMember.create(person: person2, ssj_team: team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
