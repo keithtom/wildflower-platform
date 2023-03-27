@@ -39,16 +39,20 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
   def grouped_by_category(processes)
     grouped_processes = {}
 
-    ActsAsTaggableOn::Tag.for_context(:categories).sort_by{|tag| tag.name.downcase}.each do |category|
-      category_name = category.name.parameterize(separator: '_')
-      grouped_processes[category_name] = {name: category.name, total: 0, statuses: []}
+    Workflow::Definition::Process::CATEGORIES.each do |category|
+      category_name = category.parameterize(separator: '_')
+      grouped_processes[category_name] = {name: category, total: 0, statuses: []}
     end
 
     processes.each do |process|
       process_categories(process).each do |category|
         category_name = category.parameterize(separator: '_')
-        grouped_processes[category_name][:total] += 1
-        grouped_processes[category_name][:statuses] << process_status(process)
+        if grouped_processes[category_name]
+          grouped_processes[category_name][:total] += 1
+          grouped_processes[category_name][:statuses] << process_status(process)
+        else
+          Rails.logger.warn("process (id: #{process.id}) tagged with unknown category: #{category_name}")
+        end
       end
     end
 
