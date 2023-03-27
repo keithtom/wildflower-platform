@@ -39,10 +39,43 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
   end
 
   describe "PUT /v1/workflow/steps/bd8f-c3b2/complete" do
+    let(:first_phase) { Workflow::Definition::Process::PHASES[0] }
+    let(:second_phase) { Workflow::Definition::Process::PHASES[1] }
+
     it "succeeds" do
       put "/v1/workflow/steps/#{step.external_identifier}/complete", headers: headers
       expect(response).to have_http_status(:success)
       expect(Workflow::Instance::Step.last.completed).to be true
+    end
+
+    context "completing the last step of the last process in a phase" do
+      before do
+        process.definition.phase_list = first_phase
+        process.definition.save!
+      end
+
+      it "completes the process and updates the current phase of the workflow" do
+        expect(process.workflow.current_phase).to eq(first_phase)
+        put "/v1/workflow/steps/#{step.external_identifier}/complete", headers: headers
+        expect(process.reload.completed_at).to_not be_nil
+        expect(process.workflow.current_phase).to eq(second_phase)
+      end
+    end
+
+    context "completing any step but the last step of a process" do
+      let!(:another_step) { create(:workflow_instance_step, process: process) }
+
+      before do
+        process.definition.phase_list = first_phase
+        process.definition.save!
+      end
+
+      it "does not complete the process or update the current phase of the workflow" do
+        expect(process.workflow.current_phase).to eq(first_phase)
+        put "/v1/workflow/steps/#{step.external_identifier}/complete", headers: headers
+        expect(process.reload.completed_at).to be_nil
+        expect(process.workflow.current_phase).to eq(first_phase)
+      end
     end
   end
 
