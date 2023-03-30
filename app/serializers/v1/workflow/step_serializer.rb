@@ -16,6 +16,7 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.selected_option
   end
 
+    # update this.
   belongs_to :assignee, id_method_name: :external_identifier,
     serializer: V1::PersonSerializer do |process|
       process.assignee
@@ -33,12 +34,5 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
 
   attribute :max_worktime do |step|
     distance_of_time_in_words(step.definition.max_worktime.minutes).capitalize if step.definition&.max_worktime
-  end
-
-
-  # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
-  attribute :assignee_info, if: Proc.new {|step, params| !params[:self_assigned] && !params[:basic] && step.assignee } do |step|
-    assignee = step.assignee
-    { id: assignee.external_identifier, imageUrl: assignee.image_url }
   end
 end

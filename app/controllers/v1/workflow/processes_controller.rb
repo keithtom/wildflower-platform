@@ -24,13 +24,6 @@ class V1::Workflow::ProcessesController < ApiController
 
     options = {include: ['workflow', 'steps', 'steps.documents']}
 
-    if params[:self_assigned]
-      processes = processes.select do |process|
-        process.steps.where(assignee_id: current_user.person_id, completed: false).count > 0
-      end
-      options[:params] = { assignee_id: current_user.person_id, self_assigned: true }
-    end
-
     render json: V1::Workflow::ProcessSerializer.new(processes, options)
   end
 
