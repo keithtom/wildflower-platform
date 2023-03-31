@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_23_190336) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_23_191703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -411,6 +411,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_190336) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "selected_option_id"
     t.index ["assignee_id"], name: "index_workflow_instance_step_assignments_on_assignee_id"
     t.index ["step_id"], name: "index_workflow_instance_step_assignments_on_step_id"
   end
@@ -420,19 +421,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_190336) do
     t.bigint "definition_id"
     t.string "title"
     t.string "kind"
-    t.boolean "completed", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
-    t.datetime "completed_at"
     t.string "external_identifier", null: false
-    t.bigint "selected_option_id"
-    t.bigint "assignee_id"
-    t.index ["assignee_id"], name: "index_workflow_instance_steps_on_assignee_id"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
-    t.index ["selected_option_id"], name: "index_workflow_instance_steps_on_selected_option_id"
   end
 
   create_table "workflow_instance_workflows", force: :cascade do |t|
@@ -451,5 +446,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_190336) do
   add_foreign_key "ssj_teams", "workflow_instance_workflows", column: "workflow_id"
   add_foreign_key "taggings", "tags"
   add_foreign_key "workflow_instance_step_assignments", "workflow_instance_steps", column: "step_id"
-  add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
 end

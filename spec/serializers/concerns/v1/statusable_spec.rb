@@ -78,7 +78,8 @@ RSpec.describe V1::Statusable, type: :concern do
         before do
           # assign incomplete step
           step = process.steps.where(completed: false).first
-          step.assignee_id = person.id
+          # remove this.
+          step.assignee_id = person.id # shoudl clean this up but status hsould really be cached.
           step.save!
         end
 
