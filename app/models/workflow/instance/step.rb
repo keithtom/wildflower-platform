@@ -14,6 +14,8 @@ module Workflow
     after_save :update_process
     after_destroy :update_process
 
+    scope :incomplete, -> { where(completed: false) }
+
     DEFAULT_INCREMENT = 1000
 
     def title

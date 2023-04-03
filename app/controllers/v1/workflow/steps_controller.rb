@@ -48,9 +48,8 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def assign
-    # TODO: identify current user, check if task id is accessible to user
-    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
-    @person = Person.find_by!(external_identifier: step_params[:assignee_id])
+    @step = find_team.workflow.steps.find_by!(external_identifier: params[:id])
+    @person = current_user.person
 
     Workflow::Instance::Step::AssignPerson.run(@step, @person)
 
@@ -58,10 +57,10 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def unassign
-    # TODO: identify current user, check if task id is accessible to user
-    @step = Workflow::Instance::Step.find_by!(external_identifier: params[:id])
+    @step = find_team.workflow.steps.find_by!(external_identifier: params[:id])
+    @person = current_user.person
 
-    Workflow::Instance::Step::UnassignPerson.run(@step)
+    Workflow::Instance::Step::UnassignPerson.run(@step, @person)
 
     render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
   end
