@@ -1,5 +1,5 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
-  attributes :title, :completed, :kind, :position, :completed_at, :description
+  attributes :title, :completed, :kind, :position, :description
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
     id_method_name: :external_identifier do |step|
@@ -11,15 +11,9 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.documents
   end
 
-  belongs_to :selected_option, serializer: V1::Workflow::DecisionOptionSerializer,
-    id_method_name: :external_identifier do |step|
-      step.selected_option
-  end
-
-    # update this.
-  belongs_to :assignee, id_method_name: :external_identifier,
-    serializer: V1::PersonSerializer do |process|
-      process.assignee
+  has_many :assignments,
+    serializer: V1::Workflow::StepAssignmentSerializer do |step|
+      step.assignments
   end
 
   attribute :decision_options do |step|

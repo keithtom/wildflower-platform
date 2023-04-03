@@ -2,10 +2,14 @@
 require 'rails_helper'
 
 describe V1::Workflow::StepSerializer do
-  let(:assignee) { create(:person) }
-  let(:step) { build(:workflow_instance_step, assignee_id: assignee.id) }
+  let(:step) { create(:workflow_instance_step) }
+  let!(:assignee) { create(:workflow_instance_step_assignment, step: step).assignee }
 
-  subject { described_class.new(step).as_json }
+  let(:default_options) {
+    { include: [:process, :documents, :assignments] }
+  }
+  
+  subject { described_class.new(step, default_options).as_json }
 
   before do
     3.times do |i|
@@ -14,7 +18,7 @@ describe V1::Workflow::StepSerializer do
   end
 
   it "should serialize properly" do
-    expect(json_document['data']).to have_relationships(:process, :documents)
-    expect(json_document['data']).to have_jsonapi_attributes(:completed, :completedAt, :decisionOptions, :kind, :position, :title, :minWorktime, :maxWorktime)
+    expect(json_document['data']).to have_relationships(:process, :documents, :assignments)
+    expect(json_document['data']).to have_jsonapi_attributes(:completed, :decisionOptions, :kind, :position, :title, :minWorktime, :maxWorktime)
   end
 end
