@@ -46,7 +46,6 @@ RSpec.describe V1::Statusable, type: :concern do
         process.prerequisites.each do |prereq|
           prereq.steps.each do |step|
             step.completed = true
-            step.completed_at = DateTime.now
             step.save!
           end
         end
@@ -77,10 +76,8 @@ RSpec.describe V1::Statusable, type: :concern do
       context "has incomplete steps that are assigned" do
         before do
           # assign incomplete step
-          step = process.steps.where(completed: false).first
-          # remove this.
-          step.assignee_id = person.id # shoudl clean this up but status hsould really be cached.
-          step.save!
+          step = process.steps.incomplete.first
+          step.assignments.create!(assignee_id: person.id)
         end
 
         it "has 'in progress' status" do
@@ -108,7 +105,6 @@ RSpec.describe V1::Statusable, type: :concern do
         process.prerequisites.each do |prereq|
           prereq.steps.each do |step|
             step.completed = true
-            step.completed_at = DateTime.now
             step.save!
           end
         end
@@ -151,7 +147,6 @@ RSpec.describe V1::Statusable, type: :concern do
         process.prerequisites.each do |prereq|
           prereq.steps.each do |step|
             step.completed = true
-            step.completed_at = DateTime.now
             step.save!
           end
         end

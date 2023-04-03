@@ -1,11 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe "V1::Workflow::Steps", type: :request do
-  let(:step) { create(:workflow_instance_step) }
-  let(:process) { step.process }
   let(:headers) { {'ACCEPT' => 'application/json'} }
-  let(:person) { create(:person) }
-  let(:user) { create(:user) }
+  let(:user) { create(:user, person: person) }
+  let(:person) { create(:person, ssj_team: ssj_team) }
+  let(:ssj_team) { create(:ssj_team) }
+  let(:workflow) { ssj_team.workflow }
+  let(:process) { create(:workflow_instance_process, workflow: workflow) }
+  let(:step) { create(:workflow_instance_step, process: process) }
+  
 
   before do
     sign_in(user)
@@ -167,7 +170,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
       put "/v1/workflow/steps/#{step.external_identifier}/select_option", headers: headers,
         params: { step: { selected_option_id: select_option.external_identifier } }
       expect(response).to have_http_status(:success)
-      expect(step.reload.selected_option).to eq(select_option)
+      expect(step.assignments.for_person(person.id).first.selected_option).to eq(select_option)
     end
   end
 end

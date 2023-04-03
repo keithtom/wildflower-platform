@@ -20,8 +20,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     p = step.definition.process
     p.category_list << "finance"
     p.save!
-    step.assignee = person
-    step.save!
+    step.assignments.create!(assignee: person)
     p.phase_list << phase
     p.save!
   end

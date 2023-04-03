@@ -14,8 +14,11 @@ module Workflow
     after_save :update_process
     after_destroy :update_process
 
+    scope :completed, -> { where(completed: true) }
     scope :incomplete, -> { where(completed: false) }
-
+    scope :assigned, -> { where(assigned: true) }
+    scope :unassigned, -> { where(unassigned: true) }
+    
     DEFAULT_INCREMENT = 1000
 
     def title
