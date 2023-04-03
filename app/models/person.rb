@@ -31,6 +31,7 @@ class Person < ApplicationRecord
   has_one :ssj_team_member, class_name: "SSJ::TeamMember", foreign_key: 'person_id'
   has_one :ssj_team, through: :ssj_team_member
 
+  has_one_attached :profile_image
 
   # https://github.com/ankane/searchkick#indexing
   def search_data

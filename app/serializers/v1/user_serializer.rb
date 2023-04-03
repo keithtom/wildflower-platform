@@ -16,7 +16,9 @@ module V1
 
     attribute :image_url do |user|
       if person = user.person
-        person.image_url
+        if person.profile_image.attached?
+          Rails.application.routes.url_helpers.rails_blob_path(person.profile_image)
+        end
       end
     end
 
@@ -38,7 +40,8 @@ module V1
           currentPhase: workflow.current_phase,
           opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
           regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
-          expectedStartDate: ssj_team.expected_start_date
+          expectedStartDate: ssj_team.expected_start_date,
+          workflowId: workflow.external_identifier
         }
       end
     end
