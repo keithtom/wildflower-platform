@@ -52,8 +52,9 @@ module SSJ
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, category_list: process_category, start_considering: process_start_considering
-
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, start_considering: process_start_considering
+            process_obj.category_list.add(process_category) # need to add category separately, so that it doens't parse on commas
+            process_obj.save!
             step_position = 0
           elsif process_title.blank? && step_title.present? # refactor to import_step
             puts "  adding #{process_obj.title}/#{step_title}"
