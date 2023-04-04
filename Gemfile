@@ -12,6 +12,7 @@ gem 'puma', '~> 5.0'
 #authentication
 gem 'devise'
 gem 'devise-jwt'
+gem 'devise-token_authenticatable', path: "/Users/liouyang/src/devise-token_authenticatable"
 
 # Use Puma as the app server
 # Use Redis adapter to run Action Cable in production

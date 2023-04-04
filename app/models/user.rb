@@ -5,7 +5,7 @@ class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable, :recoverable,
+  devise :database_authenticatable, :registerable, :recoverable, :token_authenticatable,
   :validatable, :jwt_authenticatable, jwt_revocation_strategy: self
 
   belongs_to :person, optional: true
@@ -26,4 +26,21 @@ class User < ApplicationRecord
   def jwt_subject
     external_identifier
   end
+
+  # burn token after authentication
+  def after_token_authentication
+    # TODO: comment back in before merging
+    # self.authentication_token = nil
+    # self.authentication_token_created_at = nil
+    # self.save!
+  end
+
+  def valid_password?(password)
+    if password.blank? && !password_required?
+      true
+    else
+       Devise::Encryptor.compare(self.class, encrypted_password, password)
+    end
+  end
 end
+

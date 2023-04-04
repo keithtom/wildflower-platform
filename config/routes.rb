@@ -10,7 +10,6 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
-  post "/users/token" => "users/sessions#token", as: :user_token
 
   namespace :v1 do
     resources :users, except: [:index, :create, :destroy]

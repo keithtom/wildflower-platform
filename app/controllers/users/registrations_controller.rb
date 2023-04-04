@@ -27,7 +27,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # PUT /resource
   # def update
-  #   super
+    # super
   # end
 
   # DELETE /resource
@@ -73,4 +73,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     return options
   end
 
+  # def update_resource(resource, params)
+    # resource.update_without_password(params)
+  # end
+
+  def bypass_sign_in(resource, scope: nil)
+    #noop
+  end
 end
