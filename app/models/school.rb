@@ -5,7 +5,7 @@ class School < ApplicationRecord
 
   acts_as_taggable_on :audiences, :ages_served, :charter, :tuition_assistance_types
 
-  searchkick # callbacks: :async
+  # searchkick # callbacks: :async
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
