@@ -11,7 +11,7 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   # def create
-   # super
+  #   super
   # end
 
   # bug in devise for rails 7 https://github.com/heartcombo/devise/issues/5443

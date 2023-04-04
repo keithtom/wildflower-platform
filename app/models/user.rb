@@ -27,12 +27,11 @@ class User < ApplicationRecord
     external_identifier
   end
 
-  # burn token after authentication
+  # after authentication hook
   def after_token_authentication
-    # TODO: comment back in before merging
-    # self.authentication_token = nil
-    # self.authentication_token_created_at = nil
-    # self.save!
+    self.authentication_token = nil
+    self.authentication_token_created_at = nil
+    self.save!
   end
 
   def valid_password?(password)
