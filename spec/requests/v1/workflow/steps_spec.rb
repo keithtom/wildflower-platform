@@ -7,7 +7,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
   let(:ssj_team) { create(:ssj_team) }
   let(:workflow) { ssj_team.workflow }
   let(:process) { create(:workflow_instance_process, workflow: workflow) }
-  let(:step) { create(:workflow_instance_step, process: process) }
+  let!(:step) { create(:workflow_instance_step, process: process) }
   
 
   before do
@@ -118,7 +118,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     end
 
     context "when step is manually created, reordered" do
-      let(:step) { create(:workflow_instance_step_manual, position: 4000) }
+      let(:step) { create(:workflow_instance_step_manual, process: process, position: 4000) }
 
       before do
         3.times do |i|
@@ -137,7 +137,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
       end
 
       context "to the end of the list" do
-        let(:step) { create(:workflow_instance_step_manual, position: 1500) }
+        let(:step) { create(:workflow_instance_step_manual, process: process, position: 1500) }
         let(:after_position) { 3000 }
         it "succeeds" do
           put "/v1/workflow/steps/#{step.external_identifier}/reorder", headers: headers,
