@@ -45,6 +45,10 @@ module Workflow
       self.definition.phase
     end
 
+    def completed?
+      !!self.completed_at
+    end
+
     def assigned_and_incomplete?
       steps.incomplete.includes(:assignments).detect { |s| s.assignments.any? }
     end

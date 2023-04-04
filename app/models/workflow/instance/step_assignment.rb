@@ -7,10 +7,10 @@ module Workflow
     # for decision steps, we record the assignee's choice
     belongs_to :selected_option, class_name: 'Workflow::DecisionOption', optional: true
 
-    scope :for_person, ->(person_id) { where(assignee_id: person_id) }
+    scope :for_person_id, ->(person_id) { where(assignee_id: person_id) }
 
     scope :for_workflow, ->(workflow_id) { joins(step: { process: :workflow }).where(workflows: { id: workflow_id }) }
+    scope :complete, -> { where.not(completed_at: nil) }
     scope :incomplete, -> { where(completed_at: nil) }
-
   end
 end

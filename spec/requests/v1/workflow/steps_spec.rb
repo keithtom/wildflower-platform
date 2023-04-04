@@ -16,20 +16,22 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
 
   describe "PUT /v1/workflow/steps/bd8f-c3b2/assign" do
     it "succeeds" do
-      put "/v1/workflow/steps/#{step.external_identifier}/assign", headers: headers,
-        params: { step: { assignee_id: person.external_identifier } }
+      put "/v1/workflow/steps/#{step.external_identifier}/assign", headers: headers
       expect(response).to have_http_status(:success)
-      expect(step.reload.assignee).to eq(person)
+      expect(step.assignments.first.assignee).to eq(person)
     end
   end
 
   describe "PUT /v1/workflow/steps/bd8f-c3b2/unassign" do
+    before { step.assignments.create!(assignee: person) }
+    
     it "succeeds" do
-      step.assignee = person
-      step.save!
+      expect(step.assignments.count).to eq(1)
       put "/v1/workflow/steps/#{step.external_identifier}/unassign", headers: headers
+      
       expect(response).to have_http_status(:success)
-      expect(step.reload.assignee).to eq(nil)
+      step.reload
+      expect(step.assignments.count).to eq(0)
     end
   end
 
@@ -48,9 +50,10 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     it "succeeds" do
       put "/v1/workflow/steps/#{step.external_identifier}/complete", headers: headers
       expect(response).to have_http_status(:success)
-      expect(Workflow::Instance::Step.last.completed).to be true
+      expect(step.reload.completed).to be true
     end
 
+    # move this to a service spec.
     context "completing the last step of the last process in a phase" do
       before do
         process.definition.phase_list = first_phase
@@ -86,8 +89,8 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     it "succeeds" do
       put "/v1/workflow/steps/#{step.external_identifier}/uncomplete", headers: headers
       expect(response).to have_http_status(:success)
-      expect(Workflow::Instance::Step.last.completed).to be false
-      expect(Workflow::Instance::Step.last.completed_at).to be_nil
+      expect(step.reload.completed).to be false
+      expect(step.assignments.count).to eq(0)
     end
   end
 
@@ -170,7 +173,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
       put "/v1/workflow/steps/#{step.external_identifier}/select_option", headers: headers,
         params: { step: { selected_option_id: select_option.external_identifier } }
       expect(response).to have_http_status(:success)
-      expect(step.assignments.for_person(person.id).first.selected_option).to eq(select_option)
+      expect(step.assignments.for_person_id(person.id).first.selected_option).to eq(select_option)
     end
   end
 end

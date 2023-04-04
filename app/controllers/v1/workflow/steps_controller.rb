@@ -12,13 +12,15 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def complete
-    Workflow::Instance::Step::Complete.run(@step)
+    @person = current_user.person
+    Workflow::Instance::Step::Complete.run(@step, @person)
 
     render json: V1::Workflow::StepSerializer.new(@step, step_options)
   end
 
   def uncomplete
-    Workflow::Instance::Step::Uncomplete.run(@step)
+    @person = current_user.person
+    Workflow::Instance::Step::Uncomplete.run(@step, @person)
 
     render json: V1::Workflow::StepSerializer.new(@step, step_options)
   end
