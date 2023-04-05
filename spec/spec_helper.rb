@@ -106,8 +106,8 @@ RSpec.configure do |config|
   RSpec.configure do |config|
     config.before(:suite) do
       # reindex models
-      Person.reindex
-      School.reindex
+      # Person.reindex
+      # School.reindex
 
       # and disable callbacks
       Searchkick.disable_callbacks

@@ -3,7 +3,7 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  searchkick # callbacks: :async
+  # searchkick # callbacks: :async
 
   acts_as_taggable_on :audiences, :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles
 
