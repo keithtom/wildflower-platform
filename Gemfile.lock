@@ -111,6 +111,8 @@ GEM
     devise-jwt (0.10.0)
       devise (~> 4.0)
       warden-jwt_auth (~> 0.6)
+    devise-token_authenticatable (1.1.0)
+      devise (>= 4.0.0, < 5.0.0)
     diff-lcs (1.5.0)
     dotenv (2.7.6)
     dotenv-rails (2.7.6)
@@ -380,6 +382,7 @@ DEPENDENCIES
   database_cleaner-active_record
   devise
   devise-jwt
+  devise-token_authenticatable
   dotenv-rails
   elasticsearch (~> 7.x)
   factory_bot_rails
