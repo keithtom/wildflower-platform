@@ -8,7 +8,7 @@ module Workflow
     before_create :set_position
 
     DEFAULT_INCREMENT = 1000
-    DECISION = "decision"
+    DECISION = "Decision"
     DEFAULT = "default"
 
     private
