@@ -27,7 +27,14 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/assigned_steps", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response[0]["steps"][0]["included"]).to include(have_type('process').and have_attribute(:phase))
+      expect(json_response['data'][0]).to have_type('stepAssignment')
+      expect(json_response['data'][0]).to have_attribute("assignedAt")
+      expect(json_response['data'][0]).to have_attribute("completedAt")
+      expect(json_response['data'][0]).to have_relationships('assignee', 'step')
+      expect(json_response['included']).to include(have_type('person'))
+      expect(json_response['included']).to include(have_type('step'))
+      expect(json_response['included']).to include(have_type('document'))
+      expect(json_response['included']).to include(have_type('process'))
     end
   end
 
