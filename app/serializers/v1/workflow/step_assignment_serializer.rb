@@ -6,7 +6,6 @@ class V1::Workflow::StepAssignmentSerializer < ApplicationSerializer
     record.created_at
   end
 
-
   belongs_to :step, id_method_name: :external_identifier do |record|
     record.step
   end

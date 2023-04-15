@@ -13,19 +13,15 @@ class SSJ::Team < ApplicationRecord
     end
   end
   
-  # has_one :ops_guide_member, -> { where(role: SSJ::TeamMember::OPS_GUIDE) }, class_name: "SSJ::TeamMember", foreign_key: 'ssj_team_id'
-  # has_one :ops_guide, through: :ops_guide_member, source: :person
+  has_many :ops_guide_members, -> { where(role: SSJ::TeamMember::OPS_GUIDE) }, class_name: "SSJ::TeamMember", foreign_key: 'ssj_team_id'
+  has_many :ops_guides, through: :ops_guide_members, source: :person
 
-  # has_one :rgl_member, -> { where(role: SSJ::TeamMember::RGL) }, class_name: "SSJ::TeamMember", foreign_key: 'ssj_team_id'
-  # has_one :rgl, through: :rgl_member, source: :person
+  has_many :rgl_members, -> { where(role: SSJ::TeamMember::RGL) }, class_name: "SSJ::TeamMember", foreign_key: 'ssj_team_id'
+  has_many :rgls, through: :rgl_members, source: :person
 
   has_many :people, through: :team_members do
     def active
       where('ssj_team_members.status = ?', SSJ::TeamMember::ACTIVE)
-    end
-
-    def partners
-      where('ssj_team_members.role = ?', SSJ::TeamMember::PARTNER)
     end
   end
 

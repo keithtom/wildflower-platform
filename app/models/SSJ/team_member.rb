@@ -11,4 +11,7 @@ class SSJ::TeamMember < ApplicationRecord
   scope :partners, -> { where(role: PARTNER) }
   scope :ops_guide, -> { where(role: OPS_GUIDE) }
   scope :rgl, -> { where(role: RGL) }
+
+  validates :role, inclusion: { in: ROLES }
+  validates :status, inclusion: { in: STATUS }
 end
