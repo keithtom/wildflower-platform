@@ -69,7 +69,9 @@ class V1::Workflow::StepsController < ApiController
     @step = find_team.workflow.steps.find_by!(external_identifier: params[:id])
   end
 
+  # TODO: have a different set of params for a manual step
   def step_params
-    params.require(:step).permit(:title, :completed, :kind, :position, :document, :after_position, :selected_option_id, :assignee_id)
+    # still would send this param? keep assignment of step the same interface.
+    params.require(:step).permit(:title, :position, :document, :after_position, :selected_option_id)
   end
 end
