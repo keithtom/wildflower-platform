@@ -7,6 +7,7 @@ describe Workflow::Instance::Step::AssignPerson do
 
   it "assigns multiple people to a step" do
     expect(step.assignments.count).to eq(0)
+
     described_class.run(step, person)
 
     expect(step.assignments.count).to eq(1)

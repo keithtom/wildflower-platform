@@ -11,13 +11,11 @@ module Workflow
     has_many :documents, as: :documentable
     
     before_create :set_position
-    after_save :update_process
-    after_destroy :update_process
 
-    scope :completed, -> { where(completed: true) }
-    scope :incomplete, -> { where(completed: false) }
+    scope :complete, -> { where(completed: true) }
+    scope :incomplete, -> { where(completed: [false, nil]) }
     scope :assigned, -> { where(assigned: true) }
-    scope :unassigned, -> { where(unassigned: true) }
+    scope :unassigned, -> { where(assigned: [false, nil]) }
     
     DEFAULT_INCREMENT = 1000
 
@@ -46,31 +44,6 @@ module Workflow
     end
 
     private
-
-    def update_process
-      update_process_completed_counter_cache
-      update_process_completion_status
-    end
-
-    def update_process_completed_counter_cache
-      self.process.completed_steps_count = Workflow::Instance::Step.where(completed: true, process_id: process.id).count
-      self.process.save
-    end
-
-    def update_process_completion_status
-      case process.completed_steps_count
-      when 0
-        if process.assigned_and_incomplete?
-          self.process.in_progress!
-        else
-          self.process.unstarted!
-        end
-      when process.steps_count
-        self.process.done!
-      else
-        self.process.in_progress!
-      end
-    end
 
     def set_position
       if self.position.nil?

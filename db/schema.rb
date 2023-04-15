@@ -425,8 +425,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_191703) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
-    t.boolean "completed"
-    t.boolean "assigned"
+    t.boolean "completed", default: false
+    t.boolean "assigned", default: false
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"

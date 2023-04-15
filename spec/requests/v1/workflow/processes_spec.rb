@@ -8,7 +8,8 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
   let!(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
   let(:user) { create(:user, person_id: person.id) }
-  let!(:assigned_step) { create(:workflow_instance_step_manual, process_id: process.id, assignee_id: user.person_id) }
+  let!(:assigned_step) { create(:workflow_instance_step_manual, process_id: process.id) }
+  let!(:assignment) { create(:workflow_instance_step_assignment, step: assigned_step, assignee: user.person)}  
 
   before do
     sign_in(user)

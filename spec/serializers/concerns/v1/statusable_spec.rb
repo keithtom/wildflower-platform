@@ -10,6 +10,13 @@ RSpec.describe V1::Statusable, type: :concern do
   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
   let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
 
+  let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets", effort: 2) }
+  let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
+  let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
+  let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }
+
+  let(:person) { create(:person) }
+
   before do
     3.times do
       process.steps.create!
@@ -17,11 +24,6 @@ RSpec.describe V1::Statusable, type: :concern do
   end
 
   context "steps unstarted" do
-    let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets", effort: 2) }
-    let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
-    let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
-    let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }
-
     before do
       prerequisite.steps.create!
     end
@@ -44,9 +46,11 @@ RSpec.describe V1::Statusable, type: :concern do
     context "all prerequisites met" do
       before do
         process.prerequisites.each do |prereq|
+          # previously, the steps would have callbacks to trigger completion of prereq.
+          # a process should cache its status, or the matrix that i made before.
+          # here we are just testing the mechanics of step completion.
           prereq.steps.each do |step|
-            step.completed = true
-            step.save!
+            Workflow::Instance::Step::Complete.run(step, person)
           end
         end
       end
@@ -58,18 +62,12 @@ RSpec.describe V1::Statusable, type: :concern do
   end
 
   context "1 of 3 steps completed" do
-    let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets", effort: 2) }
-    let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
-    let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
-    let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }
-    let(:person) { create(:person) }
-
     before do
+      prerequisite.steps.create!
       prerequisite.steps.create!
 
       step = process.steps.first
-      step.completed = true
-      step.save!
+      Workflow::Instance::Step::Complete.run(step, person)
     end
 
     context "prerequisites unmet" do
@@ -104,8 +102,7 @@ RSpec.describe V1::Statusable, type: :concern do
       before do
         process.prerequisites.each do |prereq|
           prereq.steps.each do |step|
-            step.completed = true
-            step.save!
+            Workflow::Instance::Step::Complete.run(step, person)
           end
         end
       end
@@ -117,17 +114,11 @@ RSpec.describe V1::Statusable, type: :concern do
   end
 
   context "3 of 3 steps completed" do
-    let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets", effort: 2) }
-    let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
-    let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
-    let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }
-
     before do
       prerequisite.steps.create!
 
       process.steps.each do |step|
-        step.completed = true
-        step.save!
+        Workflow::Instance::Step::Complete.run(step, person)
       end
     end
 
@@ -146,8 +137,7 @@ RSpec.describe V1::Statusable, type: :concern do
       before do
         process.prerequisites.each do |prereq|
           prereq.steps.each do |step|
-            step.completed = true
-            step.save!
+            Workflow::Instance::Step::Complete.run(step, person)
           end
         end
       end

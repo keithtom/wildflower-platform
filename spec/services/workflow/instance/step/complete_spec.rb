@@ -13,17 +13,17 @@ describe Workflow::Instance::Step::Complete do
     expect(step).to be_completed
     expect(step.assignments.count).to eq(1)
     expect(step.assignments).to include(
-      have_attributes(assignee: person, completed_at: any)
+      have_attributes(assignee: person, completed_at: kind_of(Time))
     )
 
     described_class.run(step, person2)
     
     expect(step.assignments.count).to eq(2)
     expect(step.assignments).to include(
-      have_attributes(assignee: person, completed_at: any)
+      have_attributes(assignee: person, completed_at: kind_of(Time))
     )
     expect(step.assignments).to include(
-      have_attributes(assignee: person2, completed_at: any)
+      have_attributes(assignee: person2, completed_at: kind_of(Time))
     )
   end
 

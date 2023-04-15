@@ -86,9 +86,13 @@ module Workflow
           # check if all the processes in this phase are complete, and update current phase if so
           workflow = @process.workflow
           current_phase_complete = true
+          # go through all incomplete processes and see if any are in the current phase
           workflow.processes.where.not(completion_status: 3).each do |p|
+            next if p.phase.empty?
+
             if p.phase.first.name == workflow.current_phase
               current_phase_complete = false
+              break
             end
           end
           if current_phase_complete
