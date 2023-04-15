@@ -18,6 +18,8 @@ module Workflow
     scope :unassigned, -> { where(assigned: [false, nil]) }
     
     DEFAULT_INCREMENT = 1000
+    
+    COMPLETION_TYPES = [EACH_PERSON = 'each_person', ONE_PER_GROUP = 'one_per_group'].freeze
 
     def title
       super || self.definition.try(:title)

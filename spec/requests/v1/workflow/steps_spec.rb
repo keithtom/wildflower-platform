@@ -98,7 +98,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
     it "succeeds" do
       title = "copy visioning template"
       post "/v1/workflow/processes/#{process.external_identifier}/steps", headers: headers,
-        params: { step: { title: title, kind: "action" } }
+        params: { step: { title: title, kind: "action", completion_type: Workflow::Instance::Step::ONE_PER_GROUP } }
       expect(response).to have_http_status(:success)
       expect(json_response["data"]).to have_type(:step).and have_attribute(:title)
       new_step = Workflow::Instance::Step.last

@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :workflow_instance_step, class: 'Workflow::Instance::Step' do
     association :definition, factory: :workflow_definition_step
     association :process, factory: :workflow_instance_process
+    completion_type { Workflow::Instance::Step::EACH_PERSON }
   end
 
   factory :workflow_instance_step_manual, class: 'Workflow::Instance::Step' do
@@ -9,6 +10,8 @@ FactoryBot.define do
     title { "Watch Building a Wildflower Budget " }
     kind { "default" }
     position { Workflow::Instance::Step::DEFAULT_INCREMENT }
+    completion_type { Workflow::Instance::Step::ONE_PER_GROUP }
+
     after(:build) { |step| create(:document, documentable: step) }
   end
 end
