@@ -17,8 +17,6 @@ module Workflow
     scope :assigned, -> { where(assigned: true) }
     scope :unassigned, -> { where(assigned: [false, nil]) }
     
-    DEFAULT_INCREMENT = 1000
-    
     def title
       super || self.definition.try(:title)
     end
@@ -51,7 +49,7 @@ module Workflow
 
     def set_position
       if self.position.nil?
-        self.position = self.process.steps.order(:position).last.try(:position).to_i + DEFAULT_INCREMENT
+        self.position = self.process.steps.order(:position).last.try(:position).to_i + ::Workflow::Definition::Step::DEFAULT_INCREMENT
       end
     end
   end

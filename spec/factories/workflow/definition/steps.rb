@@ -4,7 +4,7 @@ FactoryBot.define do
     title { "Watch Building a Wildflower Budget " }
     description { "watch video in its entirety" }
     kind { "default" }
-    position { Workflow::Instance::Step::DEFAULT_INCREMENT }
+    position { Workflow::Definition::Step::DEFAULT_INCREMENT }
 
     after(:create) { |step| create(:document, documentable: step) }
   end
