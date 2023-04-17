@@ -39,6 +39,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
       get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response["by_category"][1]["finance"]).to_not be_nil
+      expect(json_response["by_category"][1]["finance"]).to_not be_empty
       expect(json_response["by_phase"].first[phase]).to_not be_nil
     end
   end
