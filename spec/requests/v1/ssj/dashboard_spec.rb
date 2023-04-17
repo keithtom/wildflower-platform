@@ -18,7 +18,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     team.save!
     SSJ::TeamMember.create!(ssj_team: team, person: person, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
     p = step.definition.process
-    p.category_list << "finance"
+    p.category_list << "Finance"
     p.category_list << "Human Resources"
     p.category_list << "unknown category"
     p.save!
@@ -40,9 +40,9 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response["by_category"][1]["finance"]).to_not be_nil
-      expect(json_response["by_category"][4]["human_resources"]).to_not be_nil
-      expect(json_response["by_category"][4]["human_resources"]).to_not be_empty
+      expect(json_response["by_category"][1]["Finance"]).to_not be_nil
+      expect(json_response["by_category"][4]["Human Resources"]).to_not be_nil
+      expect(json_response["by_category"][4]["Human Resources"]).to_not be_empty
       expect(json_response["by_phase"].first[phase]).to_not be_nil
     end
   end
