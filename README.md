@@ -62,6 +62,15 @@ Analytics
 - you can see what manual steps are missing
 - you can track which workers are working well
 
+### ActiveStorage
+Using active storage to manage uploaded profile image's storage and the attachment to the person model. 
+
+The workflow is as such:
+- client sends a POST request to `/rails/active_storage/direct_uploads` with some blob information, including checksum
+- API creates a blob record in the database and sends back a token, a URL for the client to directly upload the image to, and a `signed_id` to identify the blob
+- client then uploads image to the direct URL with the token. API verifies the token is in fact for a blob, and then proceeds to upload to whichever service (production: aws, local: local).
+- client then updates the person record with the `signed_id` as the `profile_image`
+
 ### Summary
 - this system includes
   - data models

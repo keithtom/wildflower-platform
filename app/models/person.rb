@@ -30,6 +30,8 @@ class Person < ApplicationRecord
   attr_accessor :full_name
   before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
 
+  has_one_attached :profile_image
+
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {

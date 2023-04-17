@@ -17,6 +17,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     SSJ::TeamMember.create!(ssj_team: team, person: person, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
     p = step.definition.process
     p.category_list << "finance"
+    p.category_list << "Human Resources"
     p.save!
     step.assignments.create!(assignee: person)
     p.phase_list << phase
@@ -42,7 +43,9 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response["by_category"].first["finance"]).to_not be_nil
+      expect(json_response["by_category"][1]["finance"]).to_not be_nil
+      expect(json_response["by_category"][4]["human_resources"]).to_not be_nil
+      expect(json_response["by_category"][4]["human_resources"]).to_not be_empty
       expect(json_response["by_phase"].first[phase]).to_not be_nil
     end
   end
@@ -82,7 +85,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
         }
       }
       expect(response).to have_http_status(:success)
-      expect(json_response["hasPartner"]).to eq(false)
+      expect(json_response["hasPartner"]).to eq(true)
       person = user.person
       team = person.ssj_team
       expect(SSJ::TeamMember.where(ssj_team_id: team.id, status: SSJ::TeamMember::INVITED)).to_not be_empty

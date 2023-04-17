@@ -10,13 +10,18 @@ class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
 
   def grouped_by_category(documents)
     grouped_documents = {}
+    Workflow::Definition::Process::CATEGORIES.each do |category|
+      category_name = category.parameterize(separator: '_')
+      grouped_documents[category_name] = []
+    end
 
     documents.each do |document|
       get_categories(document.documentable.process).each do |category|
-        if grouped_documents[category].nil?
-          grouped_documents[category] = []
+        doc_category_name = category.parameterize(separator: '_')
+        if grouped_documents[doc_category_name].nil?
+          Rails.logger.warn("process (id: #{document.documentable.process_id}) tagged with unknown category: #{doc_category_name}")
         end
-        grouped_documents[category] << V1::Workflow::ResourceSerializer.new(document, root: false, include: @includes)
+        grouped_documents[doc_category_name] << V1::Workflow::ResourceSerializer.new(document, root: false, include: @includes)
       end
     end
 

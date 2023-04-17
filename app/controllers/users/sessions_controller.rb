@@ -11,7 +11,7 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   # def create
-  #  super
+  #   super
   # end
 
   # bug in devise for rails 7 https://github.com/heartcombo/devise/issues/5443
@@ -23,20 +23,6 @@ class Users::SessionsController < Devise::SessionsController
   # def destroy
   #   super
   # end
-
-  # create a session via token
-  # /users/sessions/token
-  def token
-    if authenticated_user = Users::AuthenticateViaToken.call(params[:token])
-      sign_in(resource_name, authenticated_user, store: false)
-      respond_with(authenticated_user)
-    else
-      render json: {
-        status: 401,
-        message: "Invalid token."
-      }, status: :unauthorized
-    end
-  end
 
   # protected
 

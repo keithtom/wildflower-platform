@@ -12,7 +12,7 @@ RSpec.describe Users::SendInviteEmail, type: :command do
       expect { subject }.to have_enqueued_job.on_queue('mailers').with('SSJMailer', 'invite', 'deliver_now', params: { user: user }, args: [])
       user.reload
       expect(user.authentication_token).to_not be_nil
-      expect(user.authentication_token_at).to_not be_nil
+      expect(user.authentication_token_created_at).to_not be_nil
     end
   end
 end
