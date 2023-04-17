@@ -20,6 +20,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     p = step.definition.process
     p.category_list << "finance"
     p.category_list << "Human Resources"
+    p.category_list << "unknown category"
     p.save!
     step.assignee = person
     step.save!
