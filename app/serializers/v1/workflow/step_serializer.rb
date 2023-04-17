@@ -37,9 +37,9 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
 
   attribute :can_complete? do |step|
     case step.completion_type
-    when Workflow::Instance::Step::EACH_PERSON
+    when Workflow::Definition::Step::EACH_PERSON
       # did this person complete it?
-    when Workflow::Instance::Step::ONE_PER_GROUP
+    when Workflow::Definition::Step::ONE_PER_GROUP
       # did anyone complete it?
       !step.completed
     else

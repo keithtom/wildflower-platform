@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_15_005201) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_04_130633) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -455,7 +455,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_005201) do
     t.string "external_identifier", null: false
     t.boolean "completed", default: false
     t.boolean "assigned", default: false
-    t.string "completion_type"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
@@ -473,7 +472,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_005201) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "ssj_team_members", "ssj_teams"
   add_foreign_key "ssj_teams", "people", column: "ops_guide_id"
   add_foreign_key "ssj_teams", "people", column: "regional_growth_lead_id"

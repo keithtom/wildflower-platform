@@ -19,8 +19,6 @@ module Workflow
     
     DEFAULT_INCREMENT = 1000
     
-    COMPLETION_TYPES = [EACH_PERSON = 'each_person', ONE_PER_GROUP = 'one_per_group'].freeze
-
     def title
       super || self.definition.try(:title)
     end
@@ -39,6 +37,10 @@ module Workflow
 
     def position
       super || self.definition.try(:position)
+    end
+
+    def completion_type
+      super || self.definition.try(:completion_type)
     end
 
     def is_manual?

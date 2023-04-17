@@ -11,6 +11,8 @@ module Workflow
     DECISION = "decision"
     DEFAULT = "default"
 
+    COMPLETION_TYPES = [EACH_PERSON = 'each_person', ONE_PER_GROUP = 'one_per_group'].freeze
+
     private
 
     def set_position

@@ -66,9 +66,9 @@ module SSJ
 
             case step_completion_type
             when "Individual"
-              completion_type = Workflow::Instance::Step::EACH_PERSON
+              completion_type = ::Workflow::Definition::Step::EACH_PERSON
             when "Collaborative"
-              completion_type = Workflow::Instance::Step::ONE_PER_GROUP
+              completion_type = ::Workflow::Definition::Step::ONE_PER_GROUP
             else
               raise "unknown completion type #{step_completion_type}"
             end
