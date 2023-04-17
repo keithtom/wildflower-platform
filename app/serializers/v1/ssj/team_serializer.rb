@@ -11,6 +11,6 @@ class V1::SSJ::TeamSerializer < ApplicationSerializer
   private
 
   def has_partner?(resource)
-    resource.people.partners.active.count > 1
+    resource.people.partners.count > 1
   end
 end
