@@ -8,7 +8,8 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
   let!(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
   let(:user) { create(:user, person_id: person.id) }
-  let!(:assigned_step) { create(:workflow_instance_step_manual, process_id: process.id, assignee_id: user.person_id) }
+  let!(:assigned_step) { create(:workflow_instance_step_manual, process_id: process.id) }
+  let!(:assignment) { create(:workflow_instance_step_assignment, step: assigned_step, assignee: user.person)}  
 
   before do
     sign_in(user)
@@ -22,25 +23,6 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
       expect(json_response["data"]).to have_type(:process).and have_attribute(:stepsCount)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:completedStepsCount)
       step_obj = json_response["included"].select{|obj| obj["type"] == "step"}.last
-      expect(step_obj).to have_attribute(:assigneeInfo)
-    end
-  end
-
-  describe "GET /v1/workflow/workflows/6823-2341/processes with steps only assigned to current user" do
-    let!(:unassigned_step) { create(:workflow_instance_step_manual, process_id: process.id) }
-
-    it "succeeds" do
-      get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?self_assigned=true", headers: headers
-      expect(response).to have_http_status(:success)
-      expect(json_response["data"][0]).to have_type(:process).and have_attribute(:status)
-      expect(json_response["data"][0]).to have_type(:process).and have_attribute(:stepsCount)
-      expect(json_response["data"][0]).to have_type(:process).and have_attribute(:completedStepsCount)
-      steps = json_response["data"][0]["relationships"]["steps"]["data"]
-      expect(steps.length).to eq(1)
-      expect(steps[0]["id"]).to_not eq(unassigned_step.external_identifier)
-      expect(steps[0]["id"]).to eq(assigned_step.external_identifier)
-      step_obj = json_response["included"].select{|obj| obj["type"] == "step"}.last
-      expect(step_obj).not_to have_attribute(:assigneeInfo)
     end
   end
 end

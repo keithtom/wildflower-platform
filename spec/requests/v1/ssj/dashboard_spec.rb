@@ -7,8 +7,6 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
   let!(:step) { create(:workflow_instance_step) }
   let(:workflow) { step.process.workflow }
   let(:expected_start_date) { Date.today + 7.days }
-  let(:partner) { create(:person) }
-  let(:partner_user_account) { create(:user, person_id: partner.id) }
   let(:phase) { Workflow::Definition::Process::PHASES.first }
 
   before do
@@ -18,10 +16,11 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     team.save!
     SSJ::TeamMember.create!(ssj_team: team, person: person, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
     p = step.definition.process
-    p.category_list << "finance"
+    p.category_list << "Finance"
+    p.category_list << "Human Resources"
+    p.category_list << "unknown category"
     p.save!
-    step.assignee = person
-    step.save!
+    step.assignments.create!(assignee: person)
     p.phase_list << phase
     p.save!
   end
@@ -30,7 +29,14 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/assigned_steps", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response[0]["steps"][0]["included"]).to include(have_type('process').and have_attribute(:phase))
+      expect(json_response['data'][0]).to have_type('stepAssignment')
+      expect(json_response['data'][0]).to have_attribute("assignedAt")
+      expect(json_response['data'][0]).to have_attribute("completedAt")
+      expect(json_response['data'][0]).to have_relationships('assignee', 'step')
+      expect(json_response['included']).to include(have_type('person'))
+      expect(json_response['included']).to include(have_type('step'))
+      expect(json_response['included']).to include(have_type('document'))
+      expect(json_response['included']).to include(have_type('process'))
     end
   end
 
@@ -38,7 +44,9 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/resources", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response["by_category"].first["finance"]).to_not be_nil
+      expect(json_response["by_category"][1]["Finance"]).to_not be_nil
+      expect(json_response["by_category"][4]["Human Resources"]).to_not be_nil
+      expect(json_response["by_category"][4]["Human Resources"]).to_not be_empty
       expect(json_response["by_phase"].first[phase]).to_not be_nil
     end
   end
@@ -78,7 +86,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
         }
       }
       expect(response).to have_http_status(:success)
-      expect(json_response["hasPartner"]).to eq(false)
+      expect(json_response["hasPartner"]).to eq(true)
       person = user.person
       team = person.ssj_team
       expect(SSJ::TeamMember.where(ssj_team_id: team.id, status: SSJ::TeamMember::INVITED)).to_not be_empty

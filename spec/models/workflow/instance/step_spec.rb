@@ -20,7 +20,7 @@ RSpec.describe Workflow::Instance::Step, type: :model do
   describe "when manual step is created with no position" do
     let(:previous_step) { create(:workflow_instance_step) }
     subject { create(:workflow_instance_step_manual, position: nil, process: previous_step.process) }
-    its(:position) { is_expected.to be(previous_step.position + Workflow::Instance::Step::DEFAULT_INCREMENT) }
+    its(:position) { is_expected.to be(previous_step.position + Workflow::Definition::Step::DEFAULT_INCREMENT) }
   end
 
   describe "when manual step is created with specified position" do

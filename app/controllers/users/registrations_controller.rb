@@ -73,4 +73,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     return options
   end
 
+  def bypass_sign_in(resource, scope: nil)
+    #noop
+    # not using a session store b/c of jwt. 
+  end
 end

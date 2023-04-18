@@ -3,7 +3,7 @@
 module V1
   class PersonSerializer < ApplicationSerializer
     attributes :email, :first_name, :middle_name, :last_name, :phone, :journey_state,
-      :personal_email, :about, :primary_language, :updated_at, :image_url
+      :personal_email, :about, :primary_language, :updated_at
 
     attribute :role_list
     # has_many :roles, serializer: V1::TagSerializer
@@ -18,6 +18,12 @@ module V1
 
     has_one :address, id_method_name: :external_identifier do |person|
       person.address
+    end
+
+    attribute :image_url do |person|
+      if person.profile_image.attached?
+        Rails.application.routes.url_helpers.rails_blob_path(person.profile_image, only_path: true)
+      end
     end
   end
 end

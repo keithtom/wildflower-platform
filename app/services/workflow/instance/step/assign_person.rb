@@ -7,8 +7,10 @@ module Workflow
       end
 
       def run
-        @step.assignee_id = @person.id
-        @step.save!
+        # NOTE: if the step worktype was "only 1 assigner", we'd unassign first.
+        @step.assignments.find_or_create_by!(assignee: @person)
+        @step.assigned = true
+        @step.save
       end
     end
   end

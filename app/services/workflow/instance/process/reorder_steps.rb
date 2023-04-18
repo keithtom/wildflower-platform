@@ -30,7 +30,7 @@ module Workflow
         end
 
         if new_position.nil?
-          new_position = previous_position + Workflow::Instance::Step::DEFAULT_INCREMENT
+          new_position = previous_position + Workflow::Definition::Step::DEFAULT_INCREMENT
         end
 
         @step.position = new_position

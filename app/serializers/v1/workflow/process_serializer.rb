@@ -16,8 +16,9 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     process.definition.phase_list.first
   end
 
+    # update this.
   attribute :steps_assigned_count do |process|
-    process.steps.where.not(assignee_id: nil).count
+    process.steps.assigned.count
   end
 
   belongs_to :workflow, serializer: V1::Workflow::WorkflowSerializer, id_method_name: :external_identifier do |process|
@@ -25,11 +26,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   end
 
   has_many :steps, serializer: V1::Workflow::StepSerializer, id_method_name: :external_identifier do |process, params|
-    if params[:assignee_id]
-      process.steps.where(assignee_id: params[:assignee_id], completed: false)
-    else
       process.steps
-    end
   end
 
   has_many :prerequisite_processes, if: Proc.new { |process, params| params && params[:prerequisites] }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
