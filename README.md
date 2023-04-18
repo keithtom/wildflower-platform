@@ -24,6 +24,21 @@ Things you may want to cover:
 Any merge to the `main` branch on the Github repository will automatically deploy to produciton and run migrations.
 You can follow the process by using the `heroku logs --tail` command.
 
+### Development Environment
+
+The development host is `https://api-dev.wildflowerschools.org`
+Merging to the branch `main` will automatically deploy to this environment.
+
+### Staging Environment
+
+The staging host is `https://api-staging.wildflowerschools.org`.
+Merging to the branch `staging` will automatically deploy to this environment.
+
+### Production Environment
+
+The production host is `https://api.wildflowerschools.org`.
+Merging to the branch `production` will automatically deploy to this environment.
+
 
 ## Platform API
 
