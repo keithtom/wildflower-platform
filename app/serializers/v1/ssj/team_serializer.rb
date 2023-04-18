@@ -4,13 +4,13 @@ class V1::SSJ::TeamSerializer < ApplicationSerializer
     {
       hasPartner: has_partner?(@resource),
       expectedStartDate: @resource.expected_start_date,
-      team: @resource.people.active.map{|person| V1::PersonSerializer.new(person, { include: ['schools', 'school_relationships', 'address']})}
+      team: V1::PersonSerializer.new(@resource.people.active, { include: ['schools', 'school_relationships', 'address'] })
     }
   end
 
   private
 
   def has_partner?(resource)
-    resource.people.partners.count > 1
+    resource.partners.count > 1 # yourself is 1 partner.
   end
 end

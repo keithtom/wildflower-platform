@@ -16,6 +16,7 @@ module Workflow
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
     enum completion_status: { unstarted: 0, to_do: 1, in_progress: 2, done: 3 }
+    # add second enum for dependency status?  find the matrix and represent it here.
 
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
 
@@ -44,8 +45,12 @@ module Workflow
       self.definition.phase
     end
 
+    def completed?
+      !!self.completed_at
+    end
+
     def assigned_and_incomplete?
-      steps.where.not(assignee_id: nil).where(completed: false).length > 0
+      steps.incomplete.includes(:assignments).detect { |s| s.assignments.any? }
     end
   end
 end

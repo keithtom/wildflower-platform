@@ -1,5 +1,5 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
-  attributes :title, :completed, :kind, :position, :completed_at, :description
+  attributes :title, :completed, :kind, :position, :description
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
     id_method_name: :external_identifier do |step|
@@ -11,14 +11,9 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.documents
   end
 
-  belongs_to :selected_option, serializer: V1::Workflow::DecisionOptionSerializer,
-    id_method_name: :external_identifier do |step|
-      step.selected_option
-  end
-
-  belongs_to :assignee, id_method_name: :external_identifier,
-    serializer: V1::PersonSerializer do |process|
-      process.assignee
+  has_many :assignments,
+    serializer: V1::Workflow::StepAssignmentSerializer do |step|
+      step.assignments
   end
 
   attribute :decision_options do |step|
@@ -35,10 +30,27 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     distance_of_time_in_words(step.definition.max_worktime.minutes).capitalize if step.definition&.max_worktime
   end
 
-
-  # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
-  attribute :assignee_info, if: Proc.new {|step, params| !params[:self_assigned] && !params[:basic] && step.assignee } do |step|
-    assignee = step.assignee
-    { id: assignee.external_identifier, imageUrl: assignee.image_url }
+  attribute :can_assign? do |step|
+    # can't be assigned if it is already completed
+    !step.completed
   end
+
+  attribute :can_complete? do |step|
+    case step.completion_type
+    when Workflow::Definition::Step::EACH_PERSON
+      # did this person complete it?
+    when Workflow::Definition::Step::ONE_PER_GROUP
+      # did anyone complete it?
+      !step.completed
+    else
+      raise "Unknown completion type: #{step.completion_type}"
+    end
+  end
+  
+  # When do we use this on step?  it should be refactored here.
+  # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
+  # attribute :assignee_info, if: Proc.new {|step, params| !params[:basic] && step.assignee } do |step|
+  #   assignee = step.assignee
+  #   { id: assignee.external_identifier, imageUrl: assignee.image_url }
+  # end
 end

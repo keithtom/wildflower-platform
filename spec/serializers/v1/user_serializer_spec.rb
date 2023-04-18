@@ -6,7 +6,7 @@ describe V1::UserSerializer do
   let(:ssj_team) { build(:ssj_team) }
 
   before do
-    person = ssj_team.people.partners.first
+    person = ssj_team.partners.first
     person.hub = build(:hub)
     person.save!
     user.person = person
