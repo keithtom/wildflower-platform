@@ -9,13 +9,13 @@ class V1::Workflow::ProcessesController < ApiController
         # find definitions tagged with phase, then load those instances.
         process_ids = workflow.definition.processes.tagged_with(params[:phase], on: :phase).pluck(:id)
         
-        processes = workflow.processes.where(definition_id: process_ids).eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
+        processes = workflow.processes.where(definition_id: process_ids).eager_load(:categories, steps: [:definition, :documents, :assignments], definition: [:categories, :taggings, steps: [:documents]]).by_position
       else
         render :not_found
         return
       end
     else
-      processes = workflow.processes.eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
+      processes = workflow.processes.eager_load(:categories, steps: [:definition, :documents, :assignments], definition: [:categories, :taggings, steps: [:documents]]).by_position
     end
 
     options = {include: ['workflow', 'steps', 'steps.documents', 'steps.assignments']}
@@ -25,7 +25,7 @@ class V1::Workflow::ProcessesController < ApiController
 
   def show
     # TODO: identify current user, check if process id is accessible to user
-    @process = Workflow::Instance::Process.find_by!(external_identifier: params[:id])
+    @process = Workflow::Instance::Process.includes(steps: [:assignments, :definition, :documents]).find_by!(external_identifier: params[:id])
 
     render json: V1::Workflow::ProcessSerializer.new(@process, params: { prerequisites: true }, include: ['workflow', 'steps', 'steps.documents', 'steps.assignments', 'prerequisite_processes'])
   end
