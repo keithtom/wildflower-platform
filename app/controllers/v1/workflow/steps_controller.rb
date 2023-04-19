@@ -4,30 +4,30 @@ class V1::Workflow::StepsController < ApiController
   def create
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
     @step = Workflow::Instance::Process::AddManualStep.run(@process, step_params)
-    render json: V1::Workflow::StepSerializer.new(@step, step_options)
+    render_step
   end
 
   def show
-    render json: V1::Workflow::StepSerializer.new(@step, step_options)
+    render_step
   end
 
   def complete
     @person = current_user.person
     Workflow::Instance::Step::Complete.run(@step, @person)
 
-    render json: V1::Workflow::StepSerializer.new(@step, step_options)
+    render_step
   end
 
   def uncomplete
     @person = current_user.person
     Workflow::Instance::Step::Uncomplete.run(@step, @person)
 
-    render json: V1::Workflow::StepSerializer.new(@step, step_options)
+    render_step
   end
 
   def reorder
     Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
-    render json: V1::Workflow::StepSerializer.new(@step, step_options)
+    render_step
 
     rescue Workflow::Instance::Process::ReorderSteps::Error => e
       render json: {error: e.message}, status: :unprocessable_entity
@@ -38,26 +38,26 @@ class V1::Workflow::StepsController < ApiController
     @person = current_user.person
 
     Workflow::Instance::Step::SelectDecisionOption.run(@step, @person, @decision_option)
-    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
+    render_step
   end
 
   def assign
     @person = current_user.person
-    
     Workflow::Instance::Step::AssignPerson.run(@step, @person)
-
-    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
+    render_step
   end
 
   def unassign
     @person = current_user.person
-
     Workflow::Instance::Step::UnassignPerson.run(@step, @person)
-
-    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
+    render_step
   end
 
   private
+
+  def render_step
+    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
+  end
 
   def step_options
     options = {}
