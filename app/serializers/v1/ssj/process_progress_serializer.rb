@@ -39,7 +39,7 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
   def grouped_by_category(processes)
     grouped_processes = {}
 
-    Workflow::Definition::Process::CATEGORIES.each do |category|
+    SSJ::Category::CATEGORIES.each do |category|
       category_name = category.parameterize(separator: '_')
       grouped_processes[category_name] = {name: category, total: 0, statuses: []}
     end
