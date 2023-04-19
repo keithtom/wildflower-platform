@@ -7,12 +7,8 @@ class V1::Workflow::ProcessesController < ApiController
     if params[:phase]
       if SSJ::Phase::PHASES.include?(params[:phase])
         # find definitions tagged with phase, then load those instances.
-        phase_process_ids = workflow.definition.processes.tagged_with(params[:phase], on: :phase).pluck(:id)
-        # then find the defintions with "start considering = true" from the next phase
-        next_phase = SSJ::Phase.next(params[:phase])
-        start_considering_process_ids = workflow.definition.processes.tagged_with(next_phase, on: :phase).where(start_considering: true).pluck(:id)
-
-        process_ids = phase_process_ids + start_considering_process_ids
+        process_ids = workflow.definition.processes.tagged_with(params[:phase], on: :phase).pluck(:id)
+        
         processes = workflow.processes.where(definition_id: process_ids).eager_load(:categories, steps: [:definition, :documents], definition: [:categories, steps: [:documents]]).by_position
       else
         render :not_found
