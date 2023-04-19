@@ -15,5 +15,9 @@ module SSJ
         raise "not a valid phase"
       end
     end
+
+    # Phase::Visioning
+    # .processes # find visioning processes
+    # .add_process # adds to visioning
   end
 end

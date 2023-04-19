@@ -3,8 +3,9 @@ FactoryBot.define do
     association :process, factory: :workflow_definition_process
     title { Faker::Company.bs }
     description { Faker::Lorem.paragraph }
-    kind { "default" }
+    kind {Workflow::Definition::Step::DEFAULT }
     position { Workflow::Definition::Step::DEFAULT_INCREMENT }
+    completion_type { Workflow::Definition::Step::EACH_PERSON }
 
     after(:create) { |step| create(:document, documentable: step) }
   end
