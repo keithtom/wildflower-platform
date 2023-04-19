@@ -96,8 +96,8 @@ module Workflow
             end
           end
           if current_phase_complete
-            current_phase_index = Workflow::Definition::Process::PHASES.index(workflow.current_phase)
-            workflow.current_phase = Workflow::Definition::Process::PHASES[current_phase_index + 1]
+            current_phase_index = SSJ::Phase::PHASES.index(workflow.current_phase)
+            workflow.current_phase = SSJ::Phase::PHASES[current_phase_index + 1]
             workflow.save!
           end
         end

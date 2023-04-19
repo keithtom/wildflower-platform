@@ -44,8 +44,8 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
   end
 
   describe "PUT /v1/workflow/steps/bd8f-c3b2/complete" do
-    let(:first_phase) { Workflow::Definition::Process::PHASES[0] }
-    let(:second_phase) { Workflow::Definition::Process::PHASES[1] }
+    let(:first_phase) { SSJ::Phase::PHASES[0] }
+    let(:second_phase) { SSJ::Phase::PHASES[1] }
 
     it "succeeds" do
       put "/v1/workflow/steps/#{step.external_identifier}/complete", headers: headers
