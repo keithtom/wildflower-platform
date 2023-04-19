@@ -1,12 +1,7 @@
 module Workflow
   class Definition::Process < ApplicationRecord
     DEFAULT_INCREMENT = 100
-    PHASES = [
-      VISIONING = "visioning",
-      PLANNING = "planning",
-      STARTUP = "startup"
-    ]
-
+    
     CATEGORIES = [
       ALBUMS_ADVICE_AND_NETWORK_MEMBERSHIP = "Albums, Advice & Network Membership",
       FINANCE = "Finance",
