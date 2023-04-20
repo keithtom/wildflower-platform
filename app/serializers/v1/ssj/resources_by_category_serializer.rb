@@ -10,7 +10,7 @@ class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
 
   def grouped_by_category(documents)
     grouped_documents = {}
-    Workflow::Definition::Process::CATEGORIES.each do |category|
+    SSJ::Category::CATEGORIES.each do |category|
       grouped_documents[category] = []
     end
 
@@ -31,7 +31,7 @@ class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
 
   def grouped_by_phase(documents)
     grouped_documents = {}
-    Workflow::Definition::Process::PHASES.each do |phase|
+    SSJ::Phase::PHASES.each do |phase|
       grouped_documents[phase] = []
     end
 

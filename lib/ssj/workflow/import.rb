@@ -133,11 +133,11 @@ module SSJ
 
       def default_process_position
         case @phase_tag.to_s
-        when "visioning"
+        when ::SSJ::Phase::VISIONING
           100_000
-        when "planning"
+        when ::SSJ::Phase::PLANNING
           200_000
-        when "startup"
+        when ::SSJ::Phase::STARTUP
           300_000
         end
       end
@@ -179,13 +179,13 @@ def create_default_workflow_and_processes
 
   # visioning = File.open('visioning.csv').read
   visioning = URI.open("https://www.dropbox.com/s/mz217l67txci7l6/visioning.csv?dl=1").read
-  SSJ::Workflow::Import.new(visioning, workflow_definition, visioning_process, "visioning").import
+  SSJ::Workflow::Import.new(visioning, workflow_definition, visioning_process, ::SSJ::Phase::VISIONING).import
 
   # planning = File.open('planning.csv').read
   planning = URI.open("https://www.dropbox.com/s/og60xsgaqqs94qn/planning.csv?dl=1").read
-  SSJ::Workflow::Import.new(planning, workflow_definition, planning_process, "planning").import
+  SSJ::Workflow::Import.new(planning, workflow_definition, planning_process, ::SSJ::Phase::PLANNING).import
 
   # startup = File.open('startup.csv').read
   startup = URI.open("https://www.dropbox.com/s/x5gelsrogmfoft7/startup.csv?dl=1").read
-  SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, "startup").import
+  SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, ::SSJ::Phase::STARTUP).import
 end
