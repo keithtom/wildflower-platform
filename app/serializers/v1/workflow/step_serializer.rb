@@ -1,5 +1,5 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
-  attributes :title, :completed, :kind, :position, :description
+  attributes :title, :kind, :position, :description  # completed is for backend use purposes and means something different in the front-end
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
     id_method_name: :external_identifier do |step|
@@ -16,7 +16,7 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
       step.assignments
   end
 
-  attribute :decision_options do |step|
+  attribute :decision_options, if: proc { |step| step.decision? } do |step|
     unless step.definition.nil? || step.kind != Workflow::Definition::Step::DECISION
       step.definition.decision_options.map {|decision_option| V1::Workflow::DecisionOptionSerializer.new(decision_option).to_json }
     end
@@ -30,12 +30,12 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     distance_of_time_in_words(step.definition.max_worktime.minutes).capitalize if step.definition&.max_worktime
   end
 
-  attribute :can_assign? do |step|
+  attribute :can_assign do |step|
     # can't be assigned if it is already completed
     !step.completed
   end
 
-  attribute :can_complete? do |step|
+  attribute :can_complete do |step, params|
     case step.completion_type
     when Workflow::Definition::Step::EACH_PERSON
       # did this person complete it?

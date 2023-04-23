@@ -41,6 +41,10 @@ module Workflow
       super || self.definition.try(:completion_type)
     end
 
+    def decision?
+      (self.kind || self.definition.try(:kind)) == Workflow::Definition::Step::DECISION
+    end
+
     def is_manual?
       definition.nil?
     end
