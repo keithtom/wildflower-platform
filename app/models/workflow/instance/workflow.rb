@@ -4,7 +4,9 @@ module Workflow
 
     belongs_to :definition, class_name: 'Workflow::Definition::Workflow'
 
-    has_many :processes, class_name: 'Workflow::Instance::Process'
+    has_many :processes
+    has_many :steps, through: :processes
+
     has_many :dependencies
 
     def name

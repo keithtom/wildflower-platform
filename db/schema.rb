@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_15_005201) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "addresses", force: :cascade do |t|
     t.string "addressable_type"
@@ -124,34 +152,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
     t.index ["entrepreneur_id"], name: "index_hubs_on_entrepreneur_id"
     t.index ["external_identifier"], name: "index_hubs_on_external_identifier", unique: true
     t.index ["name"], name: "index_hubs_on_name", unique: true
-  end
-
-  create_table "oauth_access_tokens", force: :cascade do |t|
-    t.bigint "resource_owner_id"
-    t.bigint "application_id", null: false
-    t.string "token", null: false
-    t.string "refresh_token"
-    t.integer "expires_in"
-    t.datetime "revoked_at"
-    t.datetime "created_at", null: false
-    t.string "scopes"
-    t.string "previous_refresh_token", default: "", null: false
-    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
-    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
-    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
-    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
-  end
-
-  create_table "oauth_applications", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "uid", null: false
-    t.string "secret", null: false
-    t.text "redirect_uri"
-    t.string "scopes", default: "", null: false
-    t.boolean "confidential", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
   create_table "people", force: :cascade do |t|
@@ -327,10 +327,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
     t.string "jti", null: false
-    t.string "provider"
-    t.string "uid"
     t.string "authentication_token", limit: 30
-    t.datetime "authentication_token_at"
+    t.datetime "authentication_token_created_at"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
@@ -390,6 +388,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
     t.integer "position"
     t.integer "min_worktime", default: 0
     t.integer "max_worktime", default: 0
+    t.string "completion_type"
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
@@ -435,24 +434,32 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
     t.index ["workflow_id"], name: "index_workflow_instance_processes_on_workflow_id"
   end
 
+  create_table "workflow_instance_step_assignments", force: :cascade do |t|
+    t.bigint "step_id", null: false
+    t.bigint "assignee_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "selected_option_id"
+    t.index ["assignee_id"], name: "index_workflow_instance_step_assignments_on_assignee_id"
+    t.index ["step_id"], name: "index_workflow_instance_step_assignments_on_step_id"
+  end
+
   create_table "workflow_instance_steps", force: :cascade do |t|
     t.bigint "process_id"
     t.bigint "definition_id"
     t.string "title"
     t.string "kind"
-    t.boolean "completed", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
-    t.datetime "completed_at"
     t.string "external_identifier", null: false
-    t.bigint "selected_option_id"
-    t.bigint "assignee_id"
-    t.index ["assignee_id"], name: "index_workflow_instance_steps_on_assignee_id"
+    t.boolean "completed", default: false
+    t.boolean "assigned", default: false
+    t.string "completion_type"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
-    t.index ["selected_option_id"], name: "index_workflow_instance_steps_on_selected_option_id"
   end
 
   create_table "workflow_instance_workflows", force: :cascade do |t|
@@ -460,15 +467,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_163907) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.string "current_phase", default: "visioning"
     t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end
 
-  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ssj_team_members", "ssj_teams"
   add_foreign_key "ssj_teams", "people", column: "ops_guide_id"
   add_foreign_key "ssj_teams", "people", column: "regional_growth_lead_id"
   add_foreign_key "ssj_teams", "workflow_instance_workflows", column: "workflow_id"
   add_foreign_key "taggings", "tags"
-  add_foreign_key "workflow_instance_steps", "people", column: "assignee_id"
+  add_foreign_key "workflow_instance_step_assignments", "workflow_instance_steps", column: "step_id"
 end

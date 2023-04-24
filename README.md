@@ -24,6 +24,21 @@ Things you may want to cover:
 Any merge to the `main` branch on the Github repository will automatically deploy to produciton and run migrations.
 You can follow the process by using the `heroku logs --tail` command.
 
+### Development Environment
+
+The development host is `https://api-dev.wildflowerschools.org`
+Merging to the branch `main` will automatically deploy to this environment.
+
+### Staging Environment
+
+The staging host is `https://api-staging.wildflowerschools.org`.
+Merging to the branch `staging` will automatically deploy to this environment.
+
+### Production Environment
+
+The production host is `https://api.wildflowerschools.org`.
+Merging to the branch `production` will automatically deploy to this environment.
+
 
 ## Platform API
 
@@ -61,6 +76,15 @@ Analytics
 - you can see average completion times
 - you can see what manual steps are missing
 - you can track which workers are working well
+
+### ActiveStorage
+Using active storage to manage uploaded profile image's storage and the attachment to the person model. 
+
+The workflow is as such:
+- client sends a POST request to `/rails/active_storage/direct_uploads` with some blob information, including checksum
+- API creates a blob record in the database and sends back a token, a URL for the client to directly upload the image to, and a `signed_id` to identify the blob
+- client then uploads image to the direct URL with the token. API verifies the token is in fact for a blob, and then proceeds to upload to whichever service (production: aws, local: local).
+- client then updates the person record with the `signed_id` as the `profile_image`
 
 ### Summary
 - this system includes

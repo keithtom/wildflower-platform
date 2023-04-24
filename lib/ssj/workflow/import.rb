@@ -52,19 +52,30 @@ module SSJ
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, category_list: process_category, start_considering: process_start_considering
-
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, start_considering: process_start_considering
+            process_obj.category_list.add(process_category) # need to add category separately, so that it doens't parse on commas
+            process_obj.save!
             step_position = 0
           elsif process_title.blank? && step_title.present? # refactor to import_step
             puts "  adding #{process_obj.title}/#{step_title}"
             step_description = row[17]&.strip
+            step_completion_type = row[18]&.strip
             step_type = row[16]&.strip
             # step_content = row[18]&.strip
             step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
+
+            case step_completion_type
+            when "Individual"
+              completion_type = ::Workflow::Definition::Step::EACH_PERSON
+            when "Collaborative"
+              completion_type = ::Workflow::Definition::Step::ONE_PER_GROUP
+            else
+              raise "unknown completion type #{step_completion_type}"
+            end
             
             step_min_worktime = convert_to_minutes(row[20]&.strip, row[22]&.strip)
             step_max_worktime = convert_to_minutes(row[21]&.strip, row[22]&.strip)
-            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position, min_worktime: step_min_worktime, max_worktime: step_max_worktime)
+            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position, min_worktime: step_min_worktime, max_worktime: step_max_worktime, completion_type: completion_type)
 
             step_document_titles = row[24]&.strip&.split("\n") || []
             step_document_links = row[25]&.strip&.split("\n") || []
@@ -122,11 +133,11 @@ module SSJ
 
       def default_process_position
         case @phase_tag.to_s
-        when "visioning"
+        when ::SSJ::Phase::VISIONING
           100_000
-        when "planning"
+        when ::SSJ::Phase::PLANNING
           200_000
-        when "startup"
+        when ::SSJ::Phase::STARTUP
           300_000
         end
       end
@@ -168,13 +179,13 @@ def create_default_workflow_and_processes
 
   # visioning = File.open('visioning.csv').read
   visioning = URI.open("https://www.dropbox.com/s/mz217l67txci7l6/visioning.csv?dl=1").read
-  SSJ::Workflow::Import.new(visioning, workflow_definition, visioning_process, "visioning").import
+  SSJ::Workflow::Import.new(visioning, workflow_definition, visioning_process, ::SSJ::Phase::VISIONING).import
 
   # planning = File.open('planning.csv').read
   planning = URI.open("https://www.dropbox.com/s/og60xsgaqqs94qn/planning.csv?dl=1").read
-  SSJ::Workflow::Import.new(planning, workflow_definition, planning_process, "planning").import
+  SSJ::Workflow::Import.new(planning, workflow_definition, planning_process, ::SSJ::Phase::PLANNING).import
 
   # startup = File.open('startup.csv').read
   startup = URI.open("https://www.dropbox.com/s/x5gelsrogmfoft7/startup.csv?dl=1").read
-  SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, "startup").import
+  SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, ::SSJ::Phase::STARTUP).import
 end

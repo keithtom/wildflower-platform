@@ -3,7 +3,9 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  searchkick # callbacks: :async
+  # searchkick # callbacks: :async
+  include Person::Workflow
+  include Person::SSJ
 
   acts_as_taggable_on :audiences, :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles
 
@@ -28,9 +30,7 @@ class Person < ApplicationRecord
   attr_accessor :full_name
   before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
 
-  has_one :ssj_team_member, class_name: "SSJ::TeamMember", foreign_key: 'person_id'
-  has_one :ssj_team, through: :ssj_team_member
-
+  has_one_attached :profile_image
 
   # https://github.com/ankane/searchkick#indexing
   def search_data

@@ -23,6 +23,19 @@ class V1::PeopleController < ApiController
     render json: V1::PersonSerializer.new(@person)
   end
 
+  def update
+    if current_user
+      @person = current_user.person
+      @person.update!(person_params)
+      render json: V1::PersonSerializer.new(@person.reload)
+    else
+      render json: {
+        status: 401,
+        message: "Must be signed in"
+      }, status: :unauthorized
+    end
+  end
+
   protected
   # advanced filters can do things like
   #   people_filters[group]= values; e.g. { tuition_assistance_type => ['state vouchers', 'county childcare']}
@@ -30,5 +43,19 @@ class V1::PeopleController < ApiController
   # roles = list of tags (used to be skills)
   def search_params
     params.require(:search).permit(:q, :audiences, :roles, :people_filters, :school_filters, :offset, :limit)
+  end
+
+  def person_params
+    params.require(:person).permit(:profile_image,
+                                   :first_name,
+                                   :last_name,
+                                   :email,
+                                   :primary_language,
+                                   :race_ethnicity_other,
+                                   :lgbtqia,
+                                   :gender,
+                                   :prounouns,
+                                   :household_income,
+                                   address_attributes: [:city, :state])
   end
 end

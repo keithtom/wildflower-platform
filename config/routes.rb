@@ -10,7 +10,10 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
-  post "/users/token" => "users/sessions#token", as: :user_token
+
+  devise_scope :user do
+    post "/users/email_login" => "users/registrations#email_login", as: :email_login
+  end
 
   namespace :v1 do
     resources :users, except: [:index, :create, :destroy]
