@@ -52,6 +52,9 @@ pod3 = FactoryBot.create(:pod, hub: hub2)
 school3 = FactoryBot.create(:school)
 school3.address = FactoryBot.create(:address)
 
+# ops guide
+ops_guide = FactoryBot.create(:person)
+
 # new discovery user
 user3 = FactoryBot.create(:user)  # hasn't yet associated personal profile yet
 
@@ -136,9 +139,10 @@ workflow_instance = SSJ::Initialize.run(workflow_definition)
 # then i can assign things and see todo list. as well as process show.
 
 # SSJ Team
-ssj_team = SSJ::Team.create workflow: workflow_instance
-SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
-SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+ssj_team = SSJ::Team.create! workflow: workflow_instance
+SSJ::TeamMember.create!(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+SSJ::TeamMember.create!(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+SSJ::TeamMember.create!(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
 
 # Create many of theses
 50.times do |i|
