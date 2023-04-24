@@ -8,4 +8,8 @@ class SSJMailerPreview < ActionMailer::Preview
   def invite
     SSJMailer.invite(User.first)
   end
+
+  def login
+    SSJMailer.login(User.first)
+  end
 end

@@ -11,6 +11,10 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
+  devise_scope :user do
+    post "/users/email_login" => "users/registrations#email_login", as: :email_login
+  end
+
   namespace :v1 do
     resources :users, except: [:index, :create, :destroy]
 
