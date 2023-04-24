@@ -120,20 +120,8 @@ end
 workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process7
 workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process8
 
-# create user, person x 2
-# create team, create team members
-# instantiate workflow
-instance = SSJ::Initialize.run(workflow_definition)
-# assign to team.
-team = SSJ::Team.find(2)
-team.update(workflow: instance)
-
 # create a workflow instance
-# c502-4f84 hardcode
-# and hardcode user for test@  "aef6-b33b"
 workflow_instance = SSJ::Initialize.run(workflow_definition)
-
-# then i can assign things and see todo list. as well as process show.
 
 # SSJ Team
 ssj_team = SSJ::Team.create workflow: workflow_instance
