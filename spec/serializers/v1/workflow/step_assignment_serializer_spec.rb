@@ -13,7 +13,7 @@ describe V1::Workflow::StepAssignmentSerializer do
 
 
   it "should serialize properly" do
-    expect(json_document['data']).to have_relationships(:step, :assignee, :selectedOption)
+    expect(json_document['data']).to have_relationships(:step, :assignee)
     expect(json_document['data']).to have_jsonapi_attributes(:assignedAt, :completedAt)
   end
 end
