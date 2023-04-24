@@ -61,7 +61,7 @@ RSpec.describe SSJMailer, type: :mailer do
   end
 
   describe 'login' do
-    let(:user) { create(:user) }
+    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
     let(:mail) { SSJMailer.login(user) }
 
     it 'renders the headers' do
@@ -71,7 +71,7 @@ RSpec.describe SSJMailer, type: :mailer do
     end
 
     it 'renders the login url' do
-      expect(mail.body.encoded).to match("https://platform.wildflowerschools.org/token?token=#{user.authentication_token}&redirect=https%3A%2F%2Fplatform.wildflowerschools.org%2Fssj")
+      expect(mail.body.encoded).to match("https://platform.wildflowerschools.org/token\\?token=#{user.authentication_token}&redirect=https%3A%2F%2Fplatform.wildflowerschools.org%2Fssj")
     end
   end
 end
