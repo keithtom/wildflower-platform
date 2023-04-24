@@ -44,6 +44,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
+  # POST /resource/email_login
+  # send an email to a user to login via link
+  def email_login
+    if user = User.find_by(email: params[:email])
+      Users::GenerateToken.call(user)
+      SSJMailer.login(user).deliver_now
+    end
+    render json: { message: "Email sent successfully" }
+  end
+
   # protected
 
   # If you have extra params to permit, append them to the sanitizer.

@@ -30,5 +30,12 @@ class SSJMailer < ApplicationMailer
 
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
+
+  def login(user)
+    @user = user
+    link = CGI.escape("https://platform.wildflowerschools.org/ssj")
+    @login_url = "https://platform.wildflowerschools.org/token?token=#{user.authentication_token}&redirect=#{link}"
+    mail to: @user.email, subject: "Login to the School Startup Journey!"
+  end
 end
 

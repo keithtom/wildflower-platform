@@ -1,5 +1,6 @@
 class V1::Workflow::StepAssignmentSerializer < ApplicationSerializer
-  set_id :created_at # exception to the rule, we don't care about sharing this
+  set_id :id # TODO: change to extenral identifier
+  set_type :assignment
 
   attributes :completed_at
   attribute :assigned_at do |record|
@@ -14,7 +15,7 @@ class V1::Workflow::StepAssignmentSerializer < ApplicationSerializer
     record.assignee
   end
 
-  belongs_to :selected_option, serializer: V1::Workflow::DecisionOptionSerializer, id_method_name: :external_identifier do |step|
+  belongs_to :selected_option, if: proc { |resource| resource.step.decision? }, serializer: V1::Workflow::DecisionOptionSerializer, id_method_name: :external_identifier do |step|
     step.selected_option
   end
 end
