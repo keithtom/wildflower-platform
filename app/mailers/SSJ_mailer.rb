@@ -14,8 +14,8 @@ class SSJMailer < ApplicationMailer
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
     # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
-    link = CGI.escape("#{ENV['API_URL']}/welcome/existing-tl")
-    @invite_url = "#{ENV['API_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    link = CGI.escape("#{ENV['FRONTEND_URL']}/welcome/existing-tl")
+    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
 
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
@@ -25,16 +25,16 @@ class SSJMailer < ApplicationMailer
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
     # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
-    link = CGI.escape("#{ENV['API_URL']}/welcome/existing-tl")
-    @invite_url = "#{ENV['API_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    link = CGI.escape("#{ENV['FRONTEND_URL']}/welcome/existing-tl")
+    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
 
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
 
   def login(user)
     @user = user
-    link = CGI.escape("#{ENV['API_URL']}/ssj")
-    @login_url = "#{ENV['API_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    link = CGI.escape("#{ENV['FRONTEND_URL']}/ssj")
+    @login_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
     mail to: @user.email, subject: "Login to the School Startup Journey!"
   end
 end
