@@ -16,6 +16,6 @@ class Users::SendInviteEmail < BaseCommand
   end
 
   def send_invite_email
-    SSJMailer.with(user: @user).invite.deliver_later
+    SSJMailer.invite(@user).deliver_later
   end
 end
