@@ -23,7 +23,7 @@ class V1::SSJ::DashboardController < ApiController
     
     team = find_team
     # find all the incomplete assignments/steps for this team's partners and this specific workflow.
-    assignments  = Workflow::Instance::StepAssignment.where(assignee_id: team.partner_ids).for_workflow(team.workflow_id).incomplete.includes(:assignee, :selected_option, step: [:process, :documents, definition: [:documents]])
+    assignments  = Workflow::Instance::StepAssignment.where(assignee_id: team&.partner_ids).for_workflow(team.workflow_id).incomplete.includes(:assignee, :selected_option, step: [:process, :documents, definition: [:documents]])
     
     # before we could group steps by 1 assignee, now we have multiple assignees per step so grouping that way doens't work
     # we can have assignment serializer handle serialization of steps, because it'd save us dual step serialization.
