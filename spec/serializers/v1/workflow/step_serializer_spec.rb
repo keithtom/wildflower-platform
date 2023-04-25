@@ -6,7 +6,10 @@ describe V1::Workflow::StepSerializer do
   let!(:assignee) { create(:workflow_instance_step_assignment, step: step).assignee }
 
   let(:default_options) {
-    { include: [:process, :documents, :assignments] }
+    {
+      params: { current_user: create(:user) },
+      include: [:process, :documents, :assignments]
+    }
   }
   
   subject { described_class.new(step, default_options).as_json }
