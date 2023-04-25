@@ -19,22 +19,21 @@ class V1::SSJ::DashboardController < ApiController
   # this is arguably a workflow function.
   # step assignments index for a given workflow.
   def assigned_steps
-    # TODO: this should just serialize into steps, let the front end sort out who assignees are; but that requires front-end work;
     
     team = find_team
-    # find all the incomplete assignments/steps for this team's partners and this specific workflow.
-    assignments  = Workflow::Instance::StepAssignment.where(assignee_id: team&.partner_ids).for_workflow(team.workflow_id).incomplete.includes(:assignee, :selected_option, step: [:process, :documents, definition: [:documents]])
     
+    # find all the incomplete assignments/steps for this partner and this specific workflow.
+    assignments = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(team.workflow_id).incomplete.includes(:assignee, step: [:process, :documents, definition: [:documents]])
+    steps = assignments.map { |assignment| assignment.step }
+
     # before we could group steps by 1 assignee, now we have multiple assignees per step so grouping that way doens't work
     # we can have assignment serializer handle serialization of steps, because it'd save us dual step serialization.
-    # or i somehow group the steps and put the completion/assignment info inside.
-    # but i can manage that all on the front end.  
-    # you just have the step and its assignee, and completion.  that's ideal.
+    
+    serialization_options = {}
+    serialization_options[:params] = { current_user: current_user }
+    serialization_options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
 
-    options = {}
-    options[:params] = { current_user: current_user }
-    options[:include] = ['assignee', 'selected_option', 'step', 'step.documents', 'step.process']
-    render json: V1::Workflow::StepAssignmentSerializer.new(assignments, options)
+    render json: V1::Workflow::StepSerializer.new(steps, serialization_options)
   end
 
   # this can be a turned to a team resource

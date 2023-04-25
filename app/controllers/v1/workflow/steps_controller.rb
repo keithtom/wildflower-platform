@@ -60,8 +60,8 @@ class V1::Workflow::StepsController < ApiController
 
   def serialization_options
     options = {}
-    options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
     options[:params] = { current_user: current_user }
+    options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
     options
   end
 
