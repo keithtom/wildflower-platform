@@ -5,7 +5,6 @@
 # To make updates, you have to update the dropbox links at the bottom and run #create_default_workflow_and_processes.
 
 require 'csv'
-require 'workflow/definition/process'
 
 module SSJ
   module Workflow
