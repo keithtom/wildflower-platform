@@ -21,11 +21,13 @@ class SSJ::InviteUser < BaseService
     ops_guide = User.find_by!(email: @ops_guide_email)
     team = SSJ::Team.create!(workflow: @workflow_instance, ops_guide_id: ops_guide.person.id)
     SSJ::TeamMember.create!(person: @user.reload.person, ssj_team: team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
-    SSJ::TeamMember.create!(person: @ops_guide.person, ssj_team: team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person: ops_guide.person, ssj_team: team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
   end
 
   def create_workflow_instance
     workflow_definition = Workflow::Definition::Workflow.find_by!(name: "National, Independent Sensible Default")
     @workflow_instance = SSJ::Initialize.run(workflow_definition)
+    team.workflow = @workflow_instance
+    team.save!
   end
 end
