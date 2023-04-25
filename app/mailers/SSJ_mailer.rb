@@ -38,4 +38,3 @@ class SSJMailer < ApplicationMailer
     mail to: @user.email, subject: "Login to the School Startup Journey!"
   end
 end
-
