@@ -21,7 +21,6 @@ class V1::Workflow::StepsController < ApiController
   def uncomplete
     @person = current_user.person
     Workflow::Instance::Step::Uncomplete.run(@step, @person)
-
     render_step
   end
 
@@ -56,17 +55,18 @@ class V1::Workflow::StepsController < ApiController
   private
 
   def render_step
-    render json: V1::Workflow::StepSerializer.new(@step.reload, step_options)
+    render json: V1::Workflow::StepSerializer.new(@step.reload, serialization_options)
   end
 
-  def step_options
+  def serialization_options
     options = {}
-    options[:include] = ['process', 'documents', 'assignments']
-    return options
+    options[:params] = { current_user: current_user }
+    options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
+    options
   end
 
   def find_step
-    @step = find_team.workflow.steps.find_by!(external_identifier: params[:id])
+    @step = find_team.workflow.steps.includes(:process, :documents, assignments: [:assignee]).find_by!(external_identifier: params[:id])
   end
 
   # TODO: have a different set of params for a manual step

@@ -52,5 +52,8 @@ pod3 = FactoryBot.create(:pod, hub: hub2)
 school3 = FactoryBot.create(:school)
 school3.address = FactoryBot.create(:address)
 
+# ops guide
+ops_guide = FactoryBot.create(:person)
+
 # new discovery user
 user3 = FactoryBot.create(:user)  # hasn't yet associated personal profile yet

@@ -12,6 +12,6 @@ module Workflow
     acts_as_taggable_on :categories, :phase
     enum effort: { small: 0, medium: 1, large: 2 }
 
-    scope :by_position, -> { order("workflow_instance_processes.position ASC") }
+    scope :by_position, -> { order("workflow_definition_processes.position ASC") }
   end
 end

@@ -29,7 +29,7 @@ module Workflow
         
         assignment = @step.assignments.for_person_id(@person.id).update(completed_at: nil)
 
-        if @step.assignments.incomplete.count == 0
+        if @step.assignments.complete.count == 0
           @step.completed = false
           @step.save!
         end
