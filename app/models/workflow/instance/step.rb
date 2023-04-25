@@ -12,6 +12,7 @@ module Workflow
     
     before_create :set_position
 
+    scope :by_position, -> { order("workflow_instance_steps.position ASC") }
     scope :complete, -> { where(completed: true) }
     scope :incomplete, -> { where(completed: [false, nil]) }
     scope :assigned, -> { where(assigned: true) }
@@ -47,6 +48,14 @@ module Workflow
 
     def is_manual?
       definition.nil?
+    end
+
+    def individual?
+      completion_type == Workflow::Definition::Step::EACH_PERSON
+    end
+
+    def collaborative?
+      completion_type == Workflow::Definition::Step::ONE_PER_GROUP
     end
 
     private

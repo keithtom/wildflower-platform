@@ -13,6 +13,8 @@ module Workflow
 
     COMPLETION_TYPES = [EACH_PERSON = 'each_person', ONE_PER_GROUP = 'one_per_group'].freeze
 
+    scope :by_position, -> { order("workflow_definition_steps.position ASC") }
+    
     private
 
     def set_position

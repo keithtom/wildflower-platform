@@ -26,11 +26,11 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   end
 
   has_many :steps, serializer: V1::Workflow::StepSerializer, id_method_name: :external_identifier do |process, params|
-      process.steps
+      process.steps.by_position
   end
 
   has_many :prerequisite_processes, if: Proc.new { |process, params| params && params[:prerequisites] }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
-    process.prerequisites
+    process.prerequisites.by_position
   end
   
 end
