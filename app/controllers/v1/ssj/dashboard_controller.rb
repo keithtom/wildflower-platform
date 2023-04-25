@@ -32,6 +32,7 @@ class V1::SSJ::DashboardController < ApiController
     # you just have the step and its assignee, and completion.  that's ideal.
 
     options = {}
+    options[:params] = { current_user: current_user }
     options[:include] = ['assignee', 'selected_option', 'step', 'step.documents', 'step.process']
     render json: V1::Workflow::StepAssignmentSerializer.new(assignments, options)
   end

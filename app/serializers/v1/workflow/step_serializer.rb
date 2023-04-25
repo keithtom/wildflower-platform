@@ -20,6 +20,22 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     resource.decision?
   end
 
+  attribute :is_assigned_to_me do |step, params|
+    step.assignments.where(assignee: params[:current_user].person).exists?
+  end
+
+  # this refers to if the current user should see the step as complete
+  attribute :is_complete do |step, params|
+    case
+    when step.individual?
+      params[:current_user] && step.assignments.complete.where(assignee: params[:current_user].person).exists?
+    when step.collaborative?
+      step.assignments.complete.exists?
+    else
+      raise "Unknown completion type: #{step.completion_type}"
+    end
+  end
+
   attribute :decision_options, if: proc { |step| step.decision? } do |step|
     unless step.definition.nil? || step.kind != Workflow::Definition::Step::DECISION
       step.definition.decision_options.map {|decision_option| V1::Workflow::DecisionOptionSerializer.new(decision_option).to_json }
@@ -36,19 +52,32 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
 
   attribute :can_assign do |step|
     # can't be assigned if it is already completed
-    !step.completed
+    !step.completed # and not already assigned?
+  end
+
+  attribute :can_unassign do |step, params|
+    step.assignments.where(assignee: params[:current_user].person).exists?
   end
 
   attribute :can_complete do |step, params|
     case step.completion_type
     when Workflow::Definition::Step::EACH_PERSON
-      # did this person complete it?
+      # making our responses depending on the current user who requested them?  makes the resource not very restful.
+      # we'll have to pass around current user into our serializers.
+      # if we have the resoure be dumb, then we have to put intelligence of comlpetion in the front end.
+      # shoudl the front end decide rules like can_complete? errors will result in API errors when use tries to complete but cant.
+      # serializers should contain presentation logic.  and i wnat dumb front ends.
+      params[:current_user] && !step.assignments.complete.where(assignee: params[:current_user].person).exists?
     when Workflow::Definition::Step::ONE_PER_GROUP
-      # did anyone complete it?
       !step.completed
     else
       raise "Unknown completion type: #{step.completion_type}"
     end
+  end
+
+  # need messages of why it can't uncomplete.
+  attribute :can_uncomplete do |step, params|
+    step.process.completed_at.blank? && step.assignments.complete.where(assignee: params[:current_user].person).exists?
   end
   
   # When do we use this on step?  it should be refactored here.

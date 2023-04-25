@@ -5,7 +5,7 @@ describe V1::Workflow::StepAssignmentSerializer do
   let(:assignment) { create(:workflow_instance_step_assignment) }
 
   let(:default_options) {
-    { params: { basic: true},
+    { params: { current_user: create(:user) },
       include: [:step, :assignee, :selected_option] }
   }
   

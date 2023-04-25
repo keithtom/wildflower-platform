@@ -5,6 +5,7 @@ class V1::Workflow::ProcessesController < ApiController
 
 
     serialization_options = {
+      params: { current_user: current_user },
       include: ['workflow', 'steps', 'steps.documents', 'steps.assignments'],
       fields: { # whitelist what we think should go there and it should match what's eager loaded
         # process: [],
@@ -65,7 +66,6 @@ class V1::Workflow::ProcessesController < ApiController
     # need to include decision options for step? seems like an attribute.
     serialization_options = {
       fields: [], # use prerequisites here to turn it on or off.
-      params: { prerequisites: true },
       include: ['workflow', 'steps', 'steps.documents', 'steps.assignments', 'steps.assignments.assignee',
         'steps.assignments.selected_option',
         'prerequisite_processes']
