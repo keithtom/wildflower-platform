@@ -8,7 +8,7 @@ class SSJ::InviteUser < BaseService
   def run
     create_person if @user.person.nil?
     create_ssj_team if @user.person.ssj_team.nil?
-    create_workflow_instance if @user.person.ssj_team.workflow.nil?
+    create_workflow_instance
     Users::SendInviteEmail.call(@user)
   end
 
@@ -27,7 +27,7 @@ class SSJ::InviteUser < BaseService
   def create_workflow_instance
     workflow_definition = Workflow::Definition::Workflow.find_by!(name: "National, Independent Sensible Default")
     @workflow_instance = SSJ::Initialize.run(workflow_definition)
-    team.workflow = @workflow_instance
-    team.save!
+    @user.person.ssj_team.workflow = @workflow_instance
+    @user.person.ssj_team.save!
   end
 end
