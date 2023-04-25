@@ -2,12 +2,10 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
-  # method override
   def serializable_hash
     {
       by_phase: grouped_by_phase(@resource),
       by_category: grouped_by_category(@resource)
-
     }
   end
 

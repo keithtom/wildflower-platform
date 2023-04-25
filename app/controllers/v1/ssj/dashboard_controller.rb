@@ -3,8 +3,11 @@ class V1::SSJ::DashboardController < ApiController
   # helps draw the SSJ dashboard page.
   def progress
     workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
-    processes = workflow.processes.eager_load(:prerequisites, :steps, :categories, definition: [:phase, :categories])
-    render json: V1::SSJ::ProcessProgressSerializer.new(processes)
+    processes = workflow.processes.eager_load(:prerequisites, :categories, steps: [:assignments], definition: [:phase, :categories])
+    
+    assigned_steps_count = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(workflow_id).incomplete.count
+
+    render json: V1::SSJ::ProcessProgressSerializer.new(processes).serializable_hash.merge(assigned_steps: assigned_steps_count)
   end
 
   # helps draw the SSJ resources page (resources are viewed as an SSJ specific concept)

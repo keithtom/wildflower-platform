@@ -4,7 +4,7 @@ class V1::SSJ::TeamSerializer < ApplicationSerializer
     {
       hasPartner: has_partner?(@resource),
       expectedStartDate: @resource.expected_start_date,
-      team: V1::PersonSerializer.new(@resource.people.active, { include: ['schools', 'school_relationships', 'address'] })
+      team: V1::PersonSerializer.new(@resource.people.active.includes(:schools, :school_relationships, :address, :taggings, :profile_image_attachment), { include: ['schools', 'school_relationships', 'address'] })
     }
   end
 
