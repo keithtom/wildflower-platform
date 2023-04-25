@@ -65,7 +65,7 @@ class V1::Workflow::ProcessesController < ApiController
     
     # need to include decision options for step? seems like an attribute.
     serialization_options = {
-      params: { current_user: current_user },
+      params: { prerequisites: true, current_user: current_user },
       fields: [], # use prerequisites here to turn it on or off.
       include: ['workflow', 'steps', 'steps.documents', 'steps.assignments', 'steps.assignments.assignee',
         'steps.assignments.selected_option',
