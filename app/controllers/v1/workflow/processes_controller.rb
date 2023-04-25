@@ -11,7 +11,7 @@ class V1::Workflow::ProcessesController < ApiController
         # step: []
       }
     }
-    eager_load_associations = [:categories, steps: [:definition, :documents, :assignments], definition: [:taggings, :categories, steps: [:documents]]]
+    eager_load_associations = [:categories, :prerequisites, steps: [:definition, :documents, :assignments], definition: [:taggings, :categories, steps: [:documents]]]
     processes = nil
     if params[:phase]
       if SSJ::Phase::PHASES.include?(params[:phase])
