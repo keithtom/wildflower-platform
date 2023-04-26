@@ -2,7 +2,6 @@ class V1::Workflow::ProcessesController < ApiController
   def index
     query = params[:workflow_id] ? { external_identifier: params[:workflow_id] } : { id: workflow_id }
     workflow = Workflow::Instance::Workflow.find_by!(query)
-
     serialization_options = {
       params: { current_user: current_user },
       include: ['workflow', 'steps', 'steps.documents', 'steps.assignments'],
@@ -12,6 +11,12 @@ class V1::Workflow::ProcessesController < ApiController
       }
     }
     eager_load_associations = [:categories, :prerequisites, steps: [:definition, :documents, :assignments], definition: [:taggings, :categories, steps: [:documents]]]
+
+    if params[:omit_include]
+      serialization_options.delete(:include)
+      eager_load_associations = [:categories, :prerequisites, definition: [:taggings, :categories]]
+    end
+
     processes = nil
     if params[:phase]
       if SSJ::Phase::PHASES.include?(params[:phase])
