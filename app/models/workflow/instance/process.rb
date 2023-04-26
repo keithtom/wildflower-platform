@@ -15,7 +15,7 @@ module Workflow
 
     acts_as_taggable_on :categories
     enum effort: { small: 0, medium: 1, large: 2 }
-    enum completion_status: { unstarted: 0, to_do: 1, in_progress: 2, done: 3 }
+    enum completion_status: { unstarted: 0, to_do: 1, in_progress: 2, done: 3 } # TODO: to_do is never actually used. remove it.
     # add second enum for dependency status?  find the matrix and represent it here.
 
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
