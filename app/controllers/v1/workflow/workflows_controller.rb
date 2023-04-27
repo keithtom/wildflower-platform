@@ -4,7 +4,7 @@ class V1::Workflow::WorkflowsController < ApiController
     # figure out which workflows they have with that ID
 
     @workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:id])
-    render json: V1::Workflow::WorkflowSerializer.new(@workflow, include: ['processes'])
+    render json: V1::Workflow::WorkflowSerializer.new(@workflow)
   end
 
   def resources
