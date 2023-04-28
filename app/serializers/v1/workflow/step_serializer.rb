@@ -90,11 +90,4 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   attribute :can_uncomplete do |step, params|
     step.process.completed_at.blank? && step.assignments.complete.where(assignee: params[:current_user].person).exists?
   end
-  
-  # When do we use this on step?  it should be refactored here.
-  # bit of a hack so we can have assignee information when the step serializer is nested in the process serializer
-  # attribute :assignee_info, if: Proc.new {|step, params| !params[:basic] && step.assignee } do |step|
-  #   assignee = step.assignee
-  #   { id: assignee.external_identifier, imageUrl: assignee.image_url }
-  # end
 end
