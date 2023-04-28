@@ -43,7 +43,7 @@ module Workflow
     end
 
     def decision?
-      (self.kind || self.definition.try(:kind)) == Workflow::Definition::Step::DECISION
+      kind == Workflow::Definition::Step::DECISION
     end
 
     def is_manual?
