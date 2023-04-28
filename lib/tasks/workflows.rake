@@ -12,12 +12,12 @@ namespace :workflows do
     workflow_instance = SSJ::Initialize.run(workflow_definition)
 
     puts "setting test users' workflow to instantiated workflow"
-    user1 = User.find_or_create_by!(email: 'test@test.com')
+    user1 = User.find_or_create_by!(email: 'test@test.com', password: 'password')
     if user1.person.nil?
       user1.person = FactoryBot.create!(:person)
       user1.save!
     end
-    user2 = User.find_or_create_by!(email: 'test2@test.com')
+    user2 = User.find_or_create_by!(email: 'test2@test.com', password: 'password')
     if user2.person.nil?
       user2.person = FactoryBot.create!(:person)
       user2.save!

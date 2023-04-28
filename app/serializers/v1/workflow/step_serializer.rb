@@ -37,13 +37,13 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   end
 
   # we don't persist selection without completion.
-  attribute :selected_option do |step, params|
+  attribute :selected_option, if: proc { |step| step.decision? } do |step, params|
     case
     when step.individual?
       params[:current_user] && step.assignments.where(assignee: params[:current_user].person).first&.selected_option&.external_identifier
     when step.collaborative?
       # take the first selected option
-      step.assignments.where.not(selected_option: nil).order("created_at ASC").first.selected_option.external_identifier
+      step.assignments.where.not(selected_option: nil).order("created_at ASC").first&.selected_option&.external_identifier
     else
       raise "Unknown completion type: #{step.completion_type}"
     end
