@@ -65,13 +65,13 @@ class V1::Workflow::ProcessesController < ApiController
 
   def show
     # TODO: identify current user, check if process id is accessible to user; use a find_process helper.
-    eager_load_associations = { steps: [:documents, :assignments, definition: [:documents]] }
+    eager_load_associations = { steps: [:documents, :assignments, definition: [:documents, :decision_options]] }
     
     # need to include decision options for step? seems like an attribute.
     serialization_options = {
       params: { prerequisites: true, current_user: current_user },
       fields: [], # use prerequisites here to turn it on or off.
-      include: ['workflow', 'steps', 'steps.documents', 'steps.assignments', 'steps.assignments.assignee',
+      include: ['workflow', 'steps', 'steps.documents', 'steps.decision_options', 'steps.assignments', 'steps.assignments.assignee',
         'steps.assignments.selected_option',
         'prerequisite_processes']
     }

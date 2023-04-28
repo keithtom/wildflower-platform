@@ -31,15 +31,14 @@ namespace :workflows do
     SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
   
     puts "creating 50 teams with sensible, default workflow"
-    datestamp = DateTime.now.to_i
     50.times do |i|
       print "."
       person1 = FactoryBot.create(:person)
       person2 = FactoryBot.create(:person)
       person3 = FactoryBot.create(:person)
     
-      user1 = FactoryBot.create(:user, :person => person1, email: "test_#{datestamp}_#{(i+1)*2+1}@test.com", password: "password")
-      user2 = FactoryBot.create(:user, :person => person2, email: "test_#{datestamp}_#{(i+2)*2}@test.com", password: "password")
+      user1 = FactoryBot.create(:user, :person => person1, email: "test#{(i+1)*2+1}@test.com", password: "password")
+      user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+2)*2}@test.com", password: "password")
     
       workflow_instance = SSJ::Initialize.run(workflow_definition)
       ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: person3.id)
@@ -58,7 +57,8 @@ namespace :workflows do
     3.times { |i| FactoryBot.create(:workflow_definition_step, process: process1, title: "Step #{i+1}", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
     process2 = FactoryBot.create(:workflow_definition_process, title: "Milestone B-1", position: 200)
-    1.times { |i| FactoryBot.create(:workflow_definition_step, process: process2, title: "Step #{i+1}", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
+    decision_step = FactoryBot.create(:workflow_definition_step, process: process2, title: "Decision Step 1", kind: Workflow::Definition::Step::DECISION, position: Workflow::Definition::Step::DEFAULT_INCREMENT)
+    3.times { |i| FactoryBot.create(:workflow_decision_option, decision: decision_step, description: "Option #{i+1}") }
     
     process3 = FactoryBot.create(:workflow_definition_process, title: "Milestone B-2", position: 300)
     2.times { |i| FactoryBot.create(:workflow_definition_step, process: process3, title: "Step #{i+1}", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
@@ -78,7 +78,8 @@ namespace :workflows do
     2.times { |i| FactoryBot.create(:workflow_definition_step, process: process4, title: "Step #{i+1}", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
     process5 = FactoryBot.create(:workflow_definition_process, title: "Milestone C-X")
-    1.times { |i| FactoryBot.create(:workflow_definition_step, process: process5, title: "Collaborative Step #{i+1}", completion_type: Workflow::Definition::Step::ONE_PER_GROUP, position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
+    decision_step = FactoryBot.create(:workflow_definition_step, process: process5, title: "Collaborative Decision Step 1", kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, position: Workflow::Definition::Step::DEFAULT_INCREMENT)
+    4.times { |i| FactoryBot.create(:workflow_decision_option, decision: decision_step, description: "Option #{i+1}") }
     
     process6 = FactoryBot.create(:workflow_definition_process, title: "Milestone C-Y")
     2.times { |i| FactoryBot.create(:workflow_definition_step, process: process6, title: "Step #{i+1}", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
@@ -116,14 +117,13 @@ namespace :workflows do
     workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process8
     
     # Create many of theses
-    datestamp = DateTime.now.to_i
     50.times do |i|
       print "."
       person1 = FactoryBot.create(:person)
       person2 = FactoryBot.create(:person)
     
-      user1 = FactoryBot.create(:user, :person => person1, email: "test_#{datestamp}_#{(i+1)*2+1}@test.com", password: "password")
-      user2 = FactoryBot.create(:user, :person => person2, email: "test_#{datestamp}_#{(i+2)*2}@test.com", password: "password")
+      user1 = FactoryBot.create(:user, :person => person1, email: "fake#{(i)*2+1}@test.com", password: "password")
+      user2 = FactoryBot.create(:user, :person => person2, email: "fake#{(i+1)*2}@test.com", password: "password")
     
       workflow_instance = SSJ::Initialize.run(workflow_definition)
       ssj_team = SSJ::Team.create! workflow: workflow_instance
