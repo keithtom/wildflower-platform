@@ -1,10 +1,9 @@
 require 'ssj/workflow/import'
-require_relative '../../app/models/s_s_j.rb'
 
 namespace :workflows do
   desc 'destroy all workflow definitions, import new definitions from spreadsheet and create 50 ssj teams with workflows defined by import'
   task import_default: :environment do
-    abort 'Cannot destroy all and import into production' if Rails.env.production?
+    abort 'Cannot destroy all and import into production' if Rails.env.production? && ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].blank?
     puts "destroying all workflows and importing new ones"
     create_default_workflow_and_processes
 
@@ -137,11 +136,17 @@ namespace :workflows do
   desc 'invite new user'
   task invite_user: :environment do
     email = ENV['email']
+    first_name = ENV['first_name']
     abort 'Must provide an email address' if email.blank?
     ops_guide_email = ENV['ops_guide_email']
     abort 'Must provide an ops guide email address' if ops_guide_email.blank?
 
     user = User.find_or_create_by!(email: email)
+    person = Person.find_or_create_by!(email: email)
+    person.first_name = first_name
+    person.save!
+    user.person = person
+    user.save!
     SSJ::InviteUser.run(user, ops_guide_email)
     puts "invited #{email} to SSJ workflow"
   end
