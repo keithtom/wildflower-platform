@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_15_005201) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_28_033810) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -389,6 +389,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_005201) do
     t.integer "min_worktime", default: 0
     t.integer "max_worktime", default: 0
     t.string "completion_type"
+    t.string "decision_question"
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
