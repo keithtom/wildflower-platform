@@ -1,5 +1,9 @@
 <p>
-  Dear <%= @user.name %>,
+  <%- if @user.first_name %>
+    Dear <%= @user.first_name %>,
+  <% else %>
+    Hello!
+  <% end %> 
 </p>
 <p>
 We are thrilled to hear that you are interested in beginning the School Startup Journey with Wildflower!

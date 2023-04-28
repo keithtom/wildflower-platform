@@ -14,6 +14,12 @@ class User < ApplicationRecord
     false
   end
 
+  # use a delegation pattern
+  def first_name
+    person.first_name&.strip&.capitalize if person
+  end
+
+  # use a delegation pattern
   def name
     "#{person.first_name} #{person.last_name}".strip if person
   end
