@@ -36,6 +36,10 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     end
   end
 
+  attribute :decision_question, if: proc { |step| step.decision? } do |step|
+    step.definition.decision_question
+  end
+  
   # we don't persist selection without completion.
   attribute :selected_option, if: proc { |step| step.decision? } do |step, params|
     case
