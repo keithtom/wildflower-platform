@@ -58,6 +58,29 @@ module Workflow
       completion_type == Workflow::Definition::Step::ONE_PER_GROUP
     end
 
+    def assigned_to?(person)
+      assignments.where(assignee: person).exists?
+    end
+
+    def completed_by_me?(person)
+      assignments.complete.where(assignee: person).exists?
+    end
+
+    def completed_by_anyone?
+      assignments.complete.exists?
+    end
+
+    def completed_for?(person)
+      case
+      when individual?
+        completed_by_me?(person)
+      when collaborative?
+        completed_by_anyone?
+      else
+        raise "Unknown completion type: #{step.completion_type}"
+      end
+    end
+
     private
 
     def set_position
