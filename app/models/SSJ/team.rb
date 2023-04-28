@@ -1,3 +1,5 @@
+require "ssj"
+
 module SSJ
   class Team < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier

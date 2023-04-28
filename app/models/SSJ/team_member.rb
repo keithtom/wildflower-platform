@@ -1,3 +1,5 @@
+require "ssj"
+
 # Represents team membership
 module SSJ
   class TeamMember < ApplicationRecord
