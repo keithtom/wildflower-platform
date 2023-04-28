@@ -59,7 +59,14 @@ module SSJ
             puts "  adding #{process_obj.title}/#{step_title}"
             step_description = row[17]&.strip
             step_completion_type = row[18]&.strip
-            step_type = row[16]&.strip
+            step_type = case row[16]&.strip
+            when "Decision"
+              ::Workflow::Definition::Step::DECISION
+            when "Action"
+              ::Workflow::Definition::Step::DEFAULT
+            else
+              raise "unknown step type #{row[16]&.strip}"
+            end
             # step_content = row[18]&.strip
             step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
 
@@ -154,6 +161,41 @@ module SSJ
         end
       end
     end
+
+    class ImportDecisions
+      def initialize(source_csv, definition)
+        @source_csv = source_csv
+        @csv = CSV.parse(@source_csv)
+
+        # ignore first 2 header lines
+        @csv.shift
+        @definition = definition
+
+      end
+
+      def import
+        @csv.each do |row|
+          step_title = row[2]&.strip
+          step_decision_question = row[3]&.strip
+          step_decision_option1 = row[4]&.strip
+          step_decision_option2 = row[6]&.strip
+
+          step = @definition.steps.find_by(title: step_title.strip)
+
+          raise "step not found #{step_title}" unless step.present?
+
+          puts "updating step '#{step.title}'"
+          
+          puts "  adding decision question #{step_decision_question}"
+          step.decision_question = step_decision_question
+          step.save!
+          
+          puts "  adding decision options #{step_decision_option1} and #{step_decision_option2}"
+          step.decision_options.create!(description: step_decision_option1)
+          step.decision_options.create!(description: step_decision_option2)
+        end
+      end
+    end
   end
 end
 
@@ -187,4 +229,8 @@ def create_default_workflow_and_processes
   # startup = File.open('startup.csv').read
   startup = URI.open("https://www.dropbox.com/s/x5gelsrogmfoft7/startup.csv?dl=1").read
   SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, ::SSJ::Phase::STARTUP).import
+
+  # decisions
+  decisions = URI.open("https://www.dropbox.com/s/icho1tswb3zyk93/decisions.csv?dl=1").read
+  SSJ::Workflow::ImportDecisions.new(decisions, workflow_definition).import
 end
