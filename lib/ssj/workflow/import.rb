@@ -190,6 +190,7 @@ module SSJ
           step.decision_question = step_decision_question
           step.save!
           
+          step.decision_options.destroy_all
           puts "  adding decision options #{step_decision_option1} and #{step_decision_option2}"
           step.decision_options.create!(description: step_decision_option1)
           step.decision_options.create!(description: step_decision_option2)
