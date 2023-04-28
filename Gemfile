@@ -37,6 +37,9 @@ gem "elasticsearch", '~> 7.x'
 # models
 gem 'acts-as-taggable-on'
 
+# highlight.io
+gem 'highlight'
+
 group :development, :test do
   gem 'dotenv-rails'
 
@@ -77,6 +80,7 @@ group :production do
 
   # for ActiveStorage
   gem 'aws-sdk-s3', require: false
+
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

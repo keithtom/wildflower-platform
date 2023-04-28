@@ -186,6 +186,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hashie (5.0.0)
+    highlight (2.0.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.1)
@@ -388,6 +389,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   guard-rspec
+  highlight
   jsonapi-rspec
   jsonapi-serializer
   listen (~> 3.3)
