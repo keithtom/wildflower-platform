@@ -21,12 +21,17 @@ class V1::SSJ::DashboardController < ApiController
 
   # this is arguably a workflow function.
   # step assignments index for a given workflow.
+  # maybe let front end control the fields it wants. caller knows what it needs.
+  # eager loading changes depending on what front end requests though.  fields and includes and eagerloading are coupled.
+  # we can have short hands for the various combinations.  like param[:dashboard] = true
+  # we are current hard coded to waht the todolist needs since htat's all it needs.
   def assigned_steps
     
     team = find_team
     
     # find all the incomplete assignments/steps for this partner and this specific workflow.
-    assignments = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(team.workflow_id).incomplete.includes(:assignee, step: [:process, :documents, definition: [:documents]])
+    eager_load_associations = [:assignee, step: [:documents, process: [:definition], assignments: [:step, :assignee], definition: [:documents]]]
+    assignments = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(team.workflow_id).incomplete.includes(*eager_load_associations)
     steps = assignments.map { |assignment| assignment.step }
 
     # before we could group steps by 1 assignee, now we have multiple assignees per step so grouping that way doens't work
@@ -35,6 +40,10 @@ class V1::SSJ::DashboardController < ApiController
     serialization_options = {}
     serialization_options[:params] = { current_user: current_user }
     serialization_options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
+    serialization_options[:fields] = {
+      process: [:title],
+      person: [:firstName, :lastName, :profileImageAttachment, :imageUrl],
+    }
 
     render json: V1::Workflow::StepSerializer.new(steps, serialization_options)
   end
