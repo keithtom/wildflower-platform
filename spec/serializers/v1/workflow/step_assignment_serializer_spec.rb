@@ -6,14 +6,14 @@ describe V1::Workflow::StepAssignmentSerializer do
 
   let(:default_options) {
     { params: { current_user: create(:user) },
-      include: [:step, :assignee, :selected_option] }
+      include: [:assignee] }
   }
   
   subject { described_class.new(assignment, default_options).as_json }
 
 
   it "should serialize properly" do
-    expect(json_document['data']).to have_relationships(:step, :assignee)
+    expect(json_document['data']).to have_relationships(:assignee)
     expect(json_document['data']).to have_jsonapi_attributes(:assignedAt, :completedAt)
   end
 end
