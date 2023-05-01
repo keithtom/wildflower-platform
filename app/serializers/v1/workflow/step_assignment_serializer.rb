@@ -14,8 +14,4 @@ class V1::Workflow::StepAssignmentSerializer < ApplicationSerializer
   belongs_to :assignee, serializer: V1::PersonSerializer, id_method_name: :external_identifier do |record|
     record.assignee
   end
-
-  belongs_to :selected_option, if: proc { |resource| resource.step.decision? }, serializer: V1::Workflow::DecisionOptionSerializer, id_method_name: :external_identifier do |step|
-    step.selected_option
-  end
 end
