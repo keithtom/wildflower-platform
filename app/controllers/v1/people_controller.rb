@@ -51,11 +51,18 @@ class V1::PeopleController < ApiController
                                    :last_name,
                                    :email,
                                    :primary_language,
+                                   :primary_language_other,
+                                   [:race_ethnicity_list => []],
                                    :race_ethnicity_other,
                                    :lgbtqia,
                                    :gender,
-                                   :prounouns,
+                                   :gender_other,
+                                   :pronouns,
+                                   :pronouns_other,
                                    :household_income,
+                                   :montessori_certified,
+                                   [:montessori_certified_level_list => []],
+                                   [:classroom_age_list => []],
                                    address_attributes: [:city, :state])
   end
 end
