@@ -139,7 +139,11 @@ namespace :workflows do
     50.times do |i|
       print "."
       person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+      person1.role_list = "partner"
+      person1.save!
       person2 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+      person2.role_list = "partner"
+      person2.save!
     
       user1 = FactoryBot.create(:user, :person => person1, email: "fake#{(i)*2+1}@test.com", password: "password")
       user2 = FactoryBot.create(:user, :person => person2, email: "fake#{(i+1)*2}@test.com", password: "password")
