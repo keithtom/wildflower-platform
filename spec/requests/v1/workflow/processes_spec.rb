@@ -5,7 +5,7 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
   let(:person) { create(:person) }
   let(:workflow_definition) { create(:workflow_definition_workflow) }
   let(:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
-  let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
+  let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS") }
   let!(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
   let(:user) { create(:user, person_id: person.id) }
   let!(:assigned_step) { create(:workflow_instance_step_manual, process_id: process.id) }

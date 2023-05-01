@@ -7,10 +7,10 @@ end
 RSpec.describe V1::Statusable, type: :concern do
   let(:workflow_definition) { create(:workflow_definition_workflow) }
   let(:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
-  let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS", effort: 2) }
+  let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS") }
   let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
 
-  let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets", effort: 2) }
+  let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets") }
   let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
   let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
   let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }

@@ -10,7 +10,6 @@ module Workflow
     has_many :workflows, through: :selected_processes
 
     acts_as_taggable_on :categories, :phase
-    enum effort: { small: 0, medium: 1, large: 2 }
 
     scope :by_position, -> { order("workflow_definition_processes.position ASC") }
   end
