@@ -8,7 +8,8 @@ module Workflow
 
       def run
         @step.assignments.where(assignee: @person).destroy_all
-        if @step.assignments.empty?
+
+        if @step.assignments.any?
           @step.assigned = false
           @step.save
         end

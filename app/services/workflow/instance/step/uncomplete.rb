@@ -8,6 +8,9 @@ module Workflow
       end
 
       def run
+        # raise error if the process was completed, we won't undo in this case
+        raise Error, "Process was completed" if @process.completed?
+
         # return if already uncompleted by this specific person
         uncomplete_step!
 
@@ -23,10 +26,7 @@ module Workflow
 
       private
 
-      def uncomplete_step!
-        # raise error if the process was completed, we won't undo in this case
-        raise Error, "Process was completed" if @process.completed?
-        
+      def uncomplete_step!        
         assignment = @step.assignments.for_person_id(@person.id).update(completed_at: nil)
 
         if @step.assignments.complete.count == 0
@@ -36,12 +36,27 @@ module Workflow
       end    
       
       def check_relock_step_dependencies!
+        # no-op for now
       end
 
       def update_process_completed_counter_cache
+        @process.completed_steps_count = @process.steps.complete.count
+        @process.save!
       end
 
       def update_process_completion_status
+        case @process.completed_steps_count
+        when 0
+          if @process.assigned_and_incomplete?
+            @process.in_progress!
+          else
+            @process.unstarted!
+          end
+        when @process.steps_count
+          @process.done!
+        else
+          @process.in_progress!
+        end  
       end
 
       def unstart_process
