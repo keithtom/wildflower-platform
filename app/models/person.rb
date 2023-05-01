@@ -7,6 +7,7 @@ class Person < ApplicationRecord
   include Person::Workflow
   include Person::SSJ
 
+  # tags
   acts_as_taggable_on :audiences, :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles
 
   belongs_to :hub, optional: true

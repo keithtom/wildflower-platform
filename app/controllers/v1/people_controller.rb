@@ -50,11 +50,14 @@ class V1::PeopleController < ApiController
                                    :first_name,
                                    :last_name,
                                    :email,
-                                   :primary_language,
+                                   :primary_language, # demographics fields
+                                   :race_ethnicity,
                                    :race_ethnicity_other,
                                    :lgbtqia,
                                    :gender,
-                                   :prounouns,
+                                   :gender_other,
+                                   :pronouns,
+                                   :pronouns_other,
                                    :household_income,
                                    address_attributes: [:city, :state])
   end
