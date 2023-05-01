@@ -135,6 +135,8 @@ namespace :workflows do
       'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
     ]
 
+    ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
+
     # Create many of theses
     50.times do |i|
       print "."
@@ -148,6 +150,8 @@ namespace :workflows do
       ssj_team = SSJ::Team.create! workflow: workflow_instance
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+      SSJ::TeamMember.create!(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+
     end
   end
 
