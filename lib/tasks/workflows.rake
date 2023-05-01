@@ -31,12 +31,21 @@ namespace :workflows do
     SSJ::TeamMember.create(person: user2.person, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
     SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
   
+    image_rotation = [
+      'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg',
+      'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
+      'https://ca.slack-edge.com/T1BCRBEKF-U044095NSKW-gb71eb8af435-512',
+      'https://ca.slack-edge.com/T1BCRBEKF-U6YFWTW67-8c867b8d8fff-512',
+      'https://ca.slack-edge.com/T1BCRBEKF-U0431E2ANE6-a196fd3638aa-512',
+      'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
+    ]
+
     puts "creating 50 teams with sensible, default workflow"
     50.times do |i|
       print "."
-      person1 = FactoryBot.create(:person)
-      person2 = FactoryBot.create(:person)
-      person3 = FactoryBot.create(:person)
+      person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+      person2 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+      person3 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
     
       user1 = FactoryBot.create(:user, :person => person1, email: "test#{(i+1)*2+1}@test.com", password: "password")
       user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+2)*2}@test.com", password: "password")
@@ -117,11 +126,20 @@ namespace :workflows do
     workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process7
     workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process8
     
+    image_rotation = [
+      'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg',
+      'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
+      'https://ca.slack-edge.com/T1BCRBEKF-U044095NSKW-gb71eb8af435-512',
+      'https://ca.slack-edge.com/T1BCRBEKF-U6YFWTW67-8c867b8d8fff-512',
+      'https://ca.slack-edge.com/T1BCRBEKF-U0431E2ANE6-a196fd3638aa-512',
+      'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
+    ]
+
     # Create many of theses
     50.times do |i|
       print "."
-      person1 = FactoryBot.create(:person)
-      person2 = FactoryBot.create(:person)
+      person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+      person2 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
     
       user1 = FactoryBot.create(:user, :person => person1, email: "fake#{(i)*2+1}@test.com", password: "password")
       user2 = FactoryBot.create(:user, :person => person2, email: "fake#{(i+1)*2}@test.com", password: "password")
