@@ -53,6 +53,7 @@ class V1::PeopleController < ApiController
                                    :primary_language,
                                    :primary_language_other,
                                    [:race_ethnicity_list => []],
+                                   :race_ethnicity_other,
                                    :lgbtqia,
                                    :gender,
                                    :gender_other,
@@ -60,8 +61,8 @@ class V1::PeopleController < ApiController
                                    :pronouns_other,
                                    :household_income,
                                    :montessori_certified,
-                                   [:montessori_certified_levels => []],
-                                   [:classroom_age => []],
+                                   [:montessori_certified_level_list => []],
+                                   [:classroom_age_list => []],
                                    address_attributes: [:city, :state])
   end
 end
