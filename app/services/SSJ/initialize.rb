@@ -1,38 +1,54 @@
-# initialize the workflow for this user
-
-# from here we cna use api to update
-# keep mapping data here to workflow
-#
-
+# This is really a workflow service
 class SSJ::Initialize < BaseService
   def initialize(workflow_definition)
-    # TODO: pass in user
     @workflow_definition = workflow_definition
   end
 
   def run
-    wf_instance = @workflow_definition.instances.create!
+    @wf_instance = @workflow_definition.instances.create!
 
-    # TODO: associate to user somehow
+    create_process_and_step_instances
+
+    create_dependency_instances
+
+    update_process_dependencies
+
+    @wf_instance
+  end
+
+  private
+
+  def create_process_and_step_instances
     @workflow_definition.processes.each do |process_definition|
-      process_instance = process_definition.instances.create!(workflow: wf_instance) #TODO: assign to user
+      process_instance = process_definition.instances.create!(workflow: @wf_instance)
       process_definition.steps.each do |step_definition|
         step_definition.instances.create!(process_id: process_instance.id)
       end
     end
+  end
 
+  def create_dependency_instances
     @workflow_definition.dependencies.each do |dependency_definition|
+      # this code assumes all workables are processes
       process_id = dependency_definition.workable.id
       prerequisite_process_id = dependency_definition.prerequisite_workable.id
-      instance_workable = wf_instance.processes.where(definition_id: process_id).first
-      instance_prerequisite_workable = wf_instance.processes.where(definition_id: prerequisite_process_id).first
+      
+      instance_workable = @wf_instance.processes.where(definition_id: process_id).first
+      instance_prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_process_id).first
 
-      dependency_instance = dependency_definition.instances.create!(
-        workflow: wf_instance,
+      dependency_definition.instances.create!(
+        workflow: @wf_instance,
         workable: instance_workable,
         prerequisite_workable: instance_prerequisite_workable
       )
     end
-    wf_instance
+  end
+
+  def update_process_dependencies
+    @wf_instance.processes.each do |process|
+      if process.prerequisites.empty?
+        process.prerequisites_met!
+      end
+    end
   end
 end

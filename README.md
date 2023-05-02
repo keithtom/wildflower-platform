@@ -83,8 +83,18 @@ Using active storage to manage uploaded profile image's storage and the attachme
 The workflow is as such:
 - client sends a POST request to `/rails/active_storage/direct_uploads` with some blob information, including checksum
 - API creates a blob record in the database and sends back a token, a URL for the client to directly upload the image to, and a `signed_id` to identify the blob
-- client then uploads image to the direct URL with the token. API verifies the token is in fact for a blob, and then proceeds to upload to whichever service (production: aws, local: local).
+- client then uploads image to the direct URL with the token. API verifies the token is in fact for a blob, and then proceeds to upload to whichever service (production: amazon, local: local). 
 - client then updates the person record with the `signed_id` as the `profile_image`
+
+#### Configuration
+- `storage.yml` lists the different storage services we use.
+- Set which type of service for which environments via the line `config.active_storage.service`
+- View aws credentails by running `rails credentials:show` in the terminal.
+
+#### AWS S3
+- If you want to test aws locally, change `config.active_storage.service = :local` to `config.active_storage.service = :amazon` in `development.rb`. It should upload to the `ssj-local` bucket setup in S3.
+- The client's direct upload url's host will be `https://ssj-local.s3.amazonaws.com`
+- Note: If you receive a 403 forbidden error, check the CORS policy in S3. 
 
 ### Summary
 - this system includes

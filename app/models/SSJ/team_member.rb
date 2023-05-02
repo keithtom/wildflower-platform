@@ -15,7 +15,7 @@ module SSJ
     scope :ops_guide, -> { where(role: OPS_GUIDE) }
     scope :rgl, -> { where(role: RGL) }
 
-    # validates :role, inclusion: { in: ROLES }
-    # validates :status, inclusion: { in: STATUS }
+    validates :role, inclusion: { in: ROLES }
+    validates :status, inclusion: { in: STATUS }
   end
 end

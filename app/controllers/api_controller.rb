@@ -1,13 +1,12 @@
+require "highlight"
+
 class ApiController < ActionController::API
+  include Highlight::Integrations::Rails
+
   before_action :authenticate_user!
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found
-  after_action :logging
+  around_action :with_highlight_context
 
-  def logging
-    puts "="*100
-    puts "current user: #{current_user.external_identifier}"
-  end
-
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found  
 
   private
   def not_found

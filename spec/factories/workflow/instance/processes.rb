@@ -8,7 +8,6 @@ FactoryBot.define do
     association :workflow, factory: :workflow_instance_workflow
     title { "Learn about the Advice Process" }
     description { "lorem ipsum" }
-    effort { 1 }
     position { 100 }
   end
 end
