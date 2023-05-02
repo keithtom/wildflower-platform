@@ -8,7 +8,7 @@ module SSJ
       GOVERNANCE_AND_COMPLIANCE = "Governance & Compliance",
       HUMAN_RESOURCES = "Human Resources",
       COMMUNITY_AND_FAMILY_ENGAGEMENT = "Community & Family Engagement",
-      CLASSROOM_PROGRAM_AND_PRACTICES = "Classroom Program & Practices"
+      CLASSROOM_PROGRAM_AND_PRACTICES = "Classroom & Program Practices"
     ]
   end
 end

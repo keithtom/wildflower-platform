@@ -50,6 +50,8 @@ module SSJ
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
+            puts "WARNING: process_category not in list: #{process_category}" unless ::SSJ::Category::CATEGORIES.include?(process_category)
+
             process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position
             process_obj.category_list.add(process_category) # need to add category separately, so that it doens't parse on commas
             process_obj.save!
