@@ -16,7 +16,7 @@ module Workflow
     acts_as_taggable_on :categories
 
     enum completion_status: { unstarted: 0, started: 2, finished: 3 }
-    enum dependency_cache: { dependencies_unmet: 0, dependencies_met: 1}
+    enum dependency_cache: { prerequisites_unmet: 0, prerequisites_met: 1}
     
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
 

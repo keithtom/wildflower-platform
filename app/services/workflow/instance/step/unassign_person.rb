@@ -25,18 +25,7 @@ module Workflow
 
       # might only ever be unstarted if no other assignments
       def update_process_completion_status
-        case @process.completed_steps_count
-        when 0
-          if @process.assigned_and_incomplete?
-            @process.started!
-          else
-            @process.unstarted!
-          end
-        when @process.steps_count
-          @process.finished!
-        else
-          @process.started!
-        end  
+        @process.unstarted! unless @process.assigned_and_incomplete?
       end
     end
   end

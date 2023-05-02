@@ -21,20 +21,8 @@ module Workflow
         @step.save!
       end
 
-      # should really only ever be start here...
       def update_process_completion_status
-        case @process.completed_steps_count
-        when 0
-          if @process.assigned_and_incomplete?
-            @process.started!
-          else
-            @process.unstarted!
-          end
-        when @process.steps_count
-          @process.finished!
-        else
-          @process.started!
-        end  
+        @process.started!
       end
     end
   end

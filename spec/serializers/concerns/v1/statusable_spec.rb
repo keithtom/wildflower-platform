@@ -27,7 +27,7 @@ RSpec.describe V1::Statusable, type: :concern do
     before { process.unstarted! }
     
     context "prerequisites unmet" do
-      before { process.dependencies_unmet! }
+      before { process.prerequisites_unmet! }
   
       it "has 'up next' status" do
         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
@@ -35,7 +35,7 @@ RSpec.describe V1::Statusable, type: :concern do
     end
 
     context "all prerequisites met" do
-      before { process.dependencies_met! }
+      before { process.prerequisites_met! }
 
       it "has 'to do' status" do
         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)

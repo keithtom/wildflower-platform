@@ -69,12 +69,12 @@ RSpec.describe "Workflow Feature" do
       prerequisite = workflow.processes.last
 
       expect(process.unstarted?).to be_truthy
-      expect(process.dependencies_met?).to be_falsey
+      expect(process.prerequisites_met?).to be_falsey
       expect(process.prerequisites.count).to_not eq(0)
       expect(process.steps_count).to eq(3)
 
       expect(prerequisite.unstarted?).to be_truthy
-      expect(prerequisite.dependencies_met?).to be_truthy
+      expect(prerequisite.prerequisites_met?).to be_truthy
       expect(prerequisite.prerequisites.count).to eq(0)
       expect(prerequisite.steps_count).to eq(1)
 
@@ -98,7 +98,7 @@ RSpec.describe "Workflow Feature" do
       expect(StatusableFakeSerializer.process_status(prerequisite)).to eq(V1::Statusable::DONE)
       
       process.reload
-      expect(process.dependencies_met?).to be_truthy
+      expect(process.prerequisites_met?).to be_truthy
       expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
 
       step = process.steps.first
@@ -145,7 +145,7 @@ RSpec.describe "Workflow Feature" do
       Workflow::Instance::Step::AssignPerson.run(step, person1)
 
       expect(process.started?).to be_truthy
-      expect(process.dependencies_met?).to be_falsey
+      expect(process.prerequisites_met?).to be_falsey
       expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
 
       Workflow::Instance::Step::UnassignPerson.run(step, person1)

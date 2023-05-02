@@ -47,7 +47,7 @@ class SSJ::Initialize < BaseService
   def update_process_dependencies
     @wf_instance.processes.each do |process|
       if process.prerequisites.empty?
-        process.dependencies_met!
+        process.prerequisites_met!
       end
     end
   end

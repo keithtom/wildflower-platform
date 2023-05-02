@@ -12,7 +12,7 @@ module V1::Statusable
     def process_status(process)
       case 
       when process.unstarted?
-        process.dependencies_met? ? TO_DO : UP_NEXT
+        process.prerequisites_met? ? TO_DO : UP_NEXT
       when process.started?
         process.assigned_and_incomplete? ? IN_PROGRESS : TO_DO
       when process.finished?

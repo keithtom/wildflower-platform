@@ -37,7 +37,7 @@ module Workflow
         @process.postrequisites.each do |postrequisite|
           # for this postrequisite, check if all prerequisites are complete
           if postrequisite.prerequisites.not_finished.empty?
-            postrequisite.dependencies_met!
+            postrequisite.prerequisites_met!
           end
         end
       end
@@ -51,8 +51,10 @@ module Workflow
 
         if current_phase_complete
           current_phase_index = SSJ::Phase::PHASES.index(workflow.current_phase)
-          workflow.current_phase = SSJ::Phase::PHASES[current_phase_index + 1]
-          workflow.save!
+          unless current_phase_index == SSJ::Phase::PHASES.length - 1
+            workflow.current_phase = SSJ::Phase::PHASES[current_phase_index + 1]
+            workflow.save!
+          end
         end
       end
 
