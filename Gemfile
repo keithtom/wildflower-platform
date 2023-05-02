@@ -38,7 +38,7 @@ gem "elasticsearch", '~> 7.x'
 gem 'acts-as-taggable-on'
 
 # highlight.io
-gem 'highlight'
+gem 'highlight_io'
 
 group :development, :test do
   gem 'dotenv-rails'
