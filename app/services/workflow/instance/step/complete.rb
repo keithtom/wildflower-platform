@@ -1,12 +1,6 @@
 module Workflow
   class Instance::Step
     class Complete < BaseService
-      # track startability of new steps as a metric, e.g. what did we unlock and as of when
-      # that way we can see what's waiting in someone's court.
-      # particularly for non-workers
-
-      # after we complete, we need to see what's unlocked.
-      # that's done later since state is changed..
       def initialize(step, person)
         @step = step
         @process = @step.process
@@ -57,14 +51,14 @@ module Workflow
         case @process.completed_steps_count
         when 0
           if @process.assigned_and_incomplete?
-            @process.in_progress!
+            @process.started!
           else
             @process.unstarted!
           end
         when @process.steps_count
-          @process.done!
+          @process.finished!
         else
-          @process.in_progress!
+          @process.started!
         end  
       end
 
@@ -76,30 +70,9 @@ module Workflow
         end
       end
 
-      # check if the that was the last step and complete the process
-      # TODO: move this to a Process::Complete service
       def complete_process
         if @process.completed_steps_count == @process.steps_count
-          @process.completed_at = DateTime.now
-          @process.save!
-
-          # check if all the processes in this phase are complete, and update current phase if so
-          workflow = @process.workflow
-          current_phase_complete = true
-          # go through all incomplete processes and see if any are in the current phase
-          workflow.processes.where.not(completion_status: 3).each do |p|
-            next if p.phase.empty?
-
-            if p.phase.first.name == workflow.current_phase
-              current_phase_complete = false
-              break
-            end
-          end
-          if current_phase_complete
-            current_phase_index = SSJ::Phase::PHASES.index(workflow.current_phase)
-            workflow.current_phase = SSJ::Phase::PHASES[current_phase_index + 1]
-            workflow.save!
-          end
+          Workflow::Instance::Process::Complete.run(@process)
         end
       end
 

@@ -48,14 +48,14 @@ module Workflow
         case @process.completed_steps_count
         when 0
           if @process.assigned_and_incomplete?
-            @process.in_progress!
+            @process.started!
           else
             @process.unstarted!
           end
         when @process.steps_count
-          @process.done!
+          @process.finished!
         else
-          @process.in_progress!
+          @process.started!
         end  
       end
 

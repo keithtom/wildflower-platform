@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_01_183006) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_01_232245) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -432,6 +432,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_183006) do
     t.bigint "steps_count"
     t.integer "completed_steps_count", default: 0, null: false
     t.integer "completion_status", default: 0
+    t.integer "dependency_cache", default: 0
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
     t.index ["workflow_id"], name: "index_workflow_instance_processes_on_workflow_id"

@@ -1,41 +1,26 @@
 module V1::Statusable
   extend ActiveSupport::Concern
 
-  UNSTARTED = "unstarted"
-  TO_DO = "to do"
-  IN_PROGRESS = "in progress"
-  DONE = "done"
-  UP_NEXT = "up next"
-
-  STATUS = [DONE, IN_PROGRESS, TO_DO, UP_NEXT]
-
+  IN_PROGRESS = "in progress" # In the UI, usually means assigned but not completed.  This helps the users focus on which tasks to work on of the available ones.
+  TO_DO = "to do" # In the UI, this usually means the work is ready and available to be worked on.
+  UP_NEXT = "up next" # In the UI, this means the work isn't ready to be worked on yet, usually becomes of an unmet prerequisite.
+  DONE = "done" # In the UI, this means the work is completed.
+  
+  STATUS = [IN_PROGRESS, TO_DO, UP_NEXT, DONE]
+  
   class_methods do
     def process_status(process)
-      case process.completion_status
-      when "unstarted"
-        return prerequisites_completed?(process) ? TO_DO : UP_NEXT
-      when "in_progress"
-        if process.assigned_and_incomplete?
-          return IN_PROGRESS
-        else
-          return TO_DO
-        end
+      case 
+      when process.unstarted?
+        process.dependencies_met? ? TO_DO : UP_NEXT
+      when process.started? # make sure to rename this new method.
+        process.assigned_and_incomplete? ? IN_PROGRESS : TO_DO
+      when process.finished?
+        DONE
       else
-        return DONE
+        raise "Unknown status for process #{process.id} #{process.completion_status} #{process.dependency_cache}"
       end
-    end
-
-    private
-
-    def prerequisites_completed?(process)
-      completed = true
-      process.prerequisites.each do |prerequisite|
-        unless prerequisite.done?
-          completed = false
-        end
-      end
-
-      return completed
     end
   end
 end
+  
