@@ -2,6 +2,11 @@
 
 require 'rails_helper'
 
+class StatusableFakeSerializer
+  include V1::Statusable
+end
+
+
 RSpec.describe "Workflow Feature" do
 
   context "Given a workflow definition" do
@@ -33,167 +38,151 @@ RSpec.describe "Workflow Feature" do
   end
   # 1 process unlocks 2
   # 2 processes unlock 1
+
+  context "Given a workflow instance" do
+    let!(:process_definition) { create(:workflow_definition_process) }
+    before do
+      process_definition.steps.create!(kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::EACH_PERSON, position: 1)
+      process_definition.steps.create!(kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, position: 1)
+      process_definition.steps.create!(kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, position: 1)
+    end
+
+    let!(:prerequisite_definition) { create(:workflow_definition_process) }
+    before do
+      prerequisite_definition.steps.create!
+    end
+
+    let!(:workflow_definition) { create(:workflow_definition_workflow) }
+    before do
+      workflow_definition.processes << process_definition
+      workflow_definition.processes << prerequisite_definition
+      workflow_definition.dependencies.create!(workable: process_definition, prerequisite_workable: prerequisite_definition)
+    end
+
+    let(:workflow) { SSJ::Initialize.run(workflow_definition) }
+
+    let(:person1) { create(:person) }
+    let(:person2) { create(:person) }
+
+    it "complete in order successfully" do
+      process = workflow.processes.first
+      prerequisite = workflow.processes.last
+
+      expect(process.unstarted?).to be_truthy
+      expect(process.dependencies_met?).to be_falsey
+      expect(process.prerequisites.count).to_not eq(0)
+      expect(process.steps_count).to eq(3)
+
+      expect(prerequisite.unstarted?).to be_truthy
+      expect(prerequisite.dependencies_met?).to be_truthy
+      expect(prerequisite.prerequisites.count).to eq(0)
+      expect(prerequisite.steps_count).to eq(1)
+
+      process.steps.each do |step|
+        expect(step.completed).to be_falsey
+        expect(step.assignments.count).to eq(0)
+      end
+
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
+      expect(StatusableFakeSerializer.process_status(prerequisite)).to eq(V1::Statusable::TO_DO)
+
+      Workflow::Instance::Step::AssignPerson.run(prerequisite.steps.first, person1)
+
+      expect(prerequisite.started?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(prerequisite)).to eq(V1::Statusable::IN_PROGRESS)
+      
+      Workflow::Instance::Step::Complete.run(prerequisite.steps.first, person1)
+
+      expect(prerequisite.finished?).to be_truthy
+      expect(prerequisite.completed_at).to_not be_blank
+      expect(StatusableFakeSerializer.process_status(prerequisite)).to eq(V1::Statusable::DONE)
+      
+      process.reload
+      expect(process.dependencies_met?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+
+      step = process.steps.first
+      Workflow::Instance::Step::AssignPerson.run(step, person1)
+
+      expect(process.started?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
+
+      Workflow::Instance::Step::Complete.run(step, person1)
+
+      expect(process.completed_steps_count).to eq(1)
+      expect(process.started?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+
+      Workflow::Instance::Step::Uncomplete.run(step, person1)
+      expect(process.completed_steps_count).to eq(0)
+      expect(process.started?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
+
+      Workflow::Instance::Step::UnassignPerson.run(step, person1)
+      expect(process.unstarted?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+
+      process.steps.each do |step|
+        Workflow::Instance::Step::Complete.run(step, person1)
+      end
+
+      expect(process.finished?).to be_truthy
+      expect(process.completed_steps_count).to eq(3)
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
+
+      # TODO
+      # test change of phase
+      # and the last phase all done, will it transitin properly to where?
+    end
+
+    it "complete out of order successfully" do
+      process = workflow.processes.first
+      prerequisite = workflow.processes.last
+
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
+
+      step = process.steps.first
+      Workflow::Instance::Step::AssignPerson.run(step, person1)
+
+      expect(process.started?).to be_truthy
+      expect(process.dependencies_met?).to be_falsey
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
+
+      Workflow::Instance::Step::UnassignPerson.run(step, person1)
+
+      expect(process.unstarted?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
+
+      Workflow::Instance::Step::Complete.run(step, person1)
+      expect(process.started?).to be_truthy
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+
+      step2 = process.steps.last
+      Workflow::Instance::Step::AssignPerson.run(step2, person1)
+
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
+
+      process.steps.each do |step|
+        Workflow::Instance::Step::Complete.run(step, person1)
+      end
+
+      expect(process.finished?).to be_truthy
+      expect(process.completed_steps_count).to eq(3)
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
+    end
+
+    # test multiple completesr?
+    # that if we have collaborative steps, it unlocks for everyone.
+    # if we have individual steps, it still unlocks.
+    # assign/unassign, compelte/uncomplete steps
+    #   decision steps
+    #   individual/collaborative steps
+    
+    # uncomplete spec.  test that if one person completes a collaborative, other can't complete or uncomplete it.  maybe we should let you still complete?
+  end
 end
 
-# do all the commands of the story.
-# assign/unassign, compelte/uncomplete steps
-#   decision steps
-#   individual/collaborative steps
-# finish processes, unlock processes
-# complete process not yet dependencies met
+# complete process not yet dependencies met, what about down stream postrequisites, they unlock?
 # create manual steps
 # create manual processes
 # complete a phase
-
-
-
-# require 'rails_helper'
-
-# class StatusableFakeSerializer
-#   include V1::Statusable
-# end
-
-# RSpec.describe V1::Statusable, type: :concern do
-#   let(:workflow_definition) { create(:workflow_definition_workflow) }
-#   let(:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
-#   let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS") }
-#   let(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
-
-#   let(:prerequisite_definition) { Workflow::Definition::Process.create!(title: "prepare taxes", description: "gather tax worksheets") }
-#   let(:prerequisite) { Workflow::Instance::Process.create!(definition: prerequisite_definition, workflow: workflow) }
-#   let(:dependency_definition) { Workflow::Definition::Dependency.create!(workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition) }
-#   let!(:dependency) { Workflow::Instance::Dependency.create!(workflow: workflow, workable: process, prerequisite_workable: prerequisite, definition: dependency_definition) }
-
-#   let(:person) { create(:person) }
-
-#   before do
-#     3.times do
-#       process.steps.create!
-#     end
-#   end
-
-#   context "steps unstarted" do
-#     before do
-#       prerequisite.steps.create!
-#     end
-
-#     context "prerequisites unmet" do
-#       it "has 'up next' status" do
-#         process.steps.each do |step|
-#           expect(step.completed).to be_falsey
-#         end
-
-#         expect(process.prerequisites.count).to_not eq(0)
-#         process.prerequisites.each do |prereq|
-#           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
-#         end
-
-#         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
-#       end
-#     end
-
-#     context "all prerequisites met" do
-#       before do
-#         process.prerequisites.each do |prereq|
-#           # previously, the steps would have callbacks to trigger completion of prereq.
-#           # a process should cache its status, or the matrix that i made before.
-#           # here we are just testing the mechanics of step completion.
-#           prereq.steps.each do |step|
-#             Workflow::Instance::Step::Complete.run(step, person)
-#           end
-#         end
-#       end
-
-#       it "has 'to do' status" do
-#         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
-#       end
-#     end
-#   end
-
-#   context "1 of 3 steps completed" do
-#     before do
-#       prerequisite.steps.create!
-#       prerequisite.steps.create!
-
-#       step = process.steps.first
-#       Workflow::Instance::Step::Complete.run(step, person)
-#     end
-
-#     context "prerequisites unmet" do
-#       context "has incomplete steps that are assigned" do
-#         before do
-#           # assign incomplete step
-#           step = process.steps.incomplete.first
-#           step.assignments.create!(assignee_id: person.id)
-#         end
-
-#         it "has 'in progress' status" do
-#           expect(process.prerequisites.count).to_not eq(0)
-#           process.prerequisites.each do |prereq|
-#             expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
-#           end
-
-#           expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
-#         end
-#       end
-
-#       it "has 'to do' status" do
-#         expect(process.prerequisites.count).to_not eq(0)
-#         process.prerequisites.each do |prereq|
-#           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
-#         end
-
-#         expect(StatusableFakeSerializer.process_status(process.reload)).to eq(V1::Statusable::TO_DO)
-#       end
-#     end
-
-#     context "all prerequisites met" do
-#       before do
-#         process.prerequisites.each do |prereq|
-#           prereq.steps.each do |step|
-#             Workflow::Instance::Step::Complete.run(step, person)
-#           end
-#         end
-#       end
-
-#       it "has 'to do' status" do
-#         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
-#       end
-#     end
-#   end
-
-#   context "3 of 3 steps completed" do
-#     before do
-#       prerequisite.steps.create!
-
-#       process.steps.each do |step|
-#         Workflow::Instance::Step::Complete.run(step, person)
-#       end
-#     end
-
-#     context "prerequisites unmet" do
-#       it "has 'done' status" do
-#         expect(process.prerequisites.count).to_not eq(0)
-#         process.prerequisites.each do |prereq|
-#           expect(StatusableFakeSerializer.process_status(prereq)).to eq(V1::Statusable::TO_DO)
-#         end
-
-#         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
-#       end
-#     end
-
-#     context "all prerequisites met" do
-#       before do
-#         process.prerequisites.each do |prereq|
-#           prereq.steps.each do |step|
-#             Workflow::Instance::Step::Complete.run(step, person)
-#           end
-#         end
-#       end
-
-#       it "has 'done' status" do
-#         expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::DONE)
-#       end
-#     end
-#   end
-# end

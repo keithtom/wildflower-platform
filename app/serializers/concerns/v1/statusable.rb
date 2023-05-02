@@ -13,7 +13,7 @@ module V1::Statusable
       case 
       when process.unstarted?
         process.dependencies_met? ? TO_DO : UP_NEXT
-      when process.started? # make sure to rename this new method.
+      when process.started?
         process.assigned_and_incomplete? ? IN_PROGRESS : TO_DO
       when process.finished?
         DONE
