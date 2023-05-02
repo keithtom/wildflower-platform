@@ -1,7 +1,7 @@
 module SSJ
   # helper class to hold phase logic
   class Phase
-    PHASES = [VISIONING = "visioning", PLANNING = "planning", STARTUP = "startup"]
+    PHASES = [VISIONING = "visioning", PLANNING = "planning", STARTUP = "startup", OPEN = "open"]
 
     def self.next(phase)
       case phase

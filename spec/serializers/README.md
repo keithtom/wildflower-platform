@@ -1,5 +1,8 @@
 # Serializer Tests
 
+These tests should check for presentation/serialization concerns.
+Usually the attributes and relationships we expect given a set of params.
+
 ## Gotchas
 
 Jsonapi-serializer gem has a known issue.  We are using a work around in our models.

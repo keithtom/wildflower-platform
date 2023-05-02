@@ -1,47 +1,64 @@
 module Workflow
   class Instance::Process
     class Complete < BaseService
-      # track startability of new processs as a metric, e.g. what did we unlock and as of when
-      # that way we can see what's waiting in someone's court.
-      # particularly for non-workers
-
-      # after we complete, we need to see what's unlocked.
-      # that's done later since state is changed..
       def initialize(process)
         @process = process
       end
 
       def run
-        # @process.completed = true # do processes have these fields?  separate this to another table?
-        # @process.completed_at = DateTime.now # this is on the step.
-        @process.status = V1::Statusable::DONE
-    
-        @process.save!
+        # check if steps done?
+        complete_process
 
         check_postrequisites_startable
-        # maybe send notificaitons like emails
-
+        
         # Maybe update a phase counter of milestones completed.
-        # if process.completed_processs_count == 0
-        #   process.completed_at = DateTime.now
-        # end
+        
+        update_current_phase
 
-        # if process.completed_processs_count == 1
-        #   process.started_at = DateTime.now
-        # end
-
-
+        # upon completing a process we should update the dependencies
+        
+        notify_people
       end
 
       private
 
+      def complete_process
+        # @process.completed = true # do processes have these fields?  separate this to another table?
+        @process.completed_at = Time.now
+        @process.finished!
+        @process.save!
+      end
+
+      def prerequisites_completed?(process)
+        process.prerequisites.not_finished.empty?
+      end
+    
       def check_postrequisites_startable
-        Workflow::Instance::Process::FindPostrequisites.run(@process).each do |postrequisite|
-          if Workflow::Instance::Process::Startable.run(postrequisite)
-            postrequisite.status = V1::Statusable::TO_DO
-            postrequisite.save!
+        @process.postrequisites.each do |postrequisite|
+          # for this postrequisite, check if all prerequisites are complete
+          if postrequisite.prerequisites.not_finished.empty?
+            postrequisite.prerequisites_met!
           end
         end
+      end
+
+      def update_current_phase
+        # check if all the processes in this phase are complete, and update current phase if so
+        workflow = @process.workflow
+
+        # if there are no processes tagged with the current phase and are not finished, then the phase is complete
+        current_phase_complete = workflow.processes.not_finished.tagged_with(workflow.current_phase, on: :phase, any: true).empty?
+
+        if current_phase_complete
+          current_phase_index = SSJ::Phase::PHASES.index(workflow.current_phase)
+          unless current_phase_index == SSJ::Phase::PHASES.length - 1
+            workflow.current_phase = SSJ::Phase::PHASES[current_phase_index + 1]
+            workflow.save!
+          end
+        end
+      end
+
+      def notify_people
       end
     end
   end

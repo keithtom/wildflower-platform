@@ -37,30 +37,6 @@ class V1::Workflow::ProcessesController < ApiController
     end
 
     render json: V1::Workflow::ProcessSerializer.new(processes, serialization_options)
-      # instance should eager load prerequisites?  we shouldn't serialize these. unneded
-      # eager load taggings from definition?
-      # user: keithtom
-      # GET /v1/workflow/workflows/c502-4f84/processes
-      # USE eager loading detected
-      #   Workflow::Instance::Process => [:prerequisites]
-      #   Add to your query: .includes([:prerequisites])
-      # Call stack
-      #   /Users/keithtom/workspace/wildflower-platform/app/serializers/concerns/v1/statusable.rb:32:in `prerequisites_completed?'
-      #   /Users/keithtom/workspace/wildflower-platform/app/serializers/concerns/v1/statusable.rb:16:in `process_status'
-      #   /Users/keithtom/workspace/wildflower-platform/app/serializers/v1/workflow/process_serializer.rb:8:in `block in <class:ProcessSerializer>'
-      #   /Users/keithtom/workspace/wildflower-platform/app/serializers/application_serializer.rb:10:in `to_json'
-      #   /Users/keithtom/workspace/wildflower-platform/app/controllers/v1/workflow/processes_controller.rb:27:in `index'
-
-      # user: keithtom
-      # GET /v1/workflow/workflows/c502-4f84/processes
-      # USE eager loading detected
-      #   Workflow::Definition::Process => [:taggings]
-      #   Add to your query: .includes([:taggings])
-      # Call stack
-      #   /Users/keithtom/workspace/wildflower-platform/app/serializers/v1/workflow/process_serializer.rb:16:in `block in <class:ProcessSerializer>'
-      #   /Users/keithtom/workspace/wildflower-platform/app/serializers/application_serializer.rb:10:in `to_json'
-      #   /Users/keithtom/workspace/wildflower-platform/app/controllers/v1/workflow/processes_controller.rb:27:in `index'
-
   end
 
   def show
