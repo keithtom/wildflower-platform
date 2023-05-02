@@ -17,7 +17,7 @@ module V1
     attribute :image_url do |user|
       if person = user.person
         if person.profile_image.attached?
-          Rails.application.routes.url_helpers.rails_blob_path(person.profile_image)
+          Rails.application.routes.url_helpers.rails_blob_url(person.profile_image)
         elsif person.image_url.present?
           person.image_url
         end  
