@@ -1,6 +1,12 @@
+require "highlight"
+
 class ApiController < ActionController::API
+  include Highlight::Integrations::Rails
+
   before_action :authenticate_user!
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  around_action :with_highlight_context
+
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found  
 
   private
   def not_found
