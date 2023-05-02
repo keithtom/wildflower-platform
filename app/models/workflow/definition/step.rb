@@ -8,13 +8,16 @@ module Workflow
     before_create :set_position
 
     DEFAULT_INCREMENT = 1000
-    DECISION = "decision"
-    DEFAULT = "default"
+
+    ACTION_KINDS = [DECISION = "decision", DEFAULT = "default"]
 
     COMPLETION_TYPES = [EACH_PERSON = 'each_person', ONE_PER_GROUP = 'one_per_group'].freeze
 
     scope :by_position, -> { order("workflow_definition_steps.position ASC") }
     
+    validates :kind, presence: true, inclusion: { in: Workflow::Definition::Step::ACTION_KINDS }
+    validates :completion_type, presence: true, inclusion: { in: Workflow::Definition::Step::COMPLETION_TYPES }
+
     private
 
     def set_position

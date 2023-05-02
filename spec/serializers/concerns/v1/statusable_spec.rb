@@ -19,7 +19,7 @@ RSpec.describe V1::Statusable, type: :concern do
 
   before do
     3.times do
-      process.steps.create! completed: false
+      create(:workflow_instance_step, process: process, completed: false)
     end
   end
 
@@ -46,7 +46,7 @@ RSpec.describe V1::Statusable, type: :concern do
   context "process started" do
     before do
       process.started!
-      process.steps.create!
+      create(:workflow_instance_step, process: process)
     end
 
     it "has 'to do' status" do

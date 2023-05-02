@@ -49,7 +49,7 @@ RSpec.describe "Workflow Feature" do
 
     let!(:prerequisite_definition) { create(:workflow_definition_process) }
     before do
-      prerequisite_definition.steps.create!
+      create(:workflow_definition_step, process: prerequisite_definition)
     end
 
     let!(:workflow_definition) { create(:workflow_definition_workflow) }

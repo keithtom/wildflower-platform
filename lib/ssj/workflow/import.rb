@@ -47,11 +47,10 @@ module SSJ
           if process_title.present? # refactor to import_process
             puts "creating #{process_title}"
             process_description = row[15]&.strip
-            process_start_considering = row[5]&.strip.present?
             process_category = row[7]&.strip
             process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position, start_considering: process_start_considering
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position
             process_obj.category_list.add(process_category) # need to add category separately, so that it doens't parse on commas
             process_obj.save!
             step_position = 0

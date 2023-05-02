@@ -17,7 +17,11 @@ module Workflow
     scope :incomplete, -> { where(completed: [false, nil]) }
     scope :assigned, -> { where(assigned: true) }
     scope :unassigned, -> { where(assigned: [false, nil]) }
-    
+
+    # currently it can be empty while it defers to definition
+    # validates :kind, presence: true, inclusion: { in: Workflow::Definition::Step::ACTION_KINDS }
+    # validates :completion_type, presence: true, inclusion: { in: Workflow::Definition::Step::COMPLETION_TYPES }
+
     def title
       super || self.definition.try(:title)
     end
