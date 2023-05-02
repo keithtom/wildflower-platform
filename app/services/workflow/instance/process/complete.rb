@@ -51,10 +51,14 @@ module Workflow
 
         if current_phase_complete
           current_phase_index = SSJ::Phase::PHASES.index(workflow.current_phase)
-          unless current_phase_index == SSJ::Phase::PHASES.length - 1
+          if current_phase_index == SSJ::Phase::PHASES.length - 1
+            workflow.current_phase = SSJ::Phase::OPEN
+          elsif current_phase_index.nil?
+            # do nothing
+          else
             workflow.current_phase = SSJ::Phase::PHASES[current_phase_index + 1]
-            workflow.save!
           end
+          workflow.save!
         end
       end
 
