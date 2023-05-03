@@ -7,6 +7,10 @@ class ApiController < ActionController::API
   around_action :with_highlight_context
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found  
+  rescue_from Exception do |e|
+    Highlight::H.instance.record_exception(e)
+    raise
+  end
 
   private
   def not_found
