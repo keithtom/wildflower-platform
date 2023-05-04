@@ -18,7 +18,7 @@ namespace :staging do
     adassa_person.gender = "Female"
     adassa_person.lgbtqia = false
 
-    team = adasa.person.ssj_team || SSJ::Team.create!
+    team = adassa.person.ssj_team || SSJ::Team.create!
     
     team.ops_guide = sunny
     team.regional_growth_lead = daniela
@@ -27,6 +27,17 @@ namespace :staging do
 
     team.expected_start_date = Date.parse("1/1/2024")
 
+    team.save!
+
+    maggie = User.find_or_create_by!(email: "maggie.paulin@wildflowerschools.org") do |user|
+      user.password = "password"
+    end
+    maggie_person = maggie.person || Person.create!(email: "maggie.paulin@wildflowerschools.org", first_name: "Maggie", last_name: "Paulin")
+    team = maggie_person.ssj_team || SSJ::Team.create!
+    team.ops_guide = sunny
+    team.regional_growth_lead = daniela
+    team.ops_guides << sunny
+    team.regional_growth_leads << daniela
     team.save!
   end
 end
