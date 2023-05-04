@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_02_131633) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_04_034513) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -460,6 +460,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_131633) do
     t.boolean "completed", default: false
     t.boolean "assigned", default: false
     t.string "completion_type"
+    t.text "description"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
