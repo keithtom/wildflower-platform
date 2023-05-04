@@ -44,6 +44,7 @@ namespace :staging do
     maggie_team.ops_guide = sunny.person
     maggie_team.regional_growth_lead = daniela.person
     maggie_team.save!
+    maggie.save!
     SSJ::TeamMember.create! ssj_team: maggie_team, person: maggie.person, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE
     SSJ::TeamMember.create! ssj_team: maggie_team, person: daniela.person, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE
     SSJ::TeamMember.create! ssj_team: maggie_team, person: sunny.person, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE

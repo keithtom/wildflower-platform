@@ -171,9 +171,9 @@ namespace :workflows do
 
     user = User.find_or_create_by!(email: email)
     person = Person.find_or_create_by!(email: email)
-    person.first_name = first_name
+    person.first_name ||= first_name
     person.save!
-    user.person = person
+    user.person ||= person
     user.save!
     SSJ::InviteUser.run(user, ops_guide_email)
     puts "invited #{email} to SSJ workflow"
