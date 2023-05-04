@@ -27,7 +27,9 @@ describe SSJ::Initialize do
       expect(prerequisite_instance.attributes.with_indifferent_access.slice(*slice)).to eq(prerequisite_definition.attributes.with_indifferent_access.slice(*slice))
       expect(process_instance.title).to be_present
       expect(prerequisite_instance.title).to be_present
-      
+      expect(process_instance.category_list).to be_present
+      expect(prerequisite_instance.phase_list).to be_present
+
       step1 = process_instance.steps.first
       step2 = prerequisite_instance.steps.first
 
