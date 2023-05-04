@@ -21,13 +21,13 @@ class SSJ::Initialize < BaseService
   def create_process_and_step_instances
     @workflow_definition.processes.each do |process_definition|
 
-      attributes = process_definition.attributes.slice(:title, :description, :category_list, :phase_list, :position)
+      attributes = process_definition.attributes.with_indifferent_access.slice(:title, :description, :category_list, :phase_list, :position)
       attributes.merge!(workflow: @wf_instance)
       process_instance = process_definition.instances.create!(attributes)
 
       process_definition.steps.each do |step_definition|
         # copy over documents? that seems a bit much.
-        attributes = step_definition.attributes.slice(:title, :description, :kind, :completion_type, :min_worktime, :max_worktime, :decision_question, :position)
+        attributes = step_definition.attributes.with_indifferent_access.slice(:title, :description, :kind, :completion_type, :min_worktime, :max_worktime, :decision_question, :position)
         attributes.merge!(process_id: process_instance.id)
         step_definition.instances.create!(attributes)
       end

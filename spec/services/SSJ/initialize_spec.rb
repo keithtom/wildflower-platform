@@ -23,15 +23,19 @@ describe SSJ::Initialize do
       prerequisite_instance = subject.processes.where(definition_id: prerequisite_definition.id).first
 
       slice = [:title, :description, :position, :category_list, :phase_list]
-      expect(process_instance.attributes.slice(*slice)).to eq(process_definition.attributes.slice(*slice))
-      expect(prerequisite_instance.attributes.slice(*slice)).to eq(prerequisite_definition.attributes.slice(*slice))
-
+      expect(process_instance.attributes.with_indifferent_access.slice(*slice)).to eq(process_definition.attributes.with_indifferent_access.slice(*slice))
+      expect(prerequisite_instance.attributes.with_indifferent_access.slice(*slice)).to eq(prerequisite_definition.attributes.with_indifferent_access.slice(*slice))
+      expect(process_instance.title).to be_present
+      expect(prerequisite_instance.title).to be_present
+      
       step1 = process_instance.steps.first
       step2 = prerequisite_instance.steps.first
 
       slice = [:title, :description, :kind, :completion_type, :min_worktime, :max_worktime, :decision_question, :position]
-      expect(step1.attributes.slice(*slice)).to eq(step_definition.attributes.slice(*slice))
-      expect(step2.attributes.slice(*slice)).to eq(step2_definition.attributes.slice(*slice))
+      expect(step1.attributes.with_indifferent_access.slice(*slice)).to eq(step_definition.attributes.with_indifferent_access.slice(*slice))
+      expect(step2.attributes.with_indifferent_access.slice(*slice)).to eq(step2_definition.attributes.with_indifferent_access.slice(*slice))
+      expect(step1.title).to be_present
+      expect(step2.title).to be_present
 
       dependency_instance = subject.dependencies.first
       expect(dependency_instance.workable).to eq(process_instance)
