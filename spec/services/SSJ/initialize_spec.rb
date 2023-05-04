@@ -45,5 +45,4 @@ describe SSJ::Initialize do
       expect(prerequisite_instance).to be_prerequisites_met
     end
   end
-  
 end
