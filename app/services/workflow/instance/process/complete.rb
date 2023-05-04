@@ -7,6 +7,7 @@ module Workflow
 
       def run
         # check if steps done?
+
         complete_process
 
         check_postrequisites_startable
@@ -23,7 +24,6 @@ module Workflow
       private
 
       def complete_process
-        # @process.completed = true # do processes have these fields?  separate this to another table?
         @process.completed_at = Time.now
         @process.finished!
         @process.save!

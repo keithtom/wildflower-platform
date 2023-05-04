@@ -11,9 +11,9 @@ module Workflow
     has_many :prerequisite_dependencies, class_name: 'Workflow::Instance::Dependency', as: :prerequisite_workable
     has_many :postrequisites, through: :prerequisite_dependencies, source: :workable, source_type: 'Workflow::Instance::Process'
 
-    has_many :steps, class_name: 'Workflow::Instance::Step'
+    has_many :steps
 
-    acts_as_taggable_on :categories
+    acts_as_taggable_on :categories, :phase
 
     enum completion_status: { unstarted: 0, started: 2, finished: 3 }
     enum dependency_cache: { prerequisites_unmet: 0, prerequisites_met: 1}
