@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_04_034513) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_04_150453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -269,6 +269,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_034513) do
     t.string "role"
     t.string "status"
     t.index ["person_id"], name: "index_ssj_team_members_on_person_id"
+    t.index ["ssj_team_id", "person_id", "role"], name: "index_ssj_team_members_on_ssj_team_id_and_person_id_and_role", unique: true
     t.index ["ssj_team_id"], name: "index_ssj_team_members_on_ssj_team_id"
   end
 

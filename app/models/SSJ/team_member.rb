@@ -17,5 +17,7 @@ module SSJ
 
     validates :role, inclusion: { in: ROLES }
     validates :status, inclusion: { in: STATUS }
+
+    validates :person, uniqueness: { scope: [:ssj_team_id, :role] }
   end
 end
