@@ -21,7 +21,27 @@ module Workflow
     # currently it can be empty while it defers to definition
     # validates :kind, presence: true, inclusion: { in: Workflow::Definition::Step::ACTION_KINDS }
     # validates :completion_type, presence: true, inclusion: { in: Workflow::Definition::Step::COMPLETION_TYPES }
-        
+    
+    def title
+      super || self.definition.try(:title)
+    end
+
+    def description
+      self.definition.try(:description)
+    end
+
+    def kind
+      super || self.definition.try(:kind)
+    end
+
+    def position
+      super || self.definition.try(:position)
+    end
+
+    def completion_type
+      super || self.definition.try(:completion_type)
+    end
+
     def documents
       super.empty? ? self.definition.try(:documents) : super
     end

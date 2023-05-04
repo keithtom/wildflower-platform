@@ -20,6 +20,22 @@ module Workflow
     
     scope :by_position, -> { order("workflow_instance_processes.position ASC") }
 
+    def title
+      super || self.definition.title
+    end
+
+    def description
+      super || self.definition.description
+    end
+
+    def position
+      super || self.definition.position
+    end
+
+    def phase
+      self.definition.phase
+    end
+
     def completed?
       !!self.completed_at
     end
