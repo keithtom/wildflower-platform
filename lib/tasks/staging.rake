@@ -5,11 +5,13 @@ namespace :staging do
       user.password = "password"
     end
     daniela.person || (daniela.person = Person.create!(email: "daniela.vasan@wildflowerschools.org", first_name: "Daniela", last_name: "Vasan", image_url: "https://files.slack.com/files-pri/T1BCRBEKF-F056GR2P6L9/headshot2.jpg"))
+    daniela.save!
 
     sunny = User.find_or_create_by!(email: "sunny.greenberg@wildflowerschools.org") do |user|
       user.password = "password"
     end
     sunny.person || (sunny.person = Person.create!(email: "sunny.greenberg@wildflowerschools.org", first_name: "Sunny", last_name: "Greenberg", image_url: "https://files.slack.com/files-pri/T1BCRBEKF-F0563MTR3L1/sunny_greenberg_mid-atlantic_region.jpeg"))
+    sunny.save!
 
     adassa = User.find_or_create_by!(email: "anedd28@gmail.com") do |user|
       user.password = "password"
