@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_04_164847) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_10_213402) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -187,6 +187,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_164847) do
     t.string "image_url"
     t.string "primary_language_other"
     t.string "montessori_certified"
+    t.datetime "affiliated_at"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
@@ -269,7 +270,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_164847) do
     t.string "role"
     t.string "status"
     t.index ["person_id"], name: "index_ssj_team_members_on_person_id"
-    t.index ["ssj_team_id", "person_id", "role"], name: "index_ssj_team_members_on_ssj_team_id_and_person_id_and_role", unique: true
     t.index ["ssj_team_id"], name: "index_ssj_team_members_on_ssj_team_id"
   end
 
@@ -454,11 +454,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_164847) do
     t.bigint "definition_id"
     t.string "title"
     t.string "kind"
+    t.boolean "completed", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position"
     t.string "external_identifier", null: false
-    t.boolean "completed", default: false
     t.boolean "assigned", default: false
     t.string "completion_type"
     t.text "description"
