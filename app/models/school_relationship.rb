@@ -10,7 +10,7 @@ class SchoolRelationship < ApplicationRecord
 
   # https://github.com/ankane/searchkick#indexing
   def reindex_models
-    # school.reindex
-    # person.reindex
+    school.reindex
+    person.reindex
   end
 end
