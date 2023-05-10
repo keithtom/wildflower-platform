@@ -18,9 +18,9 @@ describe 'API V1 School', type: :request do
 
   describe "GET /v1/schools/search", search: true do
     let!(:school1) { create(:school, name: "Keith Montessori") }
-    # before { School.reindex }
+    before { School.reindex }
 
-    xit "succeeds" do
+    it "succeeds" do
       get "/v1/schools/search", params: { search: {q: "Keith"} }, headers: {'ACCEPT' => 'application/json' }
       expect(response).to have_http_status(:success)
 
@@ -30,7 +30,7 @@ describe 'API V1 School', type: :request do
 
 
   describe "GET /v1/schools/1" do
-    xit "succeeds" do
+    it "succeeds" do
       get "/v1/schools/#{School.first.external_identifier}", headers: { 'ACCEPT' => 'application/json'}
       expect(response).to have_http_status(:success)
     end
