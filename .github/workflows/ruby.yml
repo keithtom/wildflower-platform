@@ -40,6 +40,9 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Run tests
+      env:
+        RAILS_ENV: "test"
+        DATABASE_URL: postgres://postgres:@localhost:5432/wildflower_platform_test
       run: | 
         bundle exec rails db:setup RAILS_ENV=test
         bundle exec rake
