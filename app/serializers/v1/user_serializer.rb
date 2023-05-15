@@ -34,6 +34,11 @@ module V1
       user.person
     end
 
+    attribute :show_network do |user|
+      # user.affiliated_at.present?
+      true
+    end
+
     attribute :ssj do |user|
       if person = user.person
         ssj_team = person.ssj_team

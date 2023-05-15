@@ -11,11 +11,12 @@ describe V1::UserSerializer do
     person = ssj_team.partners.first
     person.hub = build(:hub)
     person.save!
+    address = create(:address, addressable: person)
     user.person = person
     user.save!
   end
 
-  subject { described_class.new(user).as_json }
+  subject { described_class.new(user, {include: ['person', 'person.address']}).as_json }
 
   it "should serialize properly" do
     expect(json_document['data']).to have_jsonapi_attributes(:email, :firstName, :lastName, :imageUrl, :hub, :ssj)
@@ -23,5 +24,6 @@ describe V1::UserSerializer do
     expect(json_document['data']['attributes']['ssj']['opsGuide']['data']).to have_id(ssj_team.ops_guide.external_identifier)
     expect(json_document['data']['attributes']['ssj']['regionalGrowthLead']['data']).to have_id(ssj_team.regional_growth_lead.external_identifier)
     expect(json_document['data']['attributes']['ssj']['currentPhase']).to eq('visioning')
+    expect(json_document['included']).to include(have_type('address').and have_attribute(:city))
   end
 end
