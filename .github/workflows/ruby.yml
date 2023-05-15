@@ -7,7 +7,10 @@
 
 name: Test Suite
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+    branches: [ $default-branch ]
 
 permissions:
   contents: read
