@@ -3,7 +3,7 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  # searchkick # callbacks: :async
+  searchkick callbacks: :async
   include Person::Workflow
   include Person::SSJ
 

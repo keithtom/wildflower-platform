@@ -17,8 +17,8 @@ namespace :staging do
       user.password = "password"
     end
     adassa.person || (adassa.person = Person.create!(email: "anedd28@gmail.com", first_name: "Adassa", last_name: "Brutus"))
-    adassa.person.gender = "Female"
-    adassa.person.lgbtqia = false
+    # adassa.person.gender = "Female"
+    # adassa.person.lgbtqia = false
     adassa.person.save!
     adassa.save!
     
