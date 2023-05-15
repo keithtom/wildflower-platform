@@ -79,7 +79,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def user_options
     options = {}
-    options[:include] = ['person']
+    options[:include] = ['person', 'person.address']
     return options
   end
 
