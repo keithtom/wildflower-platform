@@ -43,5 +43,3 @@ yarn-debug.log*
 
 /vendor/bundle
 /tags
-
-# /config/credentials/test.key
