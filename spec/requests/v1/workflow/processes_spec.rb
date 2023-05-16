@@ -17,12 +17,14 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
 
   describe "GET /v1/processes/6823-2341" do
     it "succeeds" do
+      Bullet.enable = false
       get "/v1/workflow/processes/#{process.external_identifier}", headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:status)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:stepsCount)
       expect(json_response["data"]).to have_type(:process).and have_attribute(:completedStepsCount)
       step_obj = json_response["included"].select{|obj| obj["type"] == "step"}.last
+      Bullet.enable = true
     end
   end
 end
