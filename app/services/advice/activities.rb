@@ -27,8 +27,8 @@ class Advice::Activities < BaseService
 
   # get activities
   def activities_by_decision(decision)
-    filtered_events = decision.events.select { |e| e.originator == decision.creator }
-    messages = decision.messages
+    filtered_events = decision.events.where(originator_id: decision.creator_id, originator_type: "Person")
+    messages = decision.messages.includes(:sender)
     records = decision.records
     activities = (filtered_events + messages + records).map { |obj| normalize_activity(obj) }
     activities = activities.compact.sort_by { |h| h[:updated_at] }.reverse
@@ -78,11 +78,11 @@ class Advice::Activities < BaseService
       )
     when Advice::Message
       # external stakeholders don't have profile pics unless we look up gravatar from emailprofile_pic = activity.sender.image_url
-      image_url = activity.sender.image_url
+      sender = activity.sender
       Advice::Activity.new(
         id: "n/a",
         type: "message",
-        person: { name: activity.sender.name, image_url: image_url },
+        person: { name: sender.name, image_url: sender.image_url },
         title: "Message",
         content: activity.content,
         updated_at: activity.updated_at
