@@ -1,5 +1,5 @@
 class V1::Workflow::StepsController < ApiController
-  before_action :find_step, except: [:create]
+  before_action :find_step, except: [:create, :unassign, :reorder]
 
   def create
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
@@ -25,6 +25,7 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def reorder
+    @step = find_team.workflow.steps.find_by!(external_identifier: params[:id])
     Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
     render_step
 
@@ -47,6 +48,7 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def unassign
+    @step = find_team.workflow.steps.includes(:process, :documents, :assignments).find_by!(external_identifier: params[:id])
     @person = current_user.person
     Workflow::Instance::Step::UnassignPerson.run(@step, @person)
     render_step

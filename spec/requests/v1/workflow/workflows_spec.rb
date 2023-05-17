@@ -19,8 +19,8 @@ RSpec.describe "V1::Workflow::Workflows", type: :request do
   describe "GET /v1/workflow/workflows/:id/resources" do
     before do
       album_process = create(:workflow_instance_process, workflow: workflow)
-      album_process.definition.category_list.add("Album Advice & Affiliation")
-      album_process.definition.save!
+      album_process.category_list.add("Album Advice & Affiliation")
+      album_process.save!
 
       3.times do
         step_definition = create(:workflow_definition_step, process: album_process.definition)
@@ -28,8 +28,8 @@ RSpec.describe "V1::Workflow::Workflows", type: :request do
       end
 
       finance_process = create(:workflow_instance_process, workflow: workflow)
-      finance_process.definition.category_list.add("Finance")
-      finance_process.definition.save!
+      finance_process.category_list.add("Finance")
+      finance_process.save!
 
       3.times do
         step_definition = create(:workflow_definition_step, process: finance_process.definition)

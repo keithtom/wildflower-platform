@@ -1,7 +1,6 @@
 class V1::PeopleController < ApiController
   def index
-    # eager load tags
-    @people = Person.all
+    @people = Person.includes(:taggings, :profile_image_attachment, :schools, :address).all
     render json: V1::PersonSerializer.new(@people)
   end
 

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "V1::Workflow::Steps", type: :request do
   let(:headers) { {'ACCEPT' => 'application/json'} }
   let(:user) { create(:user, person: person) }
-  let(:person) { create(:person, ssj_team: ssj_team) }
+  let(:person) { create(:person) }
   let(:ssj_team) { create(:ssj_team) }
   let(:workflow) { ssj_team.workflow }
   let(:process) { create(:workflow_instance_process, workflow: workflow) }
@@ -12,6 +12,7 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
 
   before do
     sign_in(user)
+    SSJ::TeamMember.create(person: person, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
   end
 
   describe "PUT /v1/workflow/steps/bd8f-c3b2/assign" do

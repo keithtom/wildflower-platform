@@ -18,7 +18,7 @@ class ApiController < ActionController::API
   end
 
   def find_team
-    current_user&.person&.ssj_team
+    SSJ::TeamMember.where(person_id: current_user.person_id, status: SSJ::TeamMember::ACTIVE).first&.ssj_team
   end
 
   def workflow_id
