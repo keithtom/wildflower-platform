@@ -7,7 +7,7 @@ class V1::Advice::DecisionsController < ApiController
     # scope to current user
     @person = Person.find_by!(external_identifier: params[:person_id])
     # needs options for order and eager loading (messages, events and records)
-    @decisions = @person.decisions.includes(:documents, :stakeholders, :records, :creator).order("updated_at DESC").all
+    @decisions = @person.decisions.includes(:documents, :stakeholders, :records, :creator, :events).order("updated_at DESC").all
 
     # each decision has its own last activity.
     # activities needed for 'last activity'

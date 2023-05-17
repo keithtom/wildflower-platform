@@ -27,7 +27,7 @@ class Advice::Activities < BaseService
 
   # get activities
   def activities_by_decision(decision)
-    filtered_events = decision.events.where(originator_id: decision.creator_id, originator_type: "Person")
+    filtered_events = decision.events.select { |e| e.originator == decision.creator }
     messages = decision.messages.includes(:sender)
     records = decision.records
     activities = (filtered_events + messages + records).map { |obj| normalize_activity(obj) }
