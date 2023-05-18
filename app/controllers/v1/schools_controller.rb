@@ -1,6 +1,6 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.all.includes(:taggings, :pod, :school_relationships, :people, :address)
+    @schools = School.includes(:taggings, :pod, :school_relationships, :people, :address).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
