@@ -5,11 +5,10 @@
 # This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
 # For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
 
-name: Ruby
+name: Test Suite
 
 on:
   push:
-    branches: [ $default-branch ]
   pull_request:
     branches: [ $default-branch ]
 
@@ -17,15 +16,21 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  rspec:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ruby-version: ['3.0']
+
+    services:
+      postgres:
+        image: postgres:12.1-alpine
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout respository
+      uses: actions/checkout@v3
     - name: Set up Ruby
     # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
     # change this to (see https://github.com/ruby/setup-ruby#versioning):
@@ -34,5 +39,20 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: Runs Elasticsearch
+      uses: elastic/elastic-github-actions/elasticsearch@master
+      with:
+        stack-version: 7.6.0
     - name: Run tests
-      run: bundle exec rake
+      env:
+        RAILS_ENV: "test"
+        DATABASE_URL: postgres://postgres:@localhost:5432/wildflower_platform_test
+      run: | 
+        bundle exec rails db:setup
+        bundle exec rake

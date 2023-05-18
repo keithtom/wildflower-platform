@@ -16,6 +16,6 @@ class Network::Invite < BaseCommand
   end
 
   def send_invite_email
-    DirectoryMailer.invite(@user).deliver_later
+    NetworkMailer.invite(@user).deliver_later
   end
 end
