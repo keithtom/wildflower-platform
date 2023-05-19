@@ -1,7 +1,6 @@
 class V1::SchoolsController < ApiController
   def index
-    # eager load tags
-    @schools = School.all
+    @schools = School.includes(:taggings, :pod, :people, :address, school_relationships: [:person] ).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
