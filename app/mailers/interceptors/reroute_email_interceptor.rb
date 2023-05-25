@@ -13,6 +13,11 @@ module Interceptors
         mail.subject = "#{original_subject} [originally cc: #{original_cc_emails}, to: #{original_to}]"
       end
 
+      if mail.bcc.present?
+        # intended to remove maggie for SSJ mailer for now
+        mail.bcc = []
+      end
+
       Rails.logger.info "Rerouted '#{original_to}' to '#{rerouted_email_address}'."
     end
 
