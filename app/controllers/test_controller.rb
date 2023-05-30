@@ -25,6 +25,9 @@ class TestController < ApplicationController
         workflow_instance = ssj_team.workflow
         workflow_instance.processes.each do |process|
           process.steps.each do |step|
+            step.assignments.each do |assignment|
+              assignment.destroy!
+            end
             step.destroy!
           end
           process.destroy!
@@ -33,7 +36,7 @@ class TestController < ApplicationController
 
         # create clean user, person and workflow
         user = User.create!(email: 'cypress_test@test.com', password: 'password')
-        person = Person.create!
+        person = Person.create!(image_url: 'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg')
         user.person = person
         user.save!
         Address.create!(addressable: person) if person.address.nil?
