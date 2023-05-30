@@ -18,12 +18,12 @@ Rails.application.routes.draw do
   namespace :v1 do
     resources :users, except: [:index, :create, :destroy]
 
-    get "people/search", as: :search_people
+    get "/search" => "search#index", as: :search
+
     resources :people, except: [:create, :destroy] do
       # resources :school_relationships
     end
 
-    get "schools/search", as: :search_schools
     resources :schools, except: [:create, :destroy] do
       # resources :school_relationships
     end
