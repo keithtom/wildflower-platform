@@ -5,7 +5,7 @@ class V1::SchoolsController < ApiController
   end
 
   def show
-    @school = School.find_by!(external_identifier: params[:id])
+    @school = School.includes(:people).find_by!(external_identifier: params[:id])
     render json: V1::SchoolSerializer.new(@school)
   end
 
