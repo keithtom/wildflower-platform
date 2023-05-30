@@ -1,7 +1,6 @@
 class V1::SearchController < ApplicationController
 
   def index
-    # eager load tags
     offset = search_params[:offset]
     limit = search_params[:limit]
     where = {}.merge(search_params[:people_filters] || {}).merge(search_params[:school_filters]||{})
@@ -13,10 +12,26 @@ class V1::SearchController < ApplicationController
     # jsonapi-serializer 2.0 only supports 1 model; 3.0 supports mixed collections of models
     # https://github.com/jsonapi-serializer/jsonapi-serializer/pull/141
     # for now, only query 1 model at a time.
-    @search = Searchkick.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking)
-    @results = @search.to_a
-    
-    render json: get_serializer.new(@results)
+
+    # open date - not yet open, 0-2, 3-4, 5+ years
+    # 
+    case params[:models]
+    when 'person', 'people', 'persons'
+      # people where
+      params[:people_filters]
+      # based on the keys above, build the right where clause using a language of OR
+      @search = Person.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
+      @results = @search.to_a
+      render json: V1::PersonSerializer.new(@results)
+    when 'school', 'schools'
+      @search = School.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:people]])
+      @results = @search.to_a
+      render json: V1::SchoolSerializer.new(@results)
+    else
+      @search = Person.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
+      @results = @search.to_a
+      render json: V1::PersonSerializer.new(@results)
+    end
   end
 
   protected
@@ -25,6 +40,10 @@ class V1::SearchController < ApplicationController
   #   people_filters[group]= values; e.g. { tuition_assistance_type => ['state vouchers', 'county childcare']}
   # audience = list of tags (used to be roles)
   # roles = list of tags (used to be skills)
+  
+  # filters for different entities.  what's a good search API?
+  # q, models, offset, limit, general stuff
+  # but then there's specific filters for each entity in where
   def search_params
     params.permit(:q, :models, :audiences, :roles, :people_filters, :school_filters, :offset, :limit)
   end
@@ -46,16 +65,22 @@ class V1::SearchController < ApplicationController
     end.compact
   end
 
-  def get_serializer
-    return V1::PersonSerializer unless params[:models]
-      
-    case params[:models]
-    when 'person', 'people', 'persons'
-      V1::PersonSerializer
-    when 'school', 'schools'
-      V1::SchoolSerializer
-    else
-      raise "unsupported model: #{params[:models]}"
+  def interpret_people_filters
+    where = {}
+    where.merge!(address_state: params[:people_filters][:address_states]) if params[:people_filters][:address_states].present?
+    where.merge!(primary_language: params[:people_filters][:languages]) if params[:people_filters][:primary_languages].present?
+    if params[:people_filters][:roles].present?
+      where_roles = params[:people_filters][:roles].map { |role| {roles: { ilike: "%#{role}%" }} }
+      where.merge!(_or: where_roles)
     end
+    if params[:people_filters][:race_ethnicities].present?
+      where_race_ethnicity = params[:people_filters][:race_ethnicities].map { |race_ethnicity| { race_ethnicity: { ilike: "%#{race_ethnicity}%" } } }
+      where.merge!(_or: where_race_ethnicity)
+    end
+    where.merge!(gender: params[:people_filters][:genders]) if params[:people_filters][:genders]
+    where
+  end
+
+  def interpret_school_filters
   end
 end
