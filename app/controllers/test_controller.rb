@@ -10,17 +10,18 @@ class TestController < ApplicationController
         person.address&.destroy!
         person.profile_image&.purge
 
-        ssj_team = person.ssj_team
-        ssj_team.ops_guide = nil
-        ssj_team.regional_growth_lead_id = nil
-        ssj_team.save!
+        if ssj_team = person.ssj_team
+          ssj_team.ops_guide_id = nil
+          ssj_team.regional_growth_lead_id = nil
+          ssj_team.save!
 
-        ssj_team.team_members.each do |team_member|
-          User.where(person_id: team_member.person_id).destroy_all
-          team_member.person&.destroy!
-          team_member.destroy!
+          ssj_team.team_members.each do |team_member|
+            User.where(person_id: team_member.person_id).destroy_all
+            team_member.person&.destroy!
+            team_member.destroy!
+          end
+          ssj_team.destroy!
         end
-        ssj_team.destroy!
       
         workflow_instance = ssj_team.workflow
         workflow_instance.processes.each do |process|
