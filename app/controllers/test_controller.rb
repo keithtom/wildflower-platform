@@ -4,8 +4,8 @@ class TestController < ApplicationController
 
     ActiveRecord::Base.transaction do
       # delete everything associated to this user
-      person = user.person
-      user.destroy!
+      person = user&.person
+      user&.destroy! 
       if person
         person.address&.destroy!
         person.profile_image&.purge
@@ -34,22 +34,22 @@ class TestController < ApplicationController
           process.destroy!
         end
         workflow_instance.destroy!
-
-        # create clean user, person and workflow
-        user = User.create!(email: 'cypress_test@test.com', password: 'password')
-        person = Person.create!(image_url: 'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg')
-        user.person = person
-        user.save!
-        Address.create!(addressable: person) if person.address.nil?
-        
-        ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
-        workflow_definition = Workflow::Definition::Workflow.find_by(name: "Basic Workflow")
-        workflow_instance = SSJ::Initialize.run(workflow_definition)
-        ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
-
-        SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
-        SSJ::TeamMember.create!(person_id: person.id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       end
+
+      # create clean user, person and workflow
+      user = User.create!(email: 'cypress_test@test.com', password: 'password')
+      person = Person.create!(image_url: 'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg')
+      user.person = person
+      user.save!
+      Address.create!(addressable: person) if person.address.nil?
+      
+      ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
+      workflow_definition = Workflow::Definition::Workflow.find_by(name: "Basic Workflow")
+      workflow_instance = SSJ::Initialize.run(workflow_definition)
+      ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
+
+      SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+      SSJ::TeamMember.create!(person_id: person.id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
     end
   end
 end
