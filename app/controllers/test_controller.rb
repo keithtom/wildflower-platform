@@ -52,4 +52,13 @@ class TestController < ApplicationController
       SSJ::TeamMember.create!(person_id: person.id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
     end
   end
+  
+  def invite_email_link
+    user = User.find_by(email: 'cypress_test@test.com')
+    Users::GenerateToken.call(user)
+    link = CGI.escape("/welcome/new-etl")
+    invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
+
+    render json: { invite_url: invite_url }
+  end
 end
