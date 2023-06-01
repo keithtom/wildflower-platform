@@ -18,13 +18,12 @@ class V1::SearchController < ApplicationController
     case params[:models]
     when 'person', 'people', 'persons'
       # people where
-      params[:people_filters]
       # based on the keys above, build the right where clause using a language of OR
-      @search = Person.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
+      @search = Person.search(query, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
       @results = @search.to_a
       render json: V1::PersonSerializer.new(@results)
     when 'school', 'schools'
-      @search = School.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:people]])
+      @search = School.search(query, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:people]])
       @results = @search.to_a
       render json: V1::SchoolSerializer.new(@results)
     else

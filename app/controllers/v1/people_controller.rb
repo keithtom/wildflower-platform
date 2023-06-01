@@ -5,8 +5,13 @@ class V1::PeopleController < ApiController
   end
 
   def show
-    @person = Person.find_by!(external_identifier: params[:id])
-    render json: V1::PersonSerializer.new(@person)
+    if params[:network]
+      @person = Person.includes(:schools, :school_relationships).find_by!(external_identifier: params[:id])
+      render json: V1::PersonSerializer.new(@person, include: [:schools, :school_relationships, :address])
+    else
+      @person = Person.find_by!(external_identifier: params[:id])
+      render json: V1::PersonSerializer.new(@person)
+    end
   end
 
   def update
