@@ -25,11 +25,11 @@ class V1::SearchController < ApplicationController
     when 'school', 'schools'
       @search = School.search(query, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:people]])
       @results = @search.to_a
-      render json: V1::SchoolSerializer.new(@results)
+      render json: V1::SchoolSerializer.new(@results, include: [:people, :school_relationships, :address, :pod])
     else
       @search = Person.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
       @results = @search.to_a
-      render json: V1::PersonSerializer.new(@results)
+      render json: V1::PersonSerializer.new(@results, include: [:schools, :school_relationships, :address])
     end
   end
 
