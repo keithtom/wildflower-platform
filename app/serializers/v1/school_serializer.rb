@@ -8,12 +8,15 @@ module V1
     belongs_to :pod, id_method_name: :external_identifier do |school|
       school.pod
     end
+
     has_many :school_relationships, id_method_name: :external_identifier do |school|
       school.school_relationships
     end
+
     has_many :people, id_method_name: :external_identifier do |school|
       school.people
     end
+
     has_one :address, id_method_name: :external_identifier do |school|
       school.address
     end
