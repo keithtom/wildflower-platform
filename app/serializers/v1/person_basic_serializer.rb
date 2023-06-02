@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module V1
-  class PersonSerializer < ApplicationSerializer
+  class PersonBasicSerializer < ApplicationSerializer
     attributes :email, :first_name, :middle_name, :last_name, :phone,
                :role_list,
                :show_ssj,
