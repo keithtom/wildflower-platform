@@ -1,10 +1,19 @@
 require 'csv'
 
-# csv = CSV.parse(File.open('schools.csv'), headers:true, header_converters: [:downcase, :symbol])
-# csv.headers
+require 'open-uri'
 
 module Airtable
+
+  def self.import_partners
+    partners = URI.open("https://www.dropbox.com/s/kjkjbq3cv9smyut/partners.csv?dl=1").read
+    # csv = CSV.parse(partners, headers:true, header_converters: [:downcase, :symbol])
+    # csv.headers
+    Airtable::ImportPartners.new(partners).import
+  end
+
   class ImportPartners
+    SKIP_RECORDS = []
+  
     # maps partner record id to educator record id
     PARTNER_EDUCATORS = {'recM4yBS6e9Mdm8HF' => 'reca83rZwZhmhJ6Vw',
       'recG6MmlihTqHgCIp' => 'recGxGi8NCUGxNi5Z',
@@ -21,7 +30,7 @@ module Airtable
 
     def initialize(source_csv)
       @source_csv = source_csv
-      @csv = CSV.parse(@source_csv, headers: true, header_converters: [:downcase, :symbol])
+      @csv = CSV.parse(@source_csv, headers: true, header_converters: [:downcase, :symbol], encoding: "ISO8859-1")
     end
 
     def import
@@ -69,15 +78,17 @@ module Airtable
 
     def add_roles(person, airtable_row)
       if airtable_row[:roles].present?
-        person.role_list = airtable_row[:roles]
+        airtable_row[:roles].split(",").each do |tag|
+          person.role_list.add(tag.strip)
+        end
         person.save!
       end
     end
 
     def merge_roles(person, airtable_row)
       if airtable_row[:roles].present?
-        airtable_row[:roles].split(",").each do |role|
-          person.roles.add(role)
+        airtable_row[:roles].split(",").each do |tag|
+          person.role_list.add(tag.strip)
         end
         person.save!
       end

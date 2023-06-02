@@ -1,4 +1,5 @@
 require 'csv'
+require 'open-uri'
 
 # csv = CSV.parse(File.open('schools.csv'), headers:true, header_converters: [:downcase, :symbol])
 # csv.headers
@@ -15,7 +16,7 @@ module Airtable
 
     def initialize(source_csv)
       @source_csv = source_csv
-      @csv = CSV.parse(@source_csv, headers: true, header_converters: [:downcase, :symbol])
+      @csv = CSV.parse(@source_csv, headers: true, header_converters: [:downcase, :symbol], encoding: "ISO8859-1")
     end
 
     def import
@@ -71,7 +72,7 @@ module Airtable
     end
 
     def add_tl_role(person)
-      person.roles.add("Teacher Leader")
+      person.role_list.add("Teacher Leader")
       person.save!
     end
 
@@ -88,5 +89,25 @@ module Airtable
         person.save!
       end
     end
+
+    def add_relationships(people, airtable_row)
+    end
   end
 end
+
+educators = URI.open("https://www.dropbox.com/s/hn6viilndhwoshq/educators.csv?dl=1").read
+Airtable::ImportEducators.new(educators).import
+
+partners = URI.open("https://www.dropbox.com/s/kjkjbq3cv9smyut/partners.csv?dl=1").read
+Airtable::ImportPartners.new(partners).import
+
+schools = URI.open("https://www.dropbox.com/s/hiii4mgnmv3xzj7/schools.csv?dl=1").read
+Airtable::ImportSchools.new(schools).import
+# TODO: import school relationships 
+
+# what is import script missing
+- image url
+- about needs to be populated
+- affiliated_at
+
+- school add logos

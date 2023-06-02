@@ -3,16 +3,24 @@ require 'csv'
 # csv = CSV.parse(File.open('schools.csv'), headers:true, header_converters: [:downcase, :symbol])
 # csv.headers
 
+# production
+# require 'open-uri'
+# link = "https://www.dropbox.com/s/xwd4yi02st1flcb/educators.csv?dl=1"
+# data = URI.parse(link).open.read
+# data = data.force_encoding("UTF-8").gsub!("\xEF\xBB\xBF", '') # remove byte order marker
+# Airtable::ImportEducators.new(data).import
+
 module Airtable
-  class ImportSchools
+  # In Airtable, this is "Educators x Schools"
+  class ImportSchoolRelationships
     def initialize(source_csv)
       @source_csv = source_csv
-      @csv = CSV.parse(@source_csv, headers: true, header_converters: [:downcase, :symbol], encoding: "ISO8859-1")
+      @csv = CSV.parse(@source_csv, headers: true, header_converters: [:downcase, :symbol])
     end
 
     def import
       @csv.each do |row|
-        if school = School.find_by(:airtable_id => row[:record_id])
+        if school = SchoolRelationship.find_by(:airtable_id => row[:record_id])
           # update
           # Not implementing yet.
         else
@@ -56,27 +64,21 @@ module Airtable
 
     def add_ages_served(school, airtable_row)
       if airtable_row[:ages_served].present?
-        airtable_row[:ages_served].split(",").each do |tag|
-          person.ages_served_list.add(tag.strip)
-        end
+        school.ages_served_list = airtable_row[:ages_served]
         school.save!
       end
     end
 
     def add_charter(school, airtable_row)
       if airtable_row[:charter].present?
-        airtable_row[:charter].split(",").each do |tag|
-          person.charter_list.add(tag.strip)
-        end
+        school.charter_list = airtable_row[:charter]
         school.save!
       end
     end
 
     def add_tuition_assistance_types(school, airtable_row)
       if airtable_row[:sources_of_tuition_subsidy_ind_schools_only].present?
-        airtable_row[:sources_of_tuition_subsidy_ind_schools_only].split(",").each do |tag|
-          person.tuition_assistance_type_list.add(tag.strip)
-        end
+        school.tuition_assistance_type_list = airtable_row[:sources_of_tuition_subsidy_ind_schools_only]
         school.save!
       end
     end
