@@ -37,14 +37,13 @@ class V1::SearchController < ApplicationController
   # advanced filters can do things like
   #   school_filters[group]= values; e.g. { tuition_assistance_type => ['state vouchers', 'county childcare']}
   #   people_filters[group]= values; e.g. { tuition_assistance_type => ['state vouchers', 'county childcare']}
-  # audience = list of tags (used to be roles)
   # roles = list of tags (used to be skills)
   
   # filters for different entities.  what's a good search API?
   # q, models, offset, limit, general stuff
   # but then there's specific filters for each entity in where
   def search_params
-    params.permit(:q, :models, :audiences, :roles, :people_filters, :school_filters, :offset, :limit)
+    params.permit(:q, :models, :role_list, :people_filters, :school_filters, :offset, :limit)
   end
 
   # be as flexible as possible on consumption.

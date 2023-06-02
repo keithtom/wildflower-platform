@@ -4,10 +4,6 @@ FactoryBot.define do
     description { Faker::Lorem.paragraphs }
   end
 
-  factory :audience do
-    name { Faker::Color.color_name.capitalize }
-    description { Faker::Lorem.paragraphs }
-  end
   factory :role do
     name { Faker::Company.profession }
     description { Faker::Lorem.paragraphs }

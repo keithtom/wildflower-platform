@@ -3,7 +3,7 @@
 class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  acts_as_taggable_on :audiences, :ages_served, :charter, :tuition_assistance_types
+  acts_as_taggable_on :ages_served, :charter, :tuition_assistance_types
 
   searchkick callbacks: :async
 
@@ -63,7 +63,6 @@ class School < ApplicationRecord
       phone: phone,
       domain: domain,
       governance_type: governance_type,
-      audiences: audience_list.join(" "),
       ages_served: ages_served_list.join(" "),
       charter: charter_list.join(" "),
       tuition_assistance_types: tuition_assistance_type_list.join(" "),

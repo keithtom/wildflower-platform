@@ -7,7 +7,7 @@ class Person < ApplicationRecord
   include Person::Workflow
   include Person::SSJ
 
-  acts_as_taggable_on :audiences, :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles, :montessori_certified_levels, :classroom_age
+  acts_as_taggable_on :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles, :montessori_certified_levels, :classroom_age
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
