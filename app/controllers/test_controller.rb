@@ -2,26 +2,12 @@ class TestController < ApplicationController
   def reset_fixtures
     ActiveRecord::Base.transaction do
       destroy_test_records
-
-      # create clean user, person and workflow
-      user = User.create!(email: params[:email], password: 'password')
-      person = Person.create!(image_url: 'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg')
-      user.person = person
-      user.save!
-      Address.create!(addressable: person) if person.address.nil?
-      
-      ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
-      workflow_definition = Workflow::Definition::Workflow.find_by(name: "Basic Workflow")
-      workflow_instance = SSJ::Initialize.run(workflow_definition)
-      ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
-
-      SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
-      SSJ::TeamMember.create!(person_id: person.id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+      create_test_user(params[:email])
     end
   end
   
   def invite_email_link
-    user = User.find_by(email: 'cypress_test@test.com')
+    user = create_test_user(params[:email])
     Users::GenerateToken.call(user)
     link = CGI.escape("/welcome/new-etl")
     invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
@@ -65,5 +51,23 @@ class TestController < ApplicationController
         workflow_instance.destroy!
       end
     end
+  end
+
+  def create_test_user(email)
+    user = User.create!(email: email, password: 'password')
+    person = Person.create!(image_url: 'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg')
+    user.person = person
+    user.save!
+    Address.create!(addressable: person) if person.address.nil?
+    
+    ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
+    workflow_definition = Workflow::Definition::Workflow.find_by(name: "Basic Workflow")
+    workflow_instance = SSJ::Initialize.run(workflow_definition)
+    ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
+
+    SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person_id: person.id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+
+    return user
   end
 end
