@@ -33,13 +33,11 @@ person2 = FactoryBot.create(:person)
 user1 = FactoryBot.create(:user, :person => person1, email: "test@test.com", password: "password")
 user2 = FactoryBot.create(:user, :person => person2, email: "test2@test.com", password: "password")
 
-person1.audience_list = "primary, elementary"
 person1.role_list = "marketing, operations, teacher leader"
 person1.address = FactoryBot.create(:address)
 person1.school_relationships << FactoryBot.create(:school_relationship, school: school1)
 person1.save!
 
-person2.audience_list = "charter, foundation"
 person2.role_list = "compliance, communications, finance, teacher leader"
 person2.address = FactoryBot.create(:address)
 person2.school_relationships << FactoryBot.create(:school_relationship, school: school1)

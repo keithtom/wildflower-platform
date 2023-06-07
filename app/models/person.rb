@@ -7,7 +7,7 @@ class Person < ApplicationRecord
   include Person::Workflow
   include Person::SSJ
 
-  acts_as_taggable_on :audiences, :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles, :montessori_certified_levels, :classroom_age
+  acts_as_taggable_on :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles, :montessori_certified_levels, :classroom_age
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
@@ -16,6 +16,7 @@ class Person < ApplicationRecord
   # has_one :foundation_partner, through: :school_relationships, -> { where(kind: PeopleRelationship::FOUNDATION_PARTNER) }
   has_many :other_people
 
+  # current _school
   has_many :school_relationships
   has_many :schools, through: :school_relationships
 
@@ -35,18 +36,20 @@ class Person < ApplicationRecord
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
+      # general free text search
       hub: hub&.name,
       pod: pod&.name,
-      email: email,
-      personal_email: personal_email,
-      journey_state: journey_state,
-      primary_language: primary_language,
-      name: "#{first_name} #{middle_name} #{last_name}",
-      audiences: audience_list.join(" "),
-      roles: role_list.join(" "),
+      name: name,
+      about: about&.truncate(5000), # limit memory usage...?
       address_city: address&.city,
+      email: email,
+      # school name?
+      # filters below
+      primary_language: primary_language,
+      roles: role_list.join(" "),
+      gender: [gender, gender_other].join(" "),
+      race_ethnicity: race_ethnicity_list.add(race_ethnicity_other).join(" "),
       address_state: address&.state,
-      about: about&.truncate(500),
     }
   end
 
