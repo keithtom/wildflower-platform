@@ -30,13 +30,8 @@ module V1
       end
     end
 
-    belongs_to :person, serializer: V1::PersonSerializer, id_method_name: :external_identifier do |user|
+    belongs_to :person, serializer: V1::PersonBasicSerializer, id_method_name: :external_identifier do |user|
       user.person
-    end
-
-    attribute :show_network do |user|
-      # user.affiliated_at.present?
-      true
     end
 
     attribute :ssj do |user|

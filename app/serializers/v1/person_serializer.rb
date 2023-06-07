@@ -7,9 +7,7 @@ module V1
       :primary_language_other, :race_ethnicity_list, :gender_other, :pronouns_other, :montessori_certified, :montessori_certified_level_list, :classroom_age_list
 
     attribute :role_list
-    # has_many :roles, serializer: V1::TagSerializer
-    # has_many :audiences, serializer: V1::TagSerializer
-
+    
     has_many :schools, id_method_name: :external_identifier do |person|
       person.schools
     end
