@@ -5,7 +5,7 @@ class V1::SchoolsController < ApiController
   end
 
   def show
-    if params[:network]
+    if params[:network] # for directory usage
       @school = School.includes(:people, :school_relationships).find_by!(external_identifier: params[:id])
       render json: V1::SchoolSerializer.new(@school, include: [:people, :school_relationships, :address, :pod])
     else

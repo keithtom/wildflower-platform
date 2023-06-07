@@ -49,7 +49,7 @@ module Airtable
             raise "#{educator_id} not found but was expected; did you import educators yet?"
           end
         elsif person = Person.find_by(:airtable_partner_id => row[:record_id])
-          # Not implementing yet.  just a regular update of partner.
+          update_person(person, row)
         else
           person = Person.create!(map_airtable_to_database(row))
           add_roles(person, row)
@@ -66,14 +66,31 @@ module Airtable
 
       {
         :airtable_partner_id => airtable_row[:record_id],
-        :email => airtable_row[:contact_email], # figure out if personal or wf
+        :email => airtable_row[:email], # figure out if personal or wf
         :first_name => airtable_row[:name]&.split&.first,
         :last_name => airtable_row[:name]&.split&.last,
         :phone => airtable_row[:phone],
         :raw_address => airtable_row[:home_address],
         :hub => hub,
-        :pod => pod
+        :pod => pod,
+        :start_date => airtable_row[:start_date_from_stints],
+        :end_date => airtable_row[:end_date_from_stints],
+        :image_url => airtable_row[:image_url],
       }
+    end
+
+    def update_person(person, airtable_row)
+      person.email ||= airtable_row[:email]
+      person.active = airtable_row[:currently_active]
+      person.role_list = airtable_row[:roles].split(",").reject(&:blank?) if airtable_row[:roles].present?
+      person.phone = airtable_row[:phone]
+      person.raw_address = airtable_row[:home_address]
+      # person.hub ||= Hub.find_by(:name => airtable_row[:hub])
+      # person.pod ||= Pod.find_by(:name => airtable_row[:pod])
+      person.start_date ||= airtable_row[:start_date_from_stints]
+      person.end_date = airtable_row[:end_date_from_stints]
+      person.image_url ||= airtable_row[:image_url]
+      person.save!
     end
 
     def add_roles(person, airtable_row)

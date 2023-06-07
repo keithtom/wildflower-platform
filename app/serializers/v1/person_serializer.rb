@@ -7,6 +7,20 @@ module V1
       :primary_language_other, :race_ethnicity_list, :gender_other, :pronouns_other, :montessori_certified, :montessori_certified_level_list, :classroom_age_list
 
     attribute :role_list
+
+    attribute :location do |person|
+      if person.address
+        if person.address.city.present? && person.address.state.present?
+          "#{person.address.city}, #{person.address.state}"
+        elsif person.address.city.blank? && person.address.state.present?
+          "#{person.address.state}"
+        elsif person.address.city.present?
+          "#{person.address.city}"
+        end
+      else
+        "n/a"
+      end
+    end
     
     has_many :schools, id_method_name: :external_identifier do |person|
       person.schools
@@ -15,6 +29,7 @@ module V1
       person.school_relationships
     end
 
+    # consider not serializing this for privacy reasons.  how does front-end use it?
     has_one :address, id_method_name: :external_identifier do |person|
       person.address
     end

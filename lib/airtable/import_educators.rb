@@ -57,17 +57,17 @@ module Airtable
         :prosperworks_id => airtable_row[:prosperworks_id],
         :willing_to_relocate => airtable_row[:willing_to_relocate],
         :primary_language => airtable_row[:primary_language],
-        :race_ethnicity_other => airtable_row[:race_ethnicity_other],
+        :race_ethnicity_other => airtable_row[:race_ethnicity_other], # How is this imported? is key right?
         :household_income => airtable_row[:household_income],
         :income_background => airtable_row[:income_background],
         :gender => airtable_row[:gender],
         :gender_other => airtable_row[:gender_other],
-        :lgbtqia => airtable_row[:lgbtqia],
+        :lgbtqia => airtable_row[:lgbtqia] && airtable_row[:lgbtqia].strip.downcase == "true",
         :pronouns => airtable_row[:pronouns],
         :pronouns_other => airtable_row[:pronouns_other],
         :airtable_id => airtable_row[:record_id],
         :journey_state => airtable_row[:stage],
-
+        :montessori_certified => airtable_row[:montessori_certified],
       }
     end
 
@@ -83,6 +83,7 @@ module Airtable
       end
     end
 
+    # how is this imported... is the key right?
     def add_race_ethnicity(person, airtable_row)
       if airtable_row[:race_ethnicity].present?
         person.race_ethnicity_list = airtable_row[:race_ethnicity]
