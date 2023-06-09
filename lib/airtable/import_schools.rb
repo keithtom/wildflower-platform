@@ -64,6 +64,12 @@ module Airtable
         :opened_on => opened_on,
         :airtable_id => airtable_row[:record_id],
         :charter_string => airtable_row[:charter],
+        :about => airtable_row[:about],
+        :about_es => airtable_row[:about_spanish],
+        :hero_image_url => airtable_row[:hero_image_url],
+        :hero_image2_url => airtable_row[:hero_image_2_url],
+        :affiliation_date => airtable_row[:affiliation_date],
+        :num_classrooms => airtable_row[:number_of_classrooms],
       }
     end
 
