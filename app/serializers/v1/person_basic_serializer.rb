@@ -16,7 +16,7 @@ module V1
     end
   
     attribute :show_network do |person|
-      person.role_list.includes?(PeopleRelationship::FOUNDATION_PARTNER) || person.affiliated_at.present?
+      person.role_list.include?(PeopleRelationship::FOUNDATION_PARTNER) || person.affiliated_at.present?
     end
 
     # has_many :schools, id_method_name: :external_identifier do |person|
