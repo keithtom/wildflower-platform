@@ -1,6 +1,6 @@
 class V1::PeopleController < ApiController
   def index
-    @people = Person.includes(:taggings, :profile_image_attachment, :schools, :address).all
+    @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag]).all
     render json: V1::PersonSerializer.new(@people)
   end
 
