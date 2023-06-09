@@ -1,11 +1,11 @@
 class V1::PeopleController < ApiController
   def index
-    @people = Person.includes(:taggings, :profile_image_attachment, :schools, :address).all
+    @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag]).all
     render json: V1::PersonSerializer.new(@people)
   end
 
   def show
-    if params[:network]
+    if params[:network] # for directory usage
       @person = Person.includes(:schools, :school_relationships).find_by!(external_identifier: params[:id])
       render json: V1::PersonSerializer.new(@person, include: [:schools, :school_relationships, :address])
     else
