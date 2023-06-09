@@ -1,4 +1,5 @@
 require 'csv'
+require 'open-uri'
 
 # csv = CSV.parse(File.open('schools.csv'), headers:true, header_converters: [:downcase, :symbol])
 # csv.headers
@@ -12,6 +13,14 @@ require 'csv'
 
 module Airtable
   # In Airtable, this is "Educators x Schools"
+
+  def self.import_schools
+    csv = URI.open("https://www.dropbox.com/?dl=1").read
+    # csv = CSV.parse(partners, headers:true, header_converters: [:downcase, :symbol])
+    # csv.headers
+    Airtable::ImportSchoolRelationships.new(csv).import
+  end
+
   class ImportSchoolRelationships
     def initialize(source_csv)
       @source_csv = source_csv
@@ -19,18 +28,22 @@ module Airtable
     end
 
     def import
+      updates = 0
+      creates = 0
       @csv.each do |row|
         if school = SchoolRelationship.find_by(:airtable_id => row[:record_id])
-          # update
           # Not implementing yet.
+          updates += 1
         else
-          # create
+          creates += 1
           school = School.create!(map_airtable_to_database(row))
           add_ages_served(school, row)
+          add_previous_names(school, row)
           add_charter(school, row)
           add_tuition_assistance_types(school, row)
         end
       end
+      puts "done; #{updates} updates, #{creates} creates"
     end
 
 
@@ -57,14 +70,33 @@ module Airtable
         :logo_url => airtable_row[:logo_url],
         :timezone => airtable_row[:time_zone],
         :raw_address => airtable_row[:address],
-        :opened_on => opened_on,
-        :airtable_id => airtable_row[:record_id]
+        :opened_on => opened,
+        :airtable_id => airtable_row[:record_id],
+        :about => airtable_row[:about],
+        :about_es => airtable_row[:about_spanish],
+        :hero_image_url => airtable_row[:hero_image_url],
+        :hero_image2_url => airtable_row[:hero_image_2_url],
+        :charter_string => airtable_row[:charter],
+        # :closed_on => airtable_row[:closed],
+        :affiliation_date => airtable_row[:affiliation_date],
+        :num_classrooms => airtable_row[:number_of_classrooms],
       }
     end
 
     def add_ages_served(school, airtable_row)
       if airtable_row[:ages_served].present?
-        school.ages_served_list = airtable_row[:ages_served]
+        airtable_row[:ages_served].split(",").each do |tag|
+          school.ages_served_list.add(tag.strip) if tag.present?
+        end
+        school.save!
+      end
+    end
+
+    def add_previous_names(school, airtable_row)
+      if airtable_row[:prior_names].present?
+        airtable_row[:prior_names].split(",").each do |tag|
+          school.previous_names_list.add(tag.strip) if tag.present?
+        end
         school.save!
       end
     end

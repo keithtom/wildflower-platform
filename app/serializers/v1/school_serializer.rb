@@ -2,10 +2,24 @@
 
 module V1
   class SchoolSerializer < ApplicationSerializer
-    attributes :name, :short_name, :website, :phone, :email, :governance_type, :tuition_assistance_type_list, :ages_served_list, :calendar,
+    attributes :name, :short_name, :website, :phone, :email, :governance_type, :calendar,
                :max_enrollment, :facebook, :instagram, :status, :timezone, :domain,
-               :logo_url, :hero_image_url,
-               :opened_on, :updated_at
+               :logo_url, :hero_image_url, :hero_image2_url, :about, :about_es,
+               :affiliation_date, :closed_on, :num_classrooms, :charter_string,
+               :opened_on, :updated_at,
+               :facility_type
+
+    # done this way to avoid n+1 queries
+    attribute :tuition_assistance_type_list do |person|
+      person.taggings.select { |tagging| tagging.context == "tuition_assistance_types" }.map { |tagging| tagging.tag.name }
+    end
+
+    # done this way to avoid n+1 queries
+    attribute :ages_served_list do |person|
+      person.taggings.select { |tagging| tagging.context == "ages_served" }.map { |tagging| tagging.tag.name }
+    end
+
+    
 
     belongs_to :pod, id_method_name: :external_identifier do |school|
       school.pod

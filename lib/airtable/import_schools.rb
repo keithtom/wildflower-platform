@@ -1,9 +1,18 @@
 require 'csv'
+require 'open-uri'
 
 # csv = CSV.parse(File.open('schools.csv'), headers:true, header_converters: [:downcase, :symbol])
 # csv.headers
 
 module Airtable
+
+  def self.import_schools
+    csv = URI.open("https://www.dropbox.com/s/hiii4mgnmv3xzj7/schools.csv?dl=1").read
+    # csv = CSV.parse(partners, headers:true, header_converters: [:downcase, :symbol])
+    # csv.headers
+    Airtable::ImportSchools.new(csv).import
+  end
+
   class ImportSchools
     def initialize(source_csv)
       @source_csv = source_csv
@@ -11,18 +20,21 @@ module Airtable
     end
 
     def import
+      updates = 0
+      creates = 0
       @csv.each do |row|
         if school = School.find_by(:airtable_id => row[:record_id])
-          # update
+          updates += 1
           # Not implementing yet.
         else
-          # create
+          creates += 1
           school = School.create!(map_airtable_to_database(row))
           add_ages_served(school, row)
-          add_charter(school, row)
+          # add_charter(school, row)
           add_tuition_assistance_types(school, row)
         end
       end
+      puts "done; #{updates} updates, #{creates} creates"
     end
 
 
@@ -50,14 +62,15 @@ module Airtable
         :timezone => airtable_row[:time_zone],
         :raw_address => airtable_row[:address],
         :opened_on => opened_on,
-        :airtable_id => airtable_row[:record_id]
+        :airtable_id => airtable_row[:record_id],
+        :charter_string => airtable_row[:charter],
       }
     end
 
     def add_ages_served(school, airtable_row)
       if airtable_row[:ages_served].present?
         airtable_row[:ages_served].split(",").each do |tag|
-          person.ages_served_list.add(tag.strip)
+          school.ages_served_list.add(tag.strip)
         end
         school.save!
       end
@@ -66,7 +79,7 @@ module Airtable
     def add_charter(school, airtable_row)
       if airtable_row[:charter].present?
         airtable_row[:charter].split(",").each do |tag|
-          person.charter_list.add(tag.strip)
+          school.charter_list.add(tag.strip)
         end
         school.save!
       end
@@ -75,7 +88,7 @@ module Airtable
     def add_tuition_assistance_types(school, airtable_row)
       if airtable_row[:sources_of_tuition_subsidy_ind_schools_only].present?
         airtable_row[:sources_of_tuition_subsidy_ind_schools_only].split(",").each do |tag|
-          person.tuition_assistance_type_list.add(tag.strip)
+          school.tuition_assistance_type_list.add(tag.strip)
         end
         school.save!
       end

@@ -5,7 +5,7 @@ require 'open-uri'
 module Airtable
 
   def self.import_partners
-    partners = URI.open("https://www.dropbox.com/s/kjkjbq3cv9smyut/partners.csv?dl=1").read
+    partners = URI.open("").read
     # csv = CSV.parse(partners, headers:true, header_converters: [:downcase, :symbol])
     # csv.headers
     Airtable::ImportPartners.new(partners).import
@@ -26,6 +26,7 @@ module Airtable
       'recvlBDgX7Urljo4Q' => 'recW8izempocGpvef',
       'recNTCg3JTQJB7COu' => 'recdwpkVVp5qlaXm5',
       'recpRnZwLDp0D5Zek' => 'reccFU4hQjReOW41V',
+      'recARYUZH7sIHE5jQ' => 'rechZWA30MRlZVSGF'
     }
 
     def initialize(source_csv)
@@ -34,6 +35,8 @@ module Airtable
     end
 
     def import
+      updates = 0
+      creates = 0
       @csv.each do |row|
         next if SKIP_RECORDS.include?(row[:record_id])
 
@@ -41,6 +44,7 @@ module Airtable
           # merge
           educator_id = PARTNER_EDUCATORS[row[:record_id]]
           if person = Person.find_by(:airtable_id => educator_id)
+            updates += 1
             person.airtable_partner_id = row[:record_id]
             person.save!
             merge_roles(person, row)
@@ -49,12 +53,15 @@ module Airtable
             raise "#{educator_id} not found but was expected; did you import educators yet?"
           end
         elsif person = Person.find_by(:airtable_partner_id => row[:record_id])
+          updates += 1
           update_person(person, row)
         else
+          creates += 1
           person = Person.create!(map_airtable_to_database(row))
           add_roles(person, row)
         end
       end
+      puts "done; #{updates} updates, #{creates} creates"
     end
 
 
@@ -96,7 +103,7 @@ module Airtable
     def add_roles(person, airtable_row)
       if airtable_row[:roles].present?
         airtable_row[:roles].split(",").each do |tag|
-          person.role_list.add(tag.strip)
+          person.role_list.add(tag.strip) if tag.present?
         end
         person.save!
       end
@@ -105,7 +112,7 @@ module Airtable
     def merge_roles(person, airtable_row)
       if airtable_row[:roles].present?
         airtable_row[:roles].split(",").each do |tag|
-          person.role_list.add(tag.strip)
+          person.role_list.add(tag.strip) if tag.present?
         end
         person.save!
       end

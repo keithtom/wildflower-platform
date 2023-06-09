@@ -5,6 +5,14 @@ require 'open-uri'
 # csv.headers
 
 module Airtable
+
+  def self.import_educators
+    csv = URI.open("").read
+    # csv = CSV.parse(partners, headers:true, header_converters: [:downcase, :symbol])
+    # csv.headers
+    Airtable::ImportEducators.new(csv).import
+  end
+
   class ImportEducators
 
     # britni.haynie@tigerlilymontessori.org
@@ -12,7 +20,7 @@ module Airtable
     # megan.nicole.gardner@gmail.com
     # rocio.dew3@gmail.com
 
-    SKIP_RECORDS = ['recfL1pGitx4NyGHL', 'recLgghNrlBhpzANW', 'recnUSke2rLNjD0Ly', 'rec1GnbjEMhKdQlfR'] # this record seems to be a useless dupe.
+    SKIP_RECORDS = ['recfdtMDk0Dh9Qkyf', 'recfL1pGitx4NyGHL', 'recLgghNrlBhpzANW', 'recnUSke2rLNjD0Ly', 'rec1GnbjEMhKdQlfR'] # this record seems to be a useless dupe.
 
     def initialize(source_csv)
       @source_csv = source_csv
@@ -20,13 +28,20 @@ module Airtable
     end
 
     def import
+      updates = 0
+      creates = 0
+
       @csv.each do |row|
         next if row[:mark_for_deletion].present?
         next if SKIP_RECORDS.include?(row[:record_id])
 
         if person = Person.find_by(:airtable_id => row[:record_id])
-          # Not implementing yet.
+          puts "updating #{person.name}..."
+          updates += 1
+          update_person(person, row)
         else
+          puts "creating #{row[:record_id]} = #{row[:first_name]} #{row[:last_name]}..."
+          creates += 1
           person = Person.create!(map_airtable_to_database(row))
           add_tl_role(person)
           add_languages(person, row)
@@ -34,6 +49,8 @@ module Airtable
           add_relationships(person, row)
         end
       end
+
+      puts "done; #{updates} updates, #{creates} creates"
     end
 
 
@@ -68,8 +85,14 @@ module Airtable
         :airtable_id => airtable_row[:record_id],
         :journey_state => airtable_row[:stage],
         :montessori_certified => airtable_row[:montessori_certified],
+        # :affiliated_at => airtable_row[:affiliation_status].present? ? Time.parse("1/1/1") : nil,
       }
     end
+
+    # TLs we don't really listen to airtable
+    def update_person(person, airtable_row)
+    end
+
 
     def add_tl_role(person)
       person.role_list.add("Teacher Leader")
@@ -78,7 +101,9 @@ module Airtable
 
     def add_languages(person, airtable_row)
       if airtable_row[:languages].present?
-        person.language_list = airtable_row[:languages]
+        airtable_row[:languages].split(",").each do |tag|
+          person.language_list.add(tag.strip) if tag.present?
+        end
         person.save!
       end
     end
@@ -86,7 +111,9 @@ module Airtable
     # how is this imported... is the key right?
     def add_race_ethnicity(person, airtable_row)
       if airtable_row[:race_ethnicity].present?
-        person.race_ethnicity_list = airtable_row[:race_ethnicity]
+        airtable_row[:race_ethnicity].split(",").each do |tag|
+          person.race_ethnicity_list.add(tag.strip) if tag.present?
+        end
         person.save!
       end
     end
@@ -95,20 +122,3 @@ module Airtable
     end
   end
 end
-
-educators = URI.open("https://www.dropbox.com/s/hn6viilndhwoshq/educators.csv?dl=1").read
-Airtable::ImportEducators.new(educators).import
-
-partners = URI.open("https://www.dropbox.com/s/kjkjbq3cv9smyut/partners.csv?dl=1").read
-Airtable::ImportPartners.new(partners).import
-
-schools = URI.open("https://www.dropbox.com/s/hiii4mgnmv3xzj7/schools.csv?dl=1").read
-Airtable::ImportSchools.new(schools).import
-# TODO: import school relationships 
-
-# what is import script missing
-- image url
-- about needs to be populated
-- affiliated_at
-
-- school add logos

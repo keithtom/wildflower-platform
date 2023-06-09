@@ -3,7 +3,7 @@
 class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  acts_as_taggable_on :ages_served, :charter, :tuition_assistance_types
+  acts_as_taggable_on :ages_served, :tuition_assistance_types, :previous_names
 
   searchkick callbacks: :async
 
@@ -57,14 +57,13 @@ class School < ApplicationRecord
     {
       name: name,
       short_name: short_name,
-      old_name: old_name,
+      previous_names: previous_name_list.join(" "),
       website: website,
       email: email,
       phone: phone,
       domain: domain,
       governance_type: governance_type,
       ages_served: ages_served_list.join(" "),
-      charter: charter_list.join(" "),
       tuition_assistance_types: tuition_assistance_type_list.join(" "),
       address_city: address&.city,
       address_state: address&.state
