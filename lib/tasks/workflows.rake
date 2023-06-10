@@ -1,36 +1,21 @@
 require 'ssj/workflow/import'
 
 namespace :workflows do
+  desc 'Full wipe'
+  task reset: [:environment, :import_default_definition, :create_default_teams, :create_dummy_definition, :create_dummy_teams] do
+  end
+
   desc 'destroy all workflow definitions, import new definitions from spreadsheet and create 50 ssj teams with workflows defined by import'
-  task import_default: :environment do
+  task import_default_definition: :environment do
     abort 'Cannot destroy all and import into production' if Rails.env.production? && ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].blank?
-    puts "destroying all workflows and importing new ones"
+    puts "destroying all workflows and importing new definition"
     create_default_workflow_and_processes
+  end
 
-    puts "instantiating imported workflow"
+  task create_default_teams: :environment do
     workflow_definition = Workflow::Definition::Workflow.last
-    workflow_instance = SSJ::Initialize.run(workflow_definition)
-
-    puts "setting test users' workflow to instantiated workflow"
-    user1 = User.find_or_create_by!(email: 'test@test.com')
-    if user1.person.nil?
-      user1.password = "password"
-      user1.person = FactoryBot.create(:person)
-      user1.save!
-    end
-    user2 = User.find_or_create_by!(email: 'test2@test.com')
-    if user2.person.nil?
-      user2.password = "password"
-      user2.person = FactoryBot.create(:person)
-      user2.save!
-    end
-
-    ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
-    ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
-    SSJ::TeamMember.create(person: user1.person, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
-    SSJ::TeamMember.create(person: user2.person, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
-    SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
-  
+    puts "instantiating with workflow: #{workflow_definition.name}"
+    
     image_rotation = [
       'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg',
       'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
@@ -40,26 +25,26 @@ namespace :workflows do
       'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
     ]
 
-    puts "creating 50 teams with sensible, default workflow"
-    50.times do |i|
+    puts "creating 25 teams with sensible, default workflow"
+    ops_guide = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+    25.times do |i|
       print "."
       person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
       person2 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
-      person3 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
     
-      user1 = FactoryBot.create(:user, :person => person1, email: "test#{(i+1)*2+1}@test.com", password: "password")
-      user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+2)*2}@test.com", password: "password")
-    
+      user1 = FactoryBot.create(:user, :person => person1, email: "test#{(i)*2+1}@test.com", password: "password")
+      user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+1)*2}@test.com", password: "password")
+
       workflow_instance = SSJ::Initialize.run(workflow_definition)
-      ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: person3.id)
+      ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
-      SSJ::TeamMember.create(person: person3, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+      SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
     end
   end
 
   desc 'create dummy workflow and processes with ssj teams'
-  task create_dummy: :environment do
+  task create_dummy_definition: :environment do
     workflow_definition = FactoryBot.create(:workflow_definition_workflow, name: "Basic Workflow")
 
     # Visioning
@@ -125,7 +110,12 @@ namespace :workflows do
     end
     workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process7
     workflow_definition.dependencies.create! workable: process9, prerequisite_workable: process8
-    
+  end
+
+  task create_dummy_teams: :environment do
+    workflow_definition = Workflow::Definition::Workflow.last
+    puts "instantiating with workflow: #{workflow_definition.name}"
+
     image_rotation = [
       'https://en.gravatar.com/userimage/4310496/6924cffc6c2e516293c1e8b6e7533ab5.jpg',
       'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
@@ -135,10 +125,11 @@ namespace :workflows do
       'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
     ]
 
-    ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
-
+    ops_guide = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+    
     # Create many of theses
-    50.times do |i|
+    puts "creating 25 teams with dummy workflow"
+    25.times do |i|
       print "."
       person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
       person1.role_list = "partner"
@@ -155,7 +146,6 @@ namespace :workflows do
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create!(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
-
     end
   end
 
