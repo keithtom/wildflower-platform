@@ -66,7 +66,10 @@ class School < ApplicationRecord
       ages_served: ages_served_list.join(" "),
       tuition_assistance_types: tuition_assistance_type_list.join(" "),
       address_city: address&.city,
-      address_state: address&.state
+      address_state: address&.state,
+      about: about, # limit memory usage...?
+      facility_type: facility_type,
+      charter: charter_string,
     }
   end
 end
