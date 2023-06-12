@@ -39,7 +39,7 @@ class V1::SSJ::DashboardController < ApiController
     
     serialization_options = {}
     serialization_options[:params] = { current_user: current_user }
-    serialization_options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
+    serialization_options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee', 'decision_options']
     serialization_options[:fields] = {
       process: [:title],
       person: [:firstName, :lastName, :profileImageAttachment, :imageUrl],
