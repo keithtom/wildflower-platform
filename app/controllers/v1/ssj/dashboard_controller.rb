@@ -30,7 +30,7 @@ class V1::SSJ::DashboardController < ApiController
     team = find_team
     
     # find all the incomplete assignments/steps for this partner and this specific workflow.
-    eager_load_associations = [:assignee, step: [:documents, process: [:definition], assignments: [:step, :assignee], definition: [:documents]]]
+    eager_load_associations = [:assignee, step: [:documents, :decision_options, process: [:definition], assignments: [:step, :assignee], definition: [:documents]]]
     assignments = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(team.workflow_id).incomplete.includes(*eager_load_associations)
     steps = assignments.map { |assignment| assignment.step }
 
