@@ -5,6 +5,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
   let(:person) { create(:person) }
   let(:user) { create(:user, person_id: person.id) }
   let!(:step) { create(:workflow_instance_step) }
+  # let!(:decision_step) { create(:workflow_instance_step, :decision) }
   let(:workflow) { step.process.workflow }
   let(:expected_start_date) { Date.today + 7.days }
   let(:phase) { SSJ::Phase::PHASES.first }
