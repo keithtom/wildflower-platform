@@ -94,5 +94,6 @@ Rails.application.routes.draw do
   end
 
   put 'reset_fixtures', to: 'test#reset_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
+  put 'reset_partner_fixtures', to: 'test#reset_partner_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
   get 'invite_email_link', to: 'test#invite_email_link' if ENV['CYPRESS_ENABLED'] == 'true'
 end
