@@ -149,7 +149,7 @@ namespace :workflows do
     end
   end
 
-  ## rails workflows:invite email=li.ouyang@gmail.com ops_guide_email=ray_tillman@mitchell.net
+  ## rails workflows:invite_user email=li.ouyang@gmail.com first_name="Li" ops_guide_email=ray_tillman@mitchell.net 
   ## take a user's and ops guide's emails as an argument, and invite them to join an SSJ workflow
   desc 'invite new user'
   task invite_user: :environment do
