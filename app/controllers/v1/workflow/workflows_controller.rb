@@ -8,9 +8,7 @@ class V1::Workflow::WorkflowsController < ApiController
   end
 
   def resources
-    query = params[:workflow_id] ? { external_identifier: params[:workflow_id] } : { id: workflow_id }
-    @workflow = Workflow::Instance::Workflow.find_by!(query)
-    process_ids = @workflow.processes.pluck(:id)
+    process_ids = workflow.processes.pluck(:id)
     instance_step_ids = Workflow::Instance::Step.where(process_id: process_ids).pluck(:id)
     definition_step_ids = Workflow::Instance::Step.where(process_id: process_ids).pluck(:definition_id)
 
