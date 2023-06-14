@@ -3,6 +3,27 @@ FactoryBot.define do
     association :definition, factory: :workflow_definition_step
     association :process, factory: :workflow_instance_process
     completion_type { Workflow::Definition::Step::EACH_PERSON }
+
+    trait :default do
+    end
+
+    trait :decision do
+    end
+
+    trait :manual do
+    end
+
+    trait :with_document do
+    end
+
+    trait :assigned do
+    end
+
+    trait :individual do
+    end
+
+    trait :collaborative do
+    end
   end
 
   factory :workflow_instance_step_manual, class: 'Workflow::Instance::Step' do

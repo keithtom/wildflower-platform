@@ -2,7 +2,6 @@
 class V1::SSJ::DashboardController < ApiController
   # helps draw the SSJ dashboard page.
   def progress
-    workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
     processes = workflow.processes.eager_load(:prerequisites, :categories, steps: [:assignments], definition: [:phase, :categories])
     
     assigned_steps_count = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(workflow_id).incomplete.count
@@ -12,7 +11,6 @@ class V1::SSJ::DashboardController < ApiController
 
   # helps draw the SSJ resources page (resources are viewed as an SSJ specific concept)
   def resources
-    workflow = Workflow::Instance::Workflow.find_by!(id: workflow_id)
     process_ids = Workflow::Instance::Process.where(workflow_id: workflow.id).pluck(:id)
     steps = Workflow::Instance::Step.where(process_id: process_ids).includes(:documents, definition: [:documents, :process])
     documents = steps.map{|step| step.documents}.flatten

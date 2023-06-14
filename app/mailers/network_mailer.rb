@@ -7,6 +7,6 @@ class NetworkMailer < ApplicationMailer
     link = CGI.escape("#{ENV['FRONTEND_URL']}/welcome/existing-tl")
     @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
 
-    mail to: @user.email, subject: "Welcome to the Wildflower Platform!"
+    mail to: @user.email, subject: "Welcome to #{ENV['APP_NAME']}!"
   end
 end

@@ -15,21 +15,28 @@ class V1::SearchController < ApplicationController
 
     # open date - not yet open, 0-2, 3-4, 5+ years
     # 
+    default_search_options =  { where: where, limit: limit, offset: offset, track: tracking }
+
+    person_includes = [:hub, :profile_image_attachment, :schools, :address, taggings: [:tag], school_relationships: [school: [:taggings]]]
+    person_serialization_includes = [:schools, :school_relationships]
+    
+    school_includes = [:people, :address, :pod, taggings: [:tag], school_relationships: [:people]]
+    school_serialization_includes = [:people, :address, :pod, :school_relationships]
     case params[:models]
     when 'person', 'people', 'persons'
       # people where
       # based on the keys above, build the right where clause using a language of OR
-      @search = Person.search(query, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
+      @search = Person.search(query, **default_search_options.merge!({ includes: person_includes }))
       @results = @search.to_a
-      render json: V1::PersonSerializer.new(@results)
+      render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
     when 'school', 'schools'
-      @search = School.search(query, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:people]])
+      @search = School.search(query, **default_search_options.merge!({ includes: school_includes }))
       @results = @search.to_a
-      render json: V1::SchoolSerializer.new(@results, include: [:people, :school_relationships, :address, :pod])
+      render json: V1::SchoolSerializer.new(@results, include: school_serialization_includes)
     else
-      @search = Person.search(query, models: model_whitelist, where: where, limit: limit, offset: offset, track: tracking, includes: [:taggings, :address, school_relationships: [:school]])
+      @search = Person.search(query, **default_search_options.merge!({ includes: person_includes, models: model_whitelist }))
       @results = @search.to_a
-      render json: V1::PersonSerializer.new(@results, include: [:schools, :school_relationships, :address])
+      render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
     end
   end
 
