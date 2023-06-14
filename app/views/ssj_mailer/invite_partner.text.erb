@@ -2,7 +2,7 @@ Dear <%= @user.name %>,
 
 <%= @inviter.name %> has invited you to join them on the Wildflower School Startup Journey.
 
-As a next step, we invite you to join the <b>Wildflower Platform</b>, where you will have shared access to the complete School Startup Journey guide and resources.
+As a next step, we invite you to join <b><%= ENV['APP_NAME'] %></b>, where you will have shared access to the complete School Startup Journey guide and resources.
 Please <%= link_to "click here", @invite_url %> to log in and begin your journey.
 
 In parallel, your Operations Guide, [Insert name of assigned Ops Guide] ,will be in touch to schedule an orientation call for you and your partner.

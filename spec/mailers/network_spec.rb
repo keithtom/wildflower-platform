@@ -7,14 +7,14 @@ RSpec.describe NetworkMailer, type: :subjecter do
     let(:subject) { described_class.invite(user) }
 
     it "renders the headers" do
-      expect(subject.subject).to eq("Welcome to the Wildflower Platform!")
+      expect(subject.subject).to eq("Welcome to #{ENV['APP_NAME']}!")
       expect(subject.to).to eq([user.email])
       expect(subject.from).to eq(["platform@email.wildflowerschools.org"])
       expect(subject.reply_to).to eq(["support@wildflowerschools.org"])
     end
 
     it "renders the body" do
-      expect(subject.body.encoded).to match("Wildflower Platform")
+      expect(subject.body.encoded).to match(ENV['APP_NAME'])
       expect(subject.body.encoded).to match(CGI.escape("/welcome/existing-tl"))
       expect(subject.body.encoded).to match(user.authentication_token)
     end

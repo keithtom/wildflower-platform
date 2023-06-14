@@ -9,6 +9,10 @@ class SSJMailerPreview < ActionMailer::Preview
     SSJMailer.invite(User.first)
   end
 
+  def invite_ops_guide
+    SSJMailer.invite_ops_guide(User.first, SSJ::Team.first)
+  end
+
   def login
     SSJMailer.login(User.first)
   end

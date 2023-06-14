@@ -32,6 +32,15 @@ class SSJMailer < ApplicationMailer
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
 
+  def invite_ops_guide(user, ssj_team)
+    @user = user
+    link = CGI.escape("#{ENV['FRONTEND_URL']}/ssj?team=#{ssj_team.external_identifier}") # TODO: this should be a specific dashboard
+    @dashboard_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    @partner_names = ssj_team.partner_members.map(&:person).map(&:first_name).to_sentence
+
+    mail to: @user.email, subject: "SSJ Dashboard: You have a new team!"
+  end
+
   def login(user)
     @user = user
     link = CGI.escape("#{ENV['FRONTEND_URL']}/ssj")
