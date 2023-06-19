@@ -46,6 +46,9 @@ class V1::PeopleController < ApiController
                                    :montessori_certified,
                                    [:montessori_certified_level_list => []],
                                    [:classroom_age_list => []],
+                                   [:role_list => []],
+                                   :phone,
+                                   :about,
                                    address_attributes: [:city, :state])
   end
 end
