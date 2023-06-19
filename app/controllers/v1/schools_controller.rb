@@ -15,7 +15,7 @@ class V1::SchoolsController < ApiController
   end
 
   def update
-    school = School.includes(taggings: [:tag]).find_by!(external_identifier: params[:id])
+    school = School.includes(taggings: [:tag], school_relationships: [:person]).find_by!(external_identifier: params[:id])
     school.update!(school_params)
     render json: V1::SchoolSerializer.new(school.reload)
   end
