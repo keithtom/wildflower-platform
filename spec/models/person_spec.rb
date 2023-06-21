@@ -22,4 +22,24 @@ RSpec.describe Person, type: :model do
 
     its(:subroles) { is_expected.to contain_exactly "finance", "school supports", "fundraising", "ssj guide" }
   end
+
+  describe "as an OG" do
+    subject { create(:og_person) }
+
+    it "have many SSJ teams" do
+      expect(subject.og_teams.count).to eq(3)
+    end
+  end
+
+  describe "as a foundation partner" do
+  end
+
+  describe "as a TL" do
+  end
+
+  describe "as a ETL" do
+  end
+
+  describe "as a TL, OG, foundation partner" do
+  end
 end

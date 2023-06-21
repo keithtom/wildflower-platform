@@ -5,7 +5,12 @@ class Person < ApplicationRecord
 
   searchkick callbacks: :async
   include Person::Workflow
+  include Person::FoundationPartner
+  include Person::OperationsGuide
+  include Person::TeacherLeader
   include Person::SSJ
+
+  MAIN_ROLES = [TEACHER_LEADER = "teacher leader", OPS_GUIDE="ops_guide", REGIONAL_GROWTH_LEAD="regional_growth_lead", FOUNDATION_PARTNER="foundation partner"].freeze
 
   acts_as_taggable_on :roles, :tl_roles, :foundation_roles, :rse_roles, :og_roles,
     :languages,
