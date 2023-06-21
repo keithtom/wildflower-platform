@@ -10,7 +10,7 @@ class V1::SchoolsController < ApiController
       render json: V1::SchoolSerializer.new(@school, include: [:people, :school_relationships, :address, :pod])
     else
       @school = School.includes(:people, taggings: [:tag]).find_by!(external_identifier: params[:id])
-      render json: V1::SchoolSerializer.new(@school)
+      render json: V1::SchoolSerializer.new(@school, include: [:people, :school_relationships, :address, :pod])
     end
   end
 

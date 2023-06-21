@@ -3,7 +3,7 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  searchkick callbacks: :async
+  searchkick callbacks: :async, word_middle: [:name, :schools, :about, :roles, :race_ethnicity, :languages, :montessori_certified_levels]
   include Person::Workflow
   include Person::SSJ
 
