@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_01_190738) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_07_195654) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -189,6 +189,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_190738) do
     t.string "montessori_certified"
     t.datetime "affiliated_at"
     t.boolean "show_ssj", default: false
+    t.boolean "active", default: true
+    t.date "start_date"
+    t.date "end_date"
+    t.string "preferred_name"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
@@ -236,7 +240,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_190738) do
 
   create_table "schools", force: :cascade do |t|
     t.string "name"
-    t.string "old_name"
     t.string "website"
     t.string "phone"
     t.string "email"
@@ -260,7 +263,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_190738) do
     t.date "opened_on"
     t.string "facility_type"
     t.string "hero_image_url"
+    t.text "about"
+    t.text "about_es"
+    t.string "hero_image2_url"
+    t.bigint "charter_id"
+    t.string "charter_string"
+    t.date "closed_on"
+    t.date "affiliation_date"
+    t.integer "num_classrooms"
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
+    t.index ["charter_id"], name: "index_schools_on_charter_id"
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_schools_on_hub_id"
     t.index ["pod_id"], name: "index_schools_on_pod_id"

@@ -12,7 +12,11 @@ class Person < ApplicationRecord
 
   MAIN_ROLES = [TEACHER_LEADER = "teacher leader", OPS_GUIDE="ops_guide", REGIONAL_GROWTH_LEAD="regional_growth_lead", FOUNDATION_PARTNER="foundation partner"].freeze
 
-  acts_as_taggable_on :roles, :languages, :race_ethnicity, :tl_roles, :foundation_roles, :rse_roles, :og_roles, :montessori_certified_levels, :classroom_age
+  acts_as_taggable_on :roles, :tl_roles, :foundation_roles, :rse_roles, :og_roles,
+    :languages,
+    :race_ethnicity,
+    :montessori_certified_levels,
+    :classroom_age
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
@@ -41,19 +45,25 @@ class Person < ApplicationRecord
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
-      # general free text search
+      # general free text search, ordered by general relevance
+      name: name,
+      schools: schools.map(&:name).join(" "),
+      about: about, # limit memory usage...?
+      roles: role_list.join(" "),
+      tl_roles: tl_role_list.join(" "),
+      race_ethnicity: race_ethnicity_list.add(race_ethnicity_other).join(" "),
+      primary_language: primary_language,
+      languages: language_list.add(primary_language).join(" "),
+      montessori_certified_levels: montessori_certified_level_list.join(" "),
       hub: hub&.name,
       pod: pod&.name,
-      name: name,
-      about: about&.truncate(5000), # limit memory usage...?
       address_city: address&.city,
       email: email,
-      # school name?
-      # filters below
-      primary_language: primary_language,
-      roles: role_list.join(" "),
+      classroom_age: classroom_age_list.join(" "),
+      foundation_roles: foundation_role_list.join(" "),
+      rse_roles: rse_role_list.join(" "),
+      og_roles: og_role_list.join(" "),
       gender: [gender, gender_other].join(" "),
-      race_ethnicity: race_ethnicity_list.add(race_ethnicity_other).join(" "),
       address_state: address&.state,
     }
   end

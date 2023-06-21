@@ -35,16 +35,17 @@ module V1
     end
 
     attribute :ssj do |user|
-      if person = user.person
-        ssj_team = person.ssj_team
+      person = user.person
+      ssj_team = person&.ssj_team
+      if person && ssj_team
         workflow = ssj_team.workflow
-        {
-          currentPhase: workflow.current_phase,
-          opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
-          regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
-          expectedStartDate: ssj_team.expected_start_date,
-          workflowId: workflow.external_identifier
-        }
+          {
+            currentPhase: workflow.current_phase,
+            opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
+            regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
+            expectedStartDate: ssj_team.expected_start_date,
+            workflowId: workflow.external_identifier
+          }
       end
     end
   end

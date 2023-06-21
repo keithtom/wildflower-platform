@@ -1,7 +1,5 @@
 class V1::Workflow::ProcessesController < ApiController
   def index
-    query = params[:workflow_id] ? { external_identifier: params[:workflow_id] } : { id: workflow_id }
-    workflow = Workflow::Instance::Workflow.find_by!(query)
     serialization_options = {
       params: { current_user: current_user },
       include: ['workflow', 'steps', 'steps.documents', 'steps.assignments'],

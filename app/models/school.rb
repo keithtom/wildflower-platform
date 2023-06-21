@@ -3,16 +3,18 @@
 class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  acts_as_taggable_on :ages_served, :charter, :tuition_assistance_types
+  acts_as_taggable_on :ages_served, :tuition_assistance_types, :previous_names
 
   searchkick callbacks: :async
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
   has_one :address, as: :addressable, required: false, inverse_of: :addressable
+  accepts_nested_attributes_for :address
 
   has_many :school_relationships
   has_many :people, through: :school_relationships
+  accepts_nested_attributes_for :school_relationships
 
   module Governance
     CHARTER = 'Charter'
@@ -57,17 +59,19 @@ class School < ApplicationRecord
     {
       name: name,
       short_name: short_name,
-      old_name: old_name,
+      previous_names: previous_name_list.join(" "),
       website: website,
       email: email,
       phone: phone,
       domain: domain,
       governance_type: governance_type,
       ages_served: ages_served_list.join(" "),
-      charter: charter_list.join(" "),
       tuition_assistance_types: tuition_assistance_type_list.join(" "),
       address_city: address&.city,
-      address_state: address&.state
+      address_state: address&.state,
+      about: about, # limit memory usage...?
+      facility_type: facility_type,
+      charter: charter_string,
     }
   end
 end
