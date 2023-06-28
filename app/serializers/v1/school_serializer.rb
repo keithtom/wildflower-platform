@@ -31,7 +31,7 @@ module V1
       school.people
     end
 
-    has_one :address, id_method_name: :external_identifier do |school|
+    has_one :address, serializer: V1::AddressSerializer, id_method_name: :external_identifier do |school|
       school.address
     end
   end
