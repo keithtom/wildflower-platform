@@ -27,7 +27,7 @@ module V1
       school.school_relationships
     end
 
-    has_many :people, serializer: id_method_name: :external_identifier do |school|
+    has_many :people, id_method_name: :external_identifier do |school|
       school.people
     end
 
