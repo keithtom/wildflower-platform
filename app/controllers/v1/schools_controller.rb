@@ -9,7 +9,7 @@ class V1::SchoolsController < ApiController
       @school = School.includes(:people, :school_relationships, taggings: [:tag]).find_by!(external_identifier: params[:id])
       render json: V1::SchoolSerializer.new(@school, school_options)
     else
-      @school = School.includes(:address, :taggings, people: [:taggings, :address, :profile_image_attachment, :schools], taggings: [:tag]).find_by!(external_identifier: params[:id])
+      @school = School.includes(:address, :address, taggings: [:tag]).find_by!(external_identifier: params[:id])
       render json: V1::SchoolSerializer.new(@school, school_options)
     end
   end
@@ -24,7 +24,7 @@ class V1::SchoolsController < ApiController
 
   def school_options
     options = {
-      include: [:people, :address, :pod]
+      include: [:people, :school_relationships, :address, :pod]
     }
   end
 
