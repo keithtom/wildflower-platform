@@ -19,15 +19,15 @@ module V1
       person.taggings.select { |tagging| tagging.context == "ages_served" }.map { |tagging| tagging.tag.name }
     end
 
-    belongs_to :pod, id_method_name: :external_identifier do |school|
+    belongs_to :pod, serializer: V1::PodSerializer, id_method_name: :external_identifier do |school|
       school.pod
     end
 
-    has_many :school_relationships, id_method_name: :external_identifier do |school|
+    has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer, id_method_name: :external_identifier do |school|
       school.school_relationships
     end
 
-    has_many :people, id_method_name: :external_identifier do |school|
+    has_many :people, serializer: V1::PersonSerializer, id_method_name: :external_identifier do |school|
       school.people
     end
 
