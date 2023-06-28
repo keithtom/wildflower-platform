@@ -6,11 +6,17 @@ class V1::SchoolsController < ApiController
 
   def show
     if params[:network] # for directory usage
+      options = {
+        include: [:people, :school_relationships, :address, :pod]
+      }
       @school = School.includes(:people, :school_relationships, taggings: [:tag]).find_by!(external_identifier: params[:id])
-      render json: V1::SchoolSerializer.new(@school, school_options)
+      render json: V1::SchoolSerializer.new(@school, options)
     else
-      @school = School.includes(:address, people: [:taggings, :address, :profile_image_attachment], taggings: [:tag]).find_by!(external_identifier: params[:id])
-      render json: V1::SchoolSerializer.new(@school, school_options)
+      options = {
+        include: [:address]
+      }
+      @school = School.includes(:address, taggings: [:tag]).find_by!(external_identifier: params[:id])
+      render json: V1::SchoolSerializer.new(@school, options)
     end
   end
 
@@ -21,12 +27,6 @@ class V1::SchoolsController < ApiController
   end
 
   protected
-
-  def school_options
-    options = {
-      include: [:people, :school_relationships, :address, :pod]
-    }
-  end
 
   def school_params
     params.require(:school).permit(
