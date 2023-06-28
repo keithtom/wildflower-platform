@@ -16,8 +16,6 @@ class V1::SearchController < ApplicationController
     # open date - not yet open, 0-2, 3-4, 5+ years
     # 
     default_search_options =  { where: where, limit: limit, offset: offset, track: tracking }
-    puts "before interpretation"
-    puts default_search_options
 
     person_includes = [:hub, :profile_image_attachment, :schools, :address, taggings: [:tag], school_relationships: [school: [:taggings]]]
     person_serialization_includes = [:schools, :school_relationships]
