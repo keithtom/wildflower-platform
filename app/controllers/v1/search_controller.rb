@@ -16,6 +16,8 @@ class V1::SearchController < ApplicationController
     # open date - not yet open, 0-2, 3-4, 5+ years
     # 
     default_search_options =  { where: where, limit: limit, offset: offset, track: tracking }
+    puts "before interpretation"
+    puts default_search_options
 
     person_includes = [:hub, :profile_image_attachment, :schools, :address, taggings: [:tag], school_relationships: [school: [:taggings]]]
     person_serialization_includes = [:schools, :school_relationships]
@@ -30,6 +32,11 @@ class V1::SearchController < ApplicationController
       @results = @search.to_a
       render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
     when 'school', 'schools'
+      if default_search_options[:where].present? && default_search_options[:where]["open_date"].present?
+        open_date_selections = default_search_options[:where].delete("open_date")
+        default_search_options[:where].merge!(reinterpret_open_date_filters(open_date_selections))
+      end
+
       @search = School.search(query, **default_search_options.merge!({ includes: school_includes }))
       @results = @search.to_a
       render json: V1::SchoolSerializer.new(@results, include: school_serialization_includes)
@@ -50,7 +57,15 @@ class V1::SearchController < ApplicationController
   # q, models, offset, limit, general stuff
   # but then there's specific filters for each entity in where
   def search_params
-    params.permit(:q, :models, :role_list, :people_filters, :school_filters, :offset, :limit)
+    params.permit(
+      :q, 
+      :models, 
+      :role_list, 
+      :offset, 
+      :limit, 
+      people_filters: [address_state: [], languages: [], race_ethnicities: [], genders: [], roles: []], 
+      school_filters: [address_state: [], open_date: [], age_levels: [], governance_type: []]
+    )
   end
 
   # be as flexible as possible on consumption.
@@ -70,22 +85,59 @@ class V1::SearchController < ApplicationController
     end.compact
   end
 
-  def interpret_people_filters
-    where = {}
-    where.merge!(address_state: params[:people_filters][:address_states]) if params[:people_filters][:address_states].present?
-    where.merge!(primary_language: params[:people_filters][:languages]) if params[:people_filters][:primary_languages].present?
-    if params[:people_filters][:roles].present?
-      where_roles = params[:people_filters][:roles].map { |role| {roles: { ilike: "%#{role}%" }} }
-      where.merge!(_or: where_roles)
+  # def interpret_people_filters
+  #   where = {}
+  #   where.merge!(address_state: params[:people_filters][:address_states]) if params[:people_filters][:address_states].present?
+  #   where.merge!(primary_language: params[:people_filters][:languages]) if params[:people_filters][:primary_languages].present?
+  #   if params[:people_filters][:roles].present?
+  #     where_roles = params[:people_filters][:roles].map { |role| {roles: { ilike: "%#{role}%" }} }
+  #     where.merge!(_or: where_roles)
+  #   end
+  #   if params[:people_filters][:race_ethnicities].present?
+  #     where_race_ethnicity = params[:people_filters][:race_ethnicities].map { |race_ethnicity| { race_ethnicity: { ilike: "%#{race_ethnicity}%" } } }
+  #     where.merge!(_or: where_race_ethnicity)
+  #   end
+  #   where.merge!(gender: params[:people_filters][:genders]) if params[:people_filters][:genders]
+  #   where
+  # end
+
+  def translate_open_date(open_date_selection)
+    case open_date_selection
+    when "Not open"
+      nil
+    when "Within 0-2 years"
+      { gte: 2.years.ago.to_datetime }
+    when "Within 2-4 years"
+      { lte: 2.years.ago.to_datetime, gte: 4.years.ago.to_datetime }
+    when "More than 5 years"
+      { lte: 5.years.ago.to_datetime }
     end
-    if params[:people_filters][:race_ethnicities].present?
-      where_race_ethnicity = params[:people_filters][:race_ethnicities].map { |race_ethnicity| { race_ethnicity: { ilike: "%#{race_ethnicity}%" } } }
-      where.merge!(_or: where_race_ethnicity)
-    end
-    where.merge!(gender: params[:people_filters][:genders]) if params[:people_filters][:genders]
-    where
   end
 
-  def interpret_school_filters
+  ## takes the upper and lower bounds of the open date selection and returns a hash
+  ## changes filter to _or if "not open" is selected along with other date ranges
+  def reinterpret_open_date_filters(open_date_selections)
+    filter_result = {}
+    open_date_selections = open_date_selections.map{|selection| translate_open_date(selection)}
+    if open_date_selections.include?(nil)
+      filter_result[:_or] = [{open_date: nil}]
+    end
+
+    range_result = {}
+    open_date_selections.compact!
+    upper_boundary = open_date_selections.map{|selection| selection[:lte]}.max
+    range_result[:lte] = upper_boundary unless upper_boundary.nil?
+    lower_boundary = open_date_selections.map{|selection| selection[:gte]}.compact.min
+    range_result[:gte] = lower_boundary unless lower_boundary.nil?
+
+    unless range_result.empty?
+      if filter_result[:_or].present?
+        filter_result[:_or] << {open_date: range_result }
+      else
+        filter_result[:open_date] = range_result
+      end
+    end
+
+    return filter_result
   end
 end

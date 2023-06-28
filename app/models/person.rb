@@ -3,7 +3,7 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
-  searchkick callbacks: :async
+  searchkick callbacks: :async, word_middle: [:name, :schools, :about, :montessori_certified_levels], text_middle: [:languages, :race_ethnicities, :roles, :genders]
   include Person::Workflow
   include Person::SSJ
 
@@ -44,11 +44,11 @@ class Person < ApplicationRecord
       name: name,
       schools: schools.map(&:name).join(" "),
       about: about, # limit memory usage...?
-      roles: role_list.join(" "),
+      roles: role_list,
       tl_roles: tl_role_list.join(" "),
-      race_ethnicity: race_ethnicity_list.add(race_ethnicity_other).join(" "),
+      race_ethnicities: race_ethnicity_list.add(race_ethnicity_other),
       primary_language: primary_language,
-      languages: language_list.add(primary_language).join(" "),
+      languages: language_list.add(primary_language),
       montessori_certified_levels: montessori_certified_level_list.join(" "),
       hub: hub&.name,
       pod: pod&.name,
@@ -58,7 +58,7 @@ class Person < ApplicationRecord
       foundation_roles: foundation_role_list.join(" "),
       rse_roles: rse_role_list.join(" "),
       og_roles: og_role_list.join(" "),
-      gender: [gender, gender_other].join(" "),
+      genders: [gender, gender_other],
       address_state: address&.state,
     }
   end
