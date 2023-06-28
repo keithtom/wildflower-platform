@@ -204,8 +204,6 @@ RSpec.describe "V1::Searches", type: :request do
             get "/v1/search", params: { q: "Keith", people_filters: { address_state: ["California"] } }, headers: {'ACCEPT' => 'application/json' }
             expect(response).to have_http_status(:success)
 
-            puts person1.search_data
-            puts json_response
             expect(person1.search_data[:address_state]).to_not include("California")
             expect(json_response['data']).to be_empty
           end
