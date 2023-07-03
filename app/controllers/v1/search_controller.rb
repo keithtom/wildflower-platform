@@ -20,7 +20,7 @@ class V1::SearchController < ApplicationController
     person_includes = [:hub, :profile_image_attachment, :schools, :address, taggings: [:tag], school_relationships: [school: [:taggings]]]
     person_serialization_includes = [:schools, :school_relationships]
     
-    school_includes = [:people, :address, :pod, taggings: [:tag], school_relationships: [:people]]
+    school_includes = [:people, :address, :pod, taggings: [:tag], school_relationships: [:person]]
     school_serialization_includes = [:people, :address, :pod, :school_relationships]
     case params[:models]
     when 'person', 'people', 'persons'
