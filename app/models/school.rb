@@ -5,7 +5,7 @@ class School < ApplicationRecord
 
   acts_as_taggable_on :ages_served, :tuition_assistance_types, :previous_names
 
-  searchkick callbacks: :async
+  searchkick callbacks: :async, text_middle: [:age_levels, :address_state]
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
@@ -65,13 +65,14 @@ class School < ApplicationRecord
       phone: phone,
       domain: domain,
       governance_type: governance_type,
-      ages_served: ages_served_list.join(" "),
+      age_levels: ages_served_list,
       tuition_assistance_types: tuition_assistance_type_list.join(" "),
       address_city: address&.city,
       address_state: address&.state,
       about: about, # limit memory usage...?
       facility_type: facility_type,
       charter: charter_string,
+      open_date: opened_on&.to_datetime
     }
   end
 end
