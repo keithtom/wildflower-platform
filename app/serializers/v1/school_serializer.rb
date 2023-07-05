@@ -34,5 +34,13 @@ module V1
     has_one :address, serializer: V1::AddressSerializer, id_method_name: :external_identifier do |school|
       school.address
     end
+  
+    attribute :hero_image_url do |school|
+      if school.banner_image.attached?
+        Rails.application.routes.url_helpers.rails_blob_url(school.banner_image)
+      elsif school.hero_image_url.present?
+        school.hero_image_url
+      end
+    end
   end
 end
