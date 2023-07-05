@@ -1,6 +1,6 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.includes(:pod, :people, :address, taggings: [:tag], school_relationships: [:person] ).all
+    @schools = School.includes(:banner_image_attachment, :pod, :people, :address, taggings: [:tag], school_relationships: [:person] ).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -31,6 +31,7 @@ class V1::SchoolsController < ApiController
   def optimized_query
     [
       :address, 
+      :banner_image_attachment,
       taggings: [:tag], 
       school_relationships: [:person], 
       people: [:schools, :address, :hub, :profile_image_attachment, :school_relationships, taggings: [:tag]]

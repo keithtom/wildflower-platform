@@ -8,8 +8,6 @@ describe 'API V1 School', type: :request do
 
   before do
     create(:school_relationship, person: person, school: school)
-    address.addressable = school
-    address.save!
 
     create(:school)
     sign_in(user)
@@ -36,7 +34,6 @@ describe 'API V1 School', type: :request do
     let(:person1) { create(:person) }
     let(:person2) { create(:person) }
     let(:person3) { create(:person) }
-    let(:school) { School.first }
 
     it "succeeds" do
       put "/v1/schools/#{school.external_identifier}", 
