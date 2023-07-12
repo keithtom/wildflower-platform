@@ -24,8 +24,7 @@ module Airtable
       'reckr1qf6IzId3PEU' => 'recaB9d3Khz3Qy6gl',
       'recMwTUEVYgzKEB92' => 'recEZ15MHkszY9wni',
       'recvlBDgX7Urljo4Q' => 'recW8izempocGpvef',
-      'recNTCg3JTQJB7COu' => 'recdwpkVVp5qlaXm5',
-      'recpRnZwLDp0D5Zek' => 'reccFU4hQjReOW41V',
+      # 'recNTCg3JTQJB7COu' => 'recdwpkVVp5qlaXm5'Maria Alcaraz (Ale) doesn't have an educator record that i could find in the filtered lists
       'recARYUZH7sIHE5jQ' => 'rechZWA30MRlZVSGF'
     }
 
@@ -39,6 +38,7 @@ module Airtable
       creates = 0
       @csv.each do |row|
         next if SKIP_RECORDS.include?(row[:record_id])
+        next if row[:currently_active] == "Inactive"
 
         if PARTNER_EDUCATORS.keys.include?(row[:record_id])
           # merge
