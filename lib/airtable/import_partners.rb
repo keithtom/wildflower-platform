@@ -39,6 +39,7 @@ module Airtable
       creates = 0
       @csv.each do |row|
         next if SKIP_RECORDS.include?(row[:record_id])
+        next if row[:currently_active] == "Inactive"
 
         if PARTNER_EDUCATORS.keys.include?(row[:record_id])
           # merge

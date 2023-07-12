@@ -7,7 +7,7 @@ require 'open-uri'
 module Airtable
 
   def self.import_educators
-    csv = URI.open("https://www.dropbox.com/s/hn6viilndhwoshq/educators.csv?dl=1").read
+    csv = URI.open("https://www.dropbox.com/scl/fi/qtiapwzyr6krei50tndlz/educators-filtered.csv?rlkey=rzlw43ehzup6ybsq5poujs0he&dl=1").read
     # csv = CSV.parse(partners, headers:true, header_converters: [:downcase, :symbol])
     # csv.headers
     Airtable::ImportEducators.new(csv).import
