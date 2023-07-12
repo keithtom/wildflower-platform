@@ -24,8 +24,7 @@ module Airtable
       'reckr1qf6IzId3PEU' => 'recaB9d3Khz3Qy6gl',
       'recMwTUEVYgzKEB92' => 'recEZ15MHkszY9wni',
       'recvlBDgX7Urljo4Q' => 'recW8izempocGpvef',
-      'recNTCg3JTQJB7COu' => 'recdwpkVVp5qlaXm5',
-      'recpRnZwLDp0D5Zek' => 'reccFU4hQjReOW41V',
+      # 'recNTCg3JTQJB7COu' => 'recdwpkVVp5qlaXm5'Maria Alcaraz (Ale) doesn't have an educator record that i could find in the filtered lists
       'recARYUZH7sIHE5jQ' => 'rechZWA30MRlZVSGF'
     }
 
