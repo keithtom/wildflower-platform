@@ -49,19 +49,19 @@ class TestController < ApplicationController
             team_member.destroy!
           end
           ssj_team.destroy!
-        end
       
-        workflow_instance = ssj_team.workflow
-        workflow_instance.processes.each do |process|
-          process.steps.each do |step|
-            step.assignments.each do |assignment|
-              assignment.destroy!
+          workflow_instance = ssj_team.workflow
+          workflow_instance.processes.each do |process|
+            process.steps.each do |step|
+              step.assignments.each do |assignment|
+                assignment.destroy!
+              end
+              step.destroy!
             end
-            step.destroy!
+            process.destroy!
           end
-          process.destroy!
+          workflow_instance.destroy!
         end
-        workflow_instance.destroy!
       end
     end
   end
