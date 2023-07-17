@@ -1,15 +1,15 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.includes(:pod, :people, :address, taggings: [:tag], school_relationships: [:person] ).all
+    @schools = School.includes(:banner_image_attachment, :pod, :people, :address, taggings: [:tag], school_relationships: [:person] ).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
   def show
     if params[:network] # for directory usage
-      @school = School.includes(:people, :school_relationships, taggings: [:tag]).find_by!(external_identifier: params[:id])
+      @school = School.includes(*optimized_query).find_by!(external_identifier: params[:id])
       render json: V1::SchoolSerializer.new(@school, school_options)
     else
-      @school = School.includes(:address, :address, taggings: [:tag]).find_by!(external_identifier: params[:id])
+      @school = School.includes(*optimized_query).find_by!(external_identifier: params[:id])
       render json: V1::SchoolSerializer.new(@school, school_options)
     end
   end
@@ -28,8 +28,19 @@ class V1::SchoolsController < ApiController
     }
   end
 
+  def optimized_query
+    [
+      :address, 
+      :banner_image_attachment,
+      taggings: [:tag], 
+      school_relationships: [:person], 
+      people: [:schools, :address, :hub, :profile_image_attachment, :school_relationships, taggings: [:tag]]
+    ]
+  end
+
   def school_params
     params.require(:school).permit(
+      :banner_image,
       :about, 
       :opened_on, 
       [:ages_served_list => []], 

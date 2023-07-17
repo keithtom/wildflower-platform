@@ -16,6 +16,8 @@ class School < ApplicationRecord
   has_many :people, through: :school_relationships
   accepts_nested_attributes_for :school_relationships
 
+  has_one_attached :banner_image
+
   module Governance
     CHARTER = 'Charter'
     INDEPENDENT = 'Independent'

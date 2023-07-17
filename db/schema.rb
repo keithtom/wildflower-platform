@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_07_195654) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_03_152134) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -233,6 +233,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_07_195654) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier"
+    t.string "airtable_id"
+    t.index ["airtable_id"], name: "index_school_relationships_on_airtable_id", unique: true
     t.index ["external_identifier"], name: "index_school_relationships_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_school_relationships_on_person_id"
     t.index ["school_id"], name: "index_school_relationships_on_school_id"
