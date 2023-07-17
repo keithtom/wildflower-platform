@@ -2,9 +2,13 @@ require 'rails_helper'
 
 describe 'API V1 School', type: :request do
   let(:user) { create(:user) }
+  let(:school) { create(:school) }
+  let(:person) { create(:person)}
+  let(:address) { create(:address) }
 
   before do
-    create(:school)
+    create(:school_relationship, person: person, school: school)
+
     create(:school)
     sign_in(user)
   end
@@ -19,8 +23,9 @@ describe 'API V1 School', type: :request do
   describe "GET /v1/schools/1" do
     it "succeeds" do
       Bullet.enable = false ## failing on Github Actions CI, but not locally, no idea why.
-      get "/v1/schools/#{School.first.external_identifier}", headers: { 'ACCEPT' => 'application/json'}
+      get "/v1/schools/#{school.external_identifier}", headers: { 'ACCEPT' => 'application/json'}
       expect(response).to have_http_status(:success)
+      expect(json_response["included"]).to include(have_type(:person).and have_attribute(:email))
       Bullet.enable = true
     end
   end
@@ -29,7 +34,6 @@ describe 'API V1 School', type: :request do
     let(:person1) { create(:person) }
     let(:person2) { create(:person) }
     let(:person3) { create(:person) }
-    let(:school) { School.first }
 
     it "succeeds" do
       put "/v1/schools/#{school.external_identifier}", 
