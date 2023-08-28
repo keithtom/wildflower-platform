@@ -28,6 +28,16 @@ class TestController < ApplicationController
     render json: { invite_url: invite_url }
   end
 
+  def network_invite_email_link
+    person = Person.create!(email: params[:email])
+    user = User.create!(email: params[:email], person_id: person.id)
+    Users::GenerateToken.call(user)
+    link = CGI.escape("/welcome/existing-member")
+    invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
+
+    render json: { invite_url: invite_url }
+  end
+
   private
 
   def destroy_test_records
