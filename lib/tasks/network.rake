@@ -62,4 +62,21 @@ namespace :network do
       school = FactoryBot.create(:school, name: "Wildflower #{name}")
     end
   end
+
+  desc "Mark onboarded people"
+  task onboarded: [:environment] do
+    emails = [
+      'rachel.kimboko@dcwildflowerpcs.org', 
+      'brandon.royce-diop@wildflowerschools.org', 
+      'latania@blazingstarsmontessori.org', 
+      'alejandra@thedahliaschoolsf.org', 
+      'maggie@wildflowerschools.org',
+      'katelyn.shore@wildflowerschools.org',
+      'mary@wildflowermontessorischool.org'
+    ]
+    emails.each do |email|
+      person = Person.find_by(email: email)
+      person&.update!(is_onboarded: true)
+    end
+  end
 end
