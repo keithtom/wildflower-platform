@@ -33,6 +33,7 @@ gem 'oj' # faster serialization
 # Search
 gem "searchkick"
 gem "elasticsearch", '~> 7.x'
+gem "will_paginate", "~> 3.3.0"
 
 # models
 gem 'acts-as-taggable-on'
