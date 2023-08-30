@@ -20,19 +20,19 @@ class TestController < ApplicationController
   end
   
   def invite_email_link
-    user = create_test_user(params[:email])
+    user = create_test_user(params[:email], nil, params[:is_onboarded])
     Users::GenerateToken.call(user)
-    link = CGI.escape("/welcome/new-etl")
+    link = helpers.redirect_path(user)
     invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
 
     render json: { invite_url: invite_url }
   end
 
   def network_invite_email_link
-    person = Person.create!(email: params[:email])
+    person = Person.create!(email: params[:email], is_onboarded: params[:is_onboarded])
     user = User.create!(email: params[:email], person_id: person.id)
     Users::GenerateToken.call(user)
-    link = CGI.escape("/welcome/existing-member")
+    link = helpers.redirect_path(user)
     invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
 
     render json: { invite_url: invite_url }
@@ -76,11 +76,9 @@ class TestController < ApplicationController
     end
   end
 
-  def create_test_user(email, ssj_team = nil)
-    user = User.create!(email: email, password: 'password')
-    person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name)
-    user.person = person
-    user.save!
+  def create_test_user(email, ssj_team = nil, is_onboarded = false)
+    person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, is_onboarded: is_onboarded)
+    user = User.create!(email: email, password: 'password', person_id: person.id)
     Address.create!(addressable: person) if person.address.nil?
     
     if ssj_team.nil?

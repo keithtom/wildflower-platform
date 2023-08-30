@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe "Users::Registrations", type: :request do
   let(:headers) { {'ACCEPT' => 'application/json'} }
   let(:email) { Faker::Internet.unique.email  }
-  let(:user) { create(:user) }
+  let(:person) { create(:person) }
+  let(:user) { create(:user, person_id: person.id) }
 
   describe "POST /signup" do
     it "succeeds" do

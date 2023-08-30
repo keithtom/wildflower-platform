@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe LoginMailer, type: :mailer do
   describe 'login' do
-    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
+    let(:person) { create(:person) }
+    let(:user) { build(:user, authentication_token: Devise.friendly_token, person_id: person.id) }
     let(:mail) { LoginMailer.login(user) }
 
     it 'renders the headers' do
