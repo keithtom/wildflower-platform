@@ -49,6 +49,7 @@ class V1::PeopleController < ApiController
                                    [:role_list => []],
                                    :phone,
                                    :about,
+                                   :is_onboarded,
                                    address_attributes: [:city, :state])
   end
 end
