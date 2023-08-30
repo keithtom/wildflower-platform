@@ -40,11 +40,4 @@ class SSJMailer < ApplicationMailer
 
     mail to: @user.email, subject: "SSJ Dashboard: You have a new team!"
   end
-
-  def login(user)
-    @user = user
-    link = CGI.escape("#{ENV['FRONTEND_URL']}/ssj")
-    @login_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
-    mail to: @user.email, subject: "Login to the School Startup Journey!"
-  end
 end
