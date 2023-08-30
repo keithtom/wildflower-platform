@@ -49,7 +49,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def email_login
     if user = User.find_by(email: params[:email])
       Users::GenerateToken.call(user)
-      SSJMailer.login(user).deliver_now
+      LoginMailer.login(user).deliver_now
     end
     render json: { message: "Email sent successfully" }
   end
