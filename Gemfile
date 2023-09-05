@@ -41,6 +41,9 @@ gem 'acts-as-taggable-on'
 # highlight.io
 gem 'highlight_io'
 
+# parsing addresses
+gem 'Indirizzo', require: "indirizzo"
+
 group :development, :test do
   gem 'dotenv-rails'
 
