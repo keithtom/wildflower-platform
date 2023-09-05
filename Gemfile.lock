@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    Indirizzo (0.1.7)
     actioncable (7.0.4.3)
       actionpack (= 7.0.4.3)
       activesupport (= 7.0.4.3)
@@ -578,6 +579,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  Indirizzo
   acts-as-taggable-on
   aws-sdk-s3
   bullet

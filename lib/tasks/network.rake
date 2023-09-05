@@ -79,4 +79,40 @@ namespace :network do
       person&.update!(is_onboarded: true)
     end
   end
+
+  desc "Parse raw address"
+  task address: [:environment] do
+    School.all.each do |school|
+      unless school.raw_address.nil?
+        parse_addressable(school)
+        print "."
+      end
+    end
+  
+    Person.all.each do |person|
+      unless person.raw_address.nil?
+        parse_addressable(person)
+        print "."
+      end
+    end
+  end
+end
+
+def parse_addressable(addressable)
+  if addressable.address.nil?
+    parsed_address = Indirizzo::Address.new(addressable.raw_address.gsub("\n", ", "))
+    address_lines = addressable.raw_address.split("\n")
+    line2 =  address_lines.length > 3 ? address_lines[1] : nil
+
+    Address.create!(
+      addressable: addressable,
+      line1: address_lines.first,
+      line2: line2,
+      zip: parsed_address.zip,
+      city: parsed_address.city.first.titleize,
+      state: parsed_address.state,
+      country: parsed_address.country,
+    )
+    addressable.save!
+  end
 end
