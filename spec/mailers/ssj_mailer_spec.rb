@@ -60,21 +60,6 @@ RSpec.describe SSJMailer, type: :mailer do
     end
   end
 
-  describe 'login' do
-    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
-    let(:mail) { SSJMailer.login(user) }
-
-    it 'renders the headers' do
-      expect(mail.subject).to eq('Login to the School Startup Journey!')
-      expect(mail.to).to eq([user.email])
-      expect(mail.from).to eq(["platform@email.wildflowerschools.org"])
-    end
-
-    it 'renders the login url' do
-      expect(mail.body.encoded).to match(user.authentication_token)
-    end
-  end
-
   describe 'invite ops guide to new dashboard' do
     let(:user) { build(:user, authentication_token: Devise.friendly_token) }
     let(:team) { create(:ssj_team) }

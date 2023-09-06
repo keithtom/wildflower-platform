@@ -3,6 +3,8 @@ class V1::SearchController < ApplicationController
   def index
     offset = search_params[:offset]
     limit = search_params[:limit]
+    page = search_params[:page]
+    per_page = search_params[:per_page]
     where = {}.merge(search_params[:people_filters] || {}).merge(search_params[:school_filters]||{})
     query = search_params[:q]
     boost_where = {} # ideally boost local results first?
@@ -15,7 +17,7 @@ class V1::SearchController < ApplicationController
 
     # open date - not yet open, 0-2, 3-4, 5+ years
     # 
-    default_search_options =  { where: where, limit: limit, offset: offset, track: tracking }
+    default_search_options =  { where: where, limit: limit, offset: offset, track: tracking, page: page, per_page: per_page }
 
     person_includes = [:hub, :profile_image_attachment, :schools, :address, taggings: [:tag], school_relationships: [school: [:taggings]]]
     person_serialization_includes = [:schools, :school_relationships]
@@ -61,6 +63,8 @@ class V1::SearchController < ApplicationController
       :role_list, 
       :offset, 
       :limit, 
+      :page,
+      :per_page,
       people_filters: [address_state: [], languages: [], race_ethnicities: [], genders: [], roles: []], 
       school_filters: [address_state: [], open_date: [], age_levels: [], governance_type: []]
     )

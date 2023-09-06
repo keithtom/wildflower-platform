@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    Indirizzo (0.1.7)
     actioncable (7.0.4.3)
       actionpack (= 7.0.4.3)
       activesupport (= 7.0.4.3)
@@ -443,7 +444,7 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    puma (5.6.4)
+    puma (5.6.7)
       nio4r (~> 2.0)
     racc (1.6.2)
     rack (2.2.7)
@@ -571,12 +572,14 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    will_paginate (3.3.1)
     zeitwerk (2.6.8)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  Indirizzo
   acts-as-taggable-on
   aws-sdk-s3
   bullet
@@ -596,7 +599,7 @@ DEPENDENCIES
   listen (~> 3.3)
   oj
   pg (~> 1.1)
-  puma (~> 5.0)
+  puma (~> 5.6)
   rack-cors
   rack-mini-profiler (~> 2.0)
   rails (~> 7.0.4)
@@ -611,6 +614,7 @@ DEPENDENCIES
   simple_command
   tzinfo-data
   web-console (>= 4.1.0)
+  will_paginate (~> 3.3.0)
 
 RUBY VERSION
    ruby 3.2.0p0
