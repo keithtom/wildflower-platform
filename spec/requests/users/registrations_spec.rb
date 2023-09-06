@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe "Users::Registrations", type: :request do
   let(:headers) { {'ACCEPT' => 'application/json'} }
   let(:email) { Faker::Internet.unique.email  }
-  let(:user) { create(:user) }
+  let(:person) { create(:person) }
+  let(:user) { create(:user, person_id: person.id) }
 
   describe "POST /signup" do
     it "succeeds" do
@@ -19,7 +20,7 @@ RSpec.describe "Users::Registrations", type: :request do
         post "/users/email_login", params: { email: user.email }
         expect(response).to have_http_status(:success)
         expect(ActionMailer::Base.deliveries.last.to).to eq [user.email]
-        expect(ActionMailer::Base.deliveries.last.subject).to include("Login to the School Startup")
+        expect(ActionMailer::Base.deliveries.last.subject).to include("Login to My Wildflower Platform")
       end
     end
 

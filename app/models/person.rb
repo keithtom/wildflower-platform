@@ -60,6 +60,7 @@ class Person < ApplicationRecord
       og_roles: og_role_list.join(" "),
       genders: [gender, gender_other],
       address_state: address&.state,
+      is_onboarded: is_onboarded,
     }
   end
 

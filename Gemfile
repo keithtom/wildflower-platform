@@ -7,7 +7,7 @@ ruby '3.2.0'
 
 gem 'rails', '~> 7.0.4'
 gem 'pg', '~> 1.1'
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 5.6'
 
 #authentication
 gem 'devise'
@@ -33,12 +33,16 @@ gem 'oj' # faster serialization
 # Search
 gem "searchkick"
 gem "elasticsearch", '~> 7.x'
+gem "will_paginate", "~> 3.3.0"
 
 # models
 gem 'acts-as-taggable-on'
 
 # highlight.io
 gem 'highlight_io'
+
+# parsing addresses
+gem 'Indirizzo', require: "indirizzo"
 
 group :development, :test do
   gem 'dotenv-rails'
