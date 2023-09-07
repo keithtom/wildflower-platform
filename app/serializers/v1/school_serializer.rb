@@ -34,6 +34,24 @@ module V1
     has_one :address, serializer: V1::AddressSerializer, id_method_name: :external_identifier do |school|
       school.address
     end
+
+    attribute :location do |school|
+      if school.address
+        if school.address.city.present? && school.address.state.present?
+          "#{school.address.city}, #{school.address.state}"
+        elsif school.address.city.blank? && school.address.state.present?
+          "#{school.address.state}"
+        elsif school.address.city.present?
+          "#{school.address.city}"
+        end
+      else
+        if school.hub.present?
+          school.hub.name
+        else
+          nil
+        end
+      end
+    end
   
     attribute :hero_image_url do |school|
       if school.banner_image.attached?
