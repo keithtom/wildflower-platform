@@ -19,7 +19,7 @@ describe V1::SchoolSerializer do
   it "should serialize properly" do
     expect(json_document['data']).to have_id("sch333")
     expect(json_document['data']).to have_type("school")
-    expect(json_document['data']).to have_jsonapi_attributes(:name, :website, :phone, :email)
+    expect(json_document['data']).to have_jsonapi_attributes(:name, :website, :phone, :email, :location)
     expect(json_document['data']).to have_relationships(:pod, :schoolRelationships, :people, :address)
 
     expect(json_document['data']).to have_relationship(:pod).with_data({'id' => 'pod555', 'type' => 'pod'})
