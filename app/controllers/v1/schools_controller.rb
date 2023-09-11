@@ -24,7 +24,7 @@ class V1::SchoolsController < ApiController
 
   def school_options
     options = {
-      include: [:people, :school_relationships, :address, :pod]
+      include: [:people, :address, :pod, :sister_schools]
     }
   end
 
