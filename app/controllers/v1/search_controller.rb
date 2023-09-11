@@ -20,10 +20,10 @@ class V1::SearchController < ApplicationController
     default_search_options =  { where: where, limit: limit, offset: offset, track: tracking, page: page, per_page: per_page }
 
     person_includes = [:hub, :profile_image_attachment, :schools, :address, taggings: [:tag], school_relationships: [school: [:taggings]]]
-    person_serialization_includes = [:schools]
+    person_serialization_includes = [:schools, :school_relationships]
     
     school_includes = [:people, :address, :pod, taggings: [:tag], school_relationships: [:person]]
-    school_serialization_includes = [:people, :address, :pod]
+    school_serialization_includes = [:people, :address, :pod, :school_relationships]
     case params[:models]
     when 'person', 'people', 'persons'
       # people where

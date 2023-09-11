@@ -23,6 +23,10 @@ module V1
       school.pod
     end
 
+    has_many :school_relationships, id_method_name: :external_identifier do |school|
+      school.school_relationships
+    end
+
     has_many :people, id_method_name: :external_identifier do |school|
       school.people
     end
