@@ -1,6 +1,6 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.includes(:banner_image_attachment, :pod, :people, :address, taggings: [:tag], school_relationships: [:person] ).all
+    @schools = School.includes(:banner_image_attachment, :pod, :people, :address, [:sister_schools], taggings: [:tag]).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -15,7 +15,7 @@ class V1::SchoolsController < ApiController
   end
 
   def update
-    school = School.includes(taggings: [:tag], school_relationships: [:person]).find_by!(external_identifier: params[:id])
+    school = School.includes(taggings: [:tag]).find_by!(external_identifier: params[:id])
     school.update!(school_params)
     render json: V1::SchoolSerializer.new(school.reload)
   end
@@ -32,8 +32,9 @@ class V1::SchoolsController < ApiController
     [
       :address, 
       :banner_image_attachment,
+      [:sister_schools],
       taggings: [:tag], 
-      school_relationships: [:person], 
+      # school_relationships: [:person], 
       people: [:schools, :address, :hub, :profile_image_attachment, :school_relationships, taggings: [:tag]]
     ]
   end
