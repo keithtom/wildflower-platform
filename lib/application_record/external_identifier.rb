@@ -15,7 +15,7 @@ class ApplicationRecord < ActiveRecord::Base
       external_identifier
     end
 
-    # private
+    private
 
     def generate_external_identifier
       "#{SecureRandom.hex(2)}-#{SecureRandom.hex(2)}"
