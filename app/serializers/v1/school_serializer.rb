@@ -31,6 +31,10 @@ module V1
       school.people
     end
 
+    has_many :sister_schools, id_method_name: :external_identifier do |school|
+      school.sister_schools
+    end
+
     has_one :address, serializer: V1::AddressSerializer, id_method_name: :external_identifier do |school|
       school.address
     end

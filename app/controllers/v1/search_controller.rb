@@ -66,7 +66,7 @@ class V1::SearchController < ApplicationController
       :page,
       :per_page,
       people_filters: [address_state: [], languages: [], race_ethnicities: [], genders: [], roles: []], 
-      school_filters: [address_state: [], open_date: [], age_levels: [], governance_type: []]
+      school_filters: [address_state: [], open_date: [], age_levels: [], governance_type: [], charter: []]
     )
   end
 
