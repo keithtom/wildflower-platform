@@ -25,12 +25,12 @@ module Airtable
       @csv.each do |row|
         if school = School.find_by(:airtable_id => row[:record_id])
           updates += 1
-          # Not implementing yet.
+          add_charter(school, row)
+          # Not fully implemented yet.
         else
           creates += 1
           school = School.create!(map_airtable_to_database(row))
           add_ages_served(school, row)
-          # add_charter(school, row)
           add_tuition_assistance_types(school, row)
         end
       end
@@ -84,9 +84,9 @@ module Airtable
 
     def add_charter(school, airtable_row)
       if airtable_row[:charter].present?
-        airtable_row[:charter].split(",").each do |tag|
-          school.charter_list.add(tag.strip)
-        end
+        charter = Charter.find_or_create_by(name: airtable_row[:charter].strip)
+        school.charter_id = charter.id
+        school.charter_string = charter.name
         school.save!
       end
     end

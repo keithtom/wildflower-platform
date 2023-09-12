@@ -9,6 +9,8 @@ class School < ApplicationRecord
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
+  belongs_to :charter, optional: true
+  has_many :sister_schools, through: :charter, source: :schools
   has_one :address, as: :addressable, required: false, inverse_of: :addressable
   accepts_nested_attributes_for :address
 

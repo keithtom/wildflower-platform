@@ -49,6 +49,7 @@ module V1
     has_many :schools, id_method_name: :external_identifier do |person|
       person.schools
     end
+
     has_many :school_relationships, id_method_name: :external_identifier do |person|
       person.school_relationships
     end

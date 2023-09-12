@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_29_190243) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_11_143747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -129,6 +129,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_29_190243) do
     t.string "external_image_url"
     t.index ["decision_id"], name: "index_advice_stakeholders_on_decision_id"
     t.index ["external_identifier"], name: "index_advice_stakeholders_on_external_identifier", unique: true
+  end
+
+  create_table "charters", force: :cascade do |t|
+    t.string "name"
+    t.string "external_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_identifier"], name: "index_charters_on_external_identifier", unique: true
   end
 
   create_table "documents", force: :cascade do |t|
