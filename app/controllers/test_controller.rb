@@ -84,7 +84,7 @@ class TestController < ApplicationController
   end
 
   def create_test_user_with_ssj(email, ssj_team = nil, is_onboarded = false)
-    create_test_user(email, in_onboarded)
+    user = create_test_user(email, is_onboarded)
     
     if ssj_team.nil?
       ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
@@ -94,7 +94,7 @@ class TestController < ApplicationController
       SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
     end
 
-    SSJ::TeamMember.create!(person_id: person.id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person_id: user.person_id, ssj_team_id: ssj_team.id, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
 
     return user
   end
@@ -103,6 +103,8 @@ class TestController < ApplicationController
     person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, is_onboarded: is_onboarded)
     user = User.create!(email: email, password: 'password', person_id: person.id)
     Address.create!(addressable: person) if person.address.nil?
+
+    return user
   end
 
   def image_url
