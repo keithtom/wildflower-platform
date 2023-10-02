@@ -76,7 +76,8 @@ class School < ApplicationRecord
       about: about, # limit memory usage...?
       facility_type: facility_type,
       charter: charter_string,
-      open_date: opened_on&.to_datetime
+      open_date: opened_on&.to_datetime,
+      affiliated: affiliated
     }
   end
 end
