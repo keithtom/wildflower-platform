@@ -61,6 +61,7 @@ class Person < ApplicationRecord
       genders: [gender, gender_other],
       address_state: address&.state,
       is_onboarded: is_onboarded,
+      active: active,
     }
   end
 
