@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe "V1::Searches", type: :request do
   describe "GET /index", search: true do
-    let!(:person1) { create(:person, first_name: "Keith") }
-    let!(:school1) { create(:school, name: "Keith Montessori") }
+    let!(:person1) { create(:person, first_name: "Keith", active: true) }
+    let!(:person2) { create(:person, first_name: "Keith", last_name: "Inactive", active: false) }
+    let!(:school1) { create(:school, name: "Keith Montessori", affiliated: true) }
+    let!(:school2) { create(:school, name: "Unaffiliated Montessori", affiliated: false) }
     before do
       Person.reindex
       School.reindex
@@ -15,6 +17,7 @@ RSpec.describe "V1::Searches", type: :request do
       expect(response).to have_http_status(:success)
 
       expect(json_response['data']).to include(have_type('person').and have_attribute(:firstName).with_value('Keith'))
+      expect(json_response['data']).to_not include(have_type('person').and have_attribute(:lastName).with_value('Inactive'))
     end
 
     it "succeeds for schools" do
@@ -22,6 +25,7 @@ RSpec.describe "V1::Searches", type: :request do
       expect(response).to have_http_status(:success)
 
       expect(json_response['data']).to include(have_type('school').and have_attribute(:name).with_value('Keith Montessori'))
+      expect(json_response['data']).to_not include(have_type('school').and have_attribute(:name).with_value('Unaffiliated Montessori'))
     end
 
     describe "school filters" do

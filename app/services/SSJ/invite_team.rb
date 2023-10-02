@@ -29,7 +29,7 @@ class SSJ::InviteTeam < BaseService
   end
 
   def create_user_person(email, first_name, last_name)
-    person = Person.create(email: email, first_name: first_name, last_name: last_name)
+    person = Person.create(email: email, first_name: first_name, last_name: last_name, active: false)
     user = User.create(email: email, person_id: person.id)
   end
 
@@ -39,24 +39,24 @@ class SSJ::InviteTeam < BaseService
   end
 
   def create_team 
-    team = SSJ::Team.create!(
+    @team = SSJ::Team.create!(
       workflow: @workflow_instance, 
       ops_guide_id: @ops_guide.person.id, 
       regional_growth_lead_id: @regional_growth_leader.person.id
     )
-    SSJ::TeamMember.create!(person: @ops_guide.person, ssj_team: team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
-    SSJ::TeamMember.create!(person: @regional_growth_leader.person, ssj_team: team, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person: @ops_guide.person, ssj_team: @team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person: @regional_growth_leader.person, ssj_team: @team, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE)
     @user_params.each do |param|
       person= Person.find_by email: param[:email]
-      SSJ::TeamMember.create!(person: person, ssj_team: team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+      SSJ::TeamMember.create!(person: person, ssj_team: @team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
     end
   end
 
   def send_emails
-    @user_parms.each do |param|
+    @user_params.each do |param|
       user = User.find_by email: param[:email]
       Users::SendInviteEmail.call(user)
     end
-    Users::SendOpsGuideInviteEmail.call(@ops_guide, team)
+    Users::SendOpsGuideInviteEmail.call(@ops_guide, @team)
   end
 end

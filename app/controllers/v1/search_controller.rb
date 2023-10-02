@@ -5,7 +5,7 @@ class V1::SearchController < ApplicationController
     limit = search_params[:limit]
     page = search_params[:page]
     per_page = search_params[:per_page]
-    where = {}.merge(search_params[:people_filters] || {}).merge(search_params[:school_filters]||{})
+    where = {}.merge(search_params[:people_filters] || {}).merge(search_params[:school_filters] ||{})
     query = search_params[:q]
     boost_where = {} # ideally boost local results first?
     tracking = {} # {user_id: current_user.id}
@@ -28,6 +28,7 @@ class V1::SearchController < ApplicationController
     when 'person', 'people', 'persons'
       # people where
       # based on the keys above, build the right where clause using a language of OR
+      default_search_options[:where]&.merge!(active: true)
       @search = Person.search(query, **default_search_options.merge!({ includes: person_includes }))
       @results = @search.to_a
       render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
@@ -36,11 +37,13 @@ class V1::SearchController < ApplicationController
         open_date_selections = default_search_options[:where].delete("open_date")
         default_search_options[:where].merge!(reinterpret_open_date_filters(open_date_selections))
       end
+      default_search_options[:where]&.merge!(affiliated: true)
 
       @search = School.search(query, **default_search_options.merge!({ includes: school_includes }))
       @results = @search.to_a
       render json: V1::SchoolSerializer.new(@results, include: school_serialization_includes)
     else
+      default_search_options[:where]&.merge!(active: true)
       @search = Person.search(query, **default_search_options.merge!({ includes: person_includes, models: model_whitelist }))
       @results = @search.to_a
       render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
