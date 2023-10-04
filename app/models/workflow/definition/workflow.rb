@@ -1,5 +1,7 @@
 module Workflow
   class Definition::Workflow < ApplicationRecord
+    audited
+
     has_many :selected_processes
     has_many :processes, through: :selected_processes # these are the nodes
 

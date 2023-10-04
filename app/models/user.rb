@@ -3,6 +3,9 @@
 class User < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
   include Devise::JWT::RevocationStrategies::JTIMatcher
+  
+  audited
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable, :recoverable, :token_authenticatable,
