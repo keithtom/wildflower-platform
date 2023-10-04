@@ -2,6 +2,8 @@ module Workflow
   class Instance::Step < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
+    audited
+
     belongs_to :definition, class_name: 'Workflow::Definition::Step', optional: true # for manual steps.
     belongs_to :process, counter_cache: true
 

@@ -3,6 +3,8 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  audited
+
   searchkick callbacks: :async, word_middle: [:name, :schools, :about, :montessori_certified_levels], text_middle: [:languages, :race_ethnicities, :roles, :genders]
   include Person::Workflow
   include Person::SSJ
