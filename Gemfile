@@ -44,6 +44,8 @@ gem 'highlight_io'
 # parsing addresses
 gem 'Indirizzo', require: "indirizzo"
 
+gem "audited"
+
 group :development, :test do
   gem 'dotenv-rails'
 

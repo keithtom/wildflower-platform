@@ -1,6 +1,8 @@
 module Workflow
   # For a given workflow, find the prerequisite workable (process/step) for a given workable.
   class Definition::Dependency < ApplicationRecord
+    audited
+
     belongs_to :workflow
 
     belongs_to :workable, polymorphic: true

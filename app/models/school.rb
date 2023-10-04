@@ -3,6 +3,8 @@
 class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  audited
+
   acts_as_taggable_on :ages_served, :tuition_assistance_types, :previous_names
 
   searchkick callbacks: :async, text_middle: [:age_levels, :address_state]
