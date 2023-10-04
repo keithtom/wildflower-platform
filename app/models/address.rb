@@ -3,6 +3,8 @@
 class Address < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  audited
+
   belongs_to :addressable, polymorphic: true, optional: true, touch: true
 
   after_commit :reindex_addressable
