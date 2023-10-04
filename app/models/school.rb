@@ -19,6 +19,7 @@ class School < ApplicationRecord
   accepts_nested_attributes_for :school_relationships
 
   has_one_attached :banner_image
+  has_one_attached :logo_image
 
   module Governance
     CHARTER = 'Charter'
