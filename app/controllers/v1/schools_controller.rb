@@ -1,6 +1,6 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.includes(:banner_image_attachment, :pod, :people, :address, [:sister_schools], taggings: [:tag], school_relationships: [:person] ).all
+    @schools = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address, [:sister_schools], taggings: [:tag], school_relationships: [:person] ).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -32,6 +32,7 @@ class V1::SchoolsController < ApiController
     [
       :address, 
       :banner_image_attachment,
+      :logo_image_attachment,
       [:sister_schools],
       taggings: [:tag], 
       school_relationships: [:person], 
@@ -42,6 +43,7 @@ class V1::SchoolsController < ApiController
   def school_params
     params.require(:school).permit(
       :banner_image,
+      :logo_image,
       :about, 
       :opened_on, 
       [:ages_served_list => []], 

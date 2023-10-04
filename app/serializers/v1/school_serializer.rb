@@ -4,7 +4,7 @@ module V1
   class SchoolSerializer < ApplicationSerializer
     attributes :name, :short_name, :website, :phone, :email, :governance_type, :calendar,
                :max_enrollment, :facebook, :instagram, :status, :timezone, :domain,
-               :logo_url, :hero_image_url, :hero_image2_url, :about, :about_es,
+               :hero_image2_url, :about, :about_es,
                :affiliation_date, :closed_on, :num_classrooms, :charter_string,
                :opened_on, :updated_at,
                :facility_type
@@ -62,6 +62,14 @@ module V1
         Rails.application.routes.url_helpers.rails_blob_url(school.banner_image)
       elsif school.hero_image_url.present?
         school.hero_image_url
+      end
+    end
+  
+    attribute :logo_url do |school|
+      if school.logo_image.attached?
+        Rails.application.routes.url_helpers.rails_blob_url(school.logo_image)
+      elsif school.logo_url.present?
+        school.logo_url
       end
     end
   end
