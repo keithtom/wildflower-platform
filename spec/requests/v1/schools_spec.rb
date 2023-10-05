@@ -36,6 +36,7 @@ describe 'API V1 School', type: :request do
     let(:person3) { create(:person) }
 
     it "succeeds" do
+      current_school_id = school.address.id
       put "/v1/schools/#{school.external_identifier}", 
       params: { school: { 
         about: 'new about',
@@ -57,6 +58,7 @@ describe 'API V1 School', type: :request do
       expect(response).to have_http_status(:success)
 
       school.reload
+      expect(school.address.id).to eq(current_school_id)
       expect(school.address.city).to eq('new city')
       expect(school.people).to include(person1, person2, person3)
       expect(school.ages_served_list).to eq(['elementary', 'middle'])
