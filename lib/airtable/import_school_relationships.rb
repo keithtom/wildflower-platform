@@ -13,9 +13,10 @@ require 'open-uri'
 
 module Airtable
   # In Airtable, this is "Educators x Schools"
+  # airtable view https://airtable.com/appJBT9a4f3b7hWQ2/shrOhalBugGlL9nyT/tbl8ww3ir5ngSTWe4
 
   def self.import_school_relationships
-    link = "https://www.dropbox.com/s/qjjj07zsoi2g275/educators_and_schools_directory_filter.csv?dl=1"
+    link = "https://www.dropbox.com/scl/fi/eenfzm02uk3hvpznimq7m/Directory-launch-filter.csv?rlkey=r9gbosgetasstlqe1o3d8ktk9&dl=1"
     data = URI.parse(link).open.read
     data = data.force_encoding("UTF-8").gsub!("\xEF\xBB\xBF", '') # remove byte order marker
     Airtable::ImportSchoolRelationships.new(data).import
