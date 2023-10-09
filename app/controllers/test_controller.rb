@@ -55,6 +55,12 @@ class TestController < ApplicationController
       if person
         person.address&.destroy!
         person.profile_image&.purge
+        person.schools.each do |school|
+          school.destroy!
+        end
+        person.school_relationships.each do |school_relationship|
+          school_relationship.destroy!
+        end
 
         if ssj_team = person.ssj_team
           ssj_team.ops_guide_id = nil
@@ -109,8 +115,8 @@ def create_test_user(email, is_onboarded = false)
   end
 
   def create_school(person)
-    school = School.create!
-    school.address = Address.create!(addressable: school)
+    school = School.create!(name: "Cypress Test School")
+    school.address = Address.create!(addressable: school, state: "CA", city: "San Francisco", line1: "123 Main St", zip: "94105")
     school.school_relationships.create!(person: person)
     school.save!
     return school
