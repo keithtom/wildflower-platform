@@ -27,7 +27,8 @@ class Person < ApplicationRecord
   has_many :schools, through: :school_relationships
 
   has_one :address, as: :addressable
-  accepts_nested_attributes_for :address
+  # Allows update of address via person without passing in an id. We currently don't create a user w/ an address, so this is fine.
+  accepts_nested_attributes_for :address, update_only: true 
 
   has_many :decisions, class_name: "Advice::Decision", foreign_key: :creator_id
 

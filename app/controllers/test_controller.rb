@@ -22,7 +22,8 @@ class TestController < ApplicationController
   def reset_network_fixtures
     ActiveRecord::Base.transaction do
       destroy_test_records
-      create_test_user(params[:email], params[:is_onboarded])
+      user = create_test_user(params[:email], params[:is_onboarded])
+      create_school(user.person)
     end
   end
   
@@ -99,12 +100,20 @@ class TestController < ApplicationController
     return user
   end
 
-  def create_test_user(email, is_onboarded = false)
+def create_test_user(email, is_onboarded = false)
     person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, is_onboarded: is_onboarded)
     user = User.create!(email: email, password: 'password', person_id: person.id)
     Address.create!(addressable: person) if person.address.nil?
 
     return user
+  end
+
+  def create_school(person)
+    school = School.create!
+    school.address = Address.create!(addressable: school)
+    school.school_relationships.create!(person: person)
+    school.save!
+    return school
   end
 
   def image_url
