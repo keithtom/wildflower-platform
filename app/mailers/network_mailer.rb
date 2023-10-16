@@ -1,4 +1,6 @@
 class NetworkMailer < ApplicationMailer
+  default bcc: "katelyn.shore@wildflowerschools.org"
+
   def invite(user)
     @user = user
     
