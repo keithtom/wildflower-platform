@@ -55,11 +55,11 @@ class TestController < ApplicationController
       if person
         person.address&.destroy!
         person.profile_image&.purge
-        person.schools.each do |school|
-          school.destroy!
-        end
         person.school_relationships.each do |school_relationship|
           school_relationship.destroy!
+        end
+        person.schools.each do |school|
+          school.destroy!
         end
 
         if ssj_team = person.ssj_team
