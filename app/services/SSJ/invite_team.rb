@@ -1,9 +1,9 @@
 class SSJ::InviteTeam < BaseService
   def initialize(user_params, ops_guide_email, regional_growth_leader_email)
-    @ops_guide = User.find_by!(email: ops_guide_email)
+    @ops_guide = User.find_by(email: ops_guide_email)
     raise "No ops guide found for email #{ops_guide_email}" if @ops_guide.nil?
     raise "Ops guide's person record not created for user_id: #{@ops_guide.id}" if @ops_guide.person.nil?
-    @regional_growth_leader = User.find_by!(email: regional_growth_leader_email)
+    @regional_growth_leader = User.find_by(email: regional_growth_leader_email)
     raise "No regional growth leader found for email #{regional_growth_leader_email}" if @regional_growth_leader.nil?
     raise "RGL's person record not created for user_id: #{@regional_growth_leader.id}" if @regional_growth_leader.person.nil?
 
@@ -24,7 +24,7 @@ class SSJ::InviteTeam < BaseService
 
   def create_users_and_people
     @user_params.each do |param|
-      create_user_person(param[:email], param[:first_name], param[:last_name])
+      create_user_person(param[:email].strip, param[:first_name], param[:last_name])
     end
   end
 
@@ -47,14 +47,14 @@ class SSJ::InviteTeam < BaseService
     SSJ::TeamMember.create!(person: @ops_guide.person, ssj_team: @team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
     SSJ::TeamMember.create!(person: @regional_growth_leader.person, ssj_team: @team, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE)
     @user_params.each do |param|
-      person= Person.find_by email: param[:email]
+      person= Person.find_by email: param[:email].strip
       SSJ::TeamMember.create!(person: person, ssj_team: @team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
     end
   end
 
   def send_emails
     @user_params.each do |param|
-      user = User.find_by email: param[:email]
+      user = User.find_by email: param[:email].strip
       Users::SendInviteEmail.call(user)
     end
     Users::SendOpsGuideInviteEmail.call(@ops_guide, @team)
