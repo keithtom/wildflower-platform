@@ -26,6 +26,7 @@ class Network::UpdateAirtableRecords < BaseCommand
         instance.airtable_sync_at = DateTime.now
         instance.save!
         updates += 1
+        print "."
       end
       
       # creates new records
@@ -36,6 +37,7 @@ class Network::UpdateAirtableRecords < BaseCommand
         instance.airtable_sync_at = DateTime.now
         instance.save!
         creates += 1
+        print "."
       end
       Rails.logger.info("Finished syncing #{name} creates/updates to Airtable; #{updates} updates, #{creates} creates")
     rescue => e
