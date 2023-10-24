@@ -42,6 +42,7 @@ class Network::UpdateAirtableRecords < BaseCommand
       Rails.logger.info("Finished syncing #{name} creates/updates to Airtable; #{updates} updates, #{creates} creates")
     rescue => e
       Rails.logger.error("Error syncing #{name} creates/updates to Airtable; #{updates} updates, #{creates} creates completed. Error: #{e.message}.")
+      raise e
     end
   end
 
