@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_04_152931) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_18_190306) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -224,6 +224,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_04_152931) do
     t.date "end_date"
     t.string "preferred_name"
     t.boolean "is_onboarded", default: false
+    t.string "platform_airtable_id"
+    t.datetime "airtable_sync_at"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
@@ -265,6 +267,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_04_152931) do
     t.datetime "updated_at", null: false
     t.string "external_identifier"
     t.string "airtable_id"
+    t.string "platform_airtable_id"
+    t.datetime "airtable_sync_at"
     t.index ["airtable_id"], name: "index_school_relationships_on_airtable_id", unique: true
     t.index ["external_identifier"], name: "index_school_relationships_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_school_relationships_on_person_id"
@@ -305,6 +309,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_04_152931) do
     t.date "affiliation_date"
     t.integer "num_classrooms"
     t.boolean "affiliated", default: true
+    t.string "platform_airtable_id"
+    t.datetime "airtable_sync_at"
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["charter_id"], name: "index_schools_on_charter_id"
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true

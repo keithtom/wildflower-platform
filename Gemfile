@@ -46,6 +46,9 @@ gem 'Indirizzo', require: "indirizzo"
 
 gem "audited"
 
+# airtable
+gem "airrecord"
+
 group :development, :test do
   gem 'dotenv-rails'
 

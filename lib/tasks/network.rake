@@ -96,6 +96,11 @@ namespace :network do
       end
     end
   end
+
+  desc "Sync Airtable with platform data"
+  task sync_airtable: [:environment] do
+    Network::UpdateAirtableRecords.call
+  end
 end
 
 def parse_addressable(addressable)
