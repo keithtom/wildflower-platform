@@ -69,6 +69,10 @@ GEM
       tzinfo (~> 2.0)
     acts-as-taggable-on (9.0.1)
       activerecord (>= 6.0, < 7.1)
+    airrecord (1.0.12)
+      faraday (>= 1.0, < 3.0)
+      faraday-net_http_persistent
+      net-http-persistent
     ast (2.4.2)
     audited (5.4.0)
       activerecord (>= 5.0, < 7.2)
@@ -232,6 +236,8 @@ GEM
     multi_json (1.15.0)
     multipart-post (2.3.0)
     nenv (0.3.0)
+    net-http-persistent (4.0.2)
+      connection_pool (~> 2.2)
     net-imap (0.3.4)
       date
       net-protocol
@@ -588,6 +594,7 @@ PLATFORMS
 DEPENDENCIES
   Indirizzo
   acts-as-taggable-on
+  airrecord
   audited
   aws-sdk-s3
   bullet
