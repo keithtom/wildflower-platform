@@ -23,10 +23,9 @@ class Network::UpdateAirtableRecords < BaseCommand
           record[key.to_s] = value
         end
         record.save
-        instance.airtable_sync_at = DateTime.now
-        instance.save!
+        instance.update_column(:airtable_sync_at, DateTime.now)
         updates += 1
-        print "."
+        Rails.logger.info("Updated #{name} airtable record #{instance.platform_airtable_id} (#{instance.id})")
       end
       
       # creates new records
@@ -34,10 +33,9 @@ class Network::UpdateAirtableRecords < BaseCommand
       query.where(platform_airtable_id: nil).each do |instance|
         airtable_record = airtable_table.create(field_func.call(instance))
         instance.platform_airtable_id = airtable_record.id
-        instance.airtable_sync_at = DateTime.now
-        instance.save!
+        instance.update_column(:airtable_sync_at, DateTime.now)
         creates += 1
-        print "."
+        Rails.logger.info("Created #{name} airtable record #{instance.platform_airtable_id} (#{instance.id})")
       end
       Rails.logger.info("Finished syncing #{name} creates/updates to Airtable; #{updates} updates, #{creates} creates")
     rescue => e
