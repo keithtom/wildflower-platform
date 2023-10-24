@@ -47,7 +47,6 @@ class Network::UpdateAirtableRecords < BaseCommand
 
   def people_fields(person)
     {
-      :blah => "blah",
       :first_name => person.first_name,
       :middle_name => person.middle_name,
       :last_name => person.last_name,
