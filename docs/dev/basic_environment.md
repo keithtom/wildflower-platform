@@ -49,3 +49,7 @@ rake db:migrate
 2. Update the `config/elasticsearch.yml` file such that `xpack.security.enabled` is set to `false`
 3. Run `./bin/elasticsearch` from inside the directory
 4. Test the server is running correctly by running `curl -X GET "localhost:9200/?pretty"`
+
+## Installing Redis
+`brew install redis`
+`brew services start redis`

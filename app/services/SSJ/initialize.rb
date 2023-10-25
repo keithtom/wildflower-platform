@@ -1,19 +1,19 @@
 # This is really a workflow service
 class SSJ::Initialize < BaseService
-  def initialize(workflow_definition)
-    @workflow_definition = workflow_definition
+  def initialize(wf_instance_id)
+    @wf_instance = Workflow::Instance::Workflow.find(wf_instance_id)
+    unless @wf_instance.processes.empty?
+      raise "workflow instance #{@wf_instance.external_identifier} has already been instantiated with processes"
+    end
+    @workflow_definition = @wf_instance.definition
   end
 
   def run
-    @wf_instance = @workflow_definition.instances.create!
-
-    create_process_and_step_instances
-
-    create_dependency_instances
-
-    update_process_dependencies
-
-    @wf_instance
+    ActiveRecord::Base.transaction do
+      create_process_and_step_instances
+      create_dependency_instances
+      update_process_dependencies
+    end
   end
 
   private
