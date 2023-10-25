@@ -1,11 +1,11 @@
 class SSJ::InviteTeam < BaseService
   def initialize(user_params, ops_guide_email, regional_growth_leader_email)
-    @ops_guide = User.find_by!(email: ops_guide_email)
-    raise "No ops guide found for email #{ops_guide_email}" if @ops_guide.nil?
-    raise "Ops guide's person record not created for user_id: #{@ops_guide.id}" if @ops_guide.person.nil?
-    @regional_growth_leader = User.find_by!(email: regional_growth_leader_email)
-    raise "No regional growth leader found for email #{regional_growth_leader_email}" if @regional_growth_leader.nil?
-    raise "RGL's person record not created for user_id: #{@regional_growth_leader.id}" if @regional_growth_leader.person.nil?
+    @ops_guide = User.find_by(email: ops_guide_email)
+    raise "No ops guide user found for email #{ops_guide_email}" if @ops_guide.nil?
+    raise "Ops guide's person record not created for user_id: #{@ops_guide.external_identifier}" if @ops_guide.person.nil?
+    @regional_growth_leader = User.find_by(email: regional_growth_leader_email)
+    raise "No regional growth leader user found for email #{regional_growth_leader_email}" if @regional_growth_leader.nil?
+    raise "RGL's person record not created for user_id: #{@regional_growth_leader.external_identifier}" if @regional_growth_leader.person.nil?
 
     @user_params = user_params
 
