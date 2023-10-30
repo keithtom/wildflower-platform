@@ -1,6 +1,6 @@
 module V1
   class UserSerializer < ApplicationSerializer
-    attributes :email
+    attributes :email, :is_admin
 
     attribute :first_name do |user|
       if person = user.person
