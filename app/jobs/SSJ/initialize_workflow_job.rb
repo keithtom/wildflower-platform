@@ -5,3 +5,4 @@ class SSJ::InitializeWorkflowJob < ApplicationJob
     SSJ::Initialize.run(workflow_instance_id)
   end
 end
+# 
