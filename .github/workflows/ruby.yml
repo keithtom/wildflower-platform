@@ -22,9 +22,8 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14.9-alpine
+        image: postgres
         env:
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
