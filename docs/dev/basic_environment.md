@@ -50,6 +50,5 @@ rake db:migrate
 3. Run `./bin/elasticsearch` from inside the directory
 4. Test the server is running correctly by running `curl -X GET "localhost:9200/?pretty"`
 
-## Installing Redis
-`brew install redis`
-`brew services start redis`
+## Running background worker
+`bundle exec good_job start`
