@@ -23,8 +23,6 @@ jobs:
     services:
       postgres:
         image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
@@ -55,6 +53,7 @@ jobs:
       env:
         RAILS_ENV: "test"
         DATABASE_URL: postgres://postgres:@localhost:5432/wildflower_platform_test
+        POSTGRES_PASSWORD: postgres
       run: | 
         bundle exec rails db:setup
         bundle exec rake
