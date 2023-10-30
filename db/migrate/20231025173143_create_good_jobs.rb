@@ -3,7 +3,6 @@
 class CreateGoodJobs < ActiveRecord::Migration[7.0]
   def change
     # Uncomment for Postgres v12 or earlier to enable gen_random_uuid() support
-    enable_extension 'uuid-ossp'
     enable_extension 'pgcrypto' unless extension_enabled?('pgcrypto')
 
     create_table :good_jobs, id: :uuid do |t|
