@@ -58,6 +58,7 @@ jobs:
         PG_USER: postgres
         PG_DATABASE: postgres
         PG_PASSWORD: postgres
+        PG_PORT: ${{ job.services.postgres.ports['5432'] }}
         DATABASE_URL: postgres://postgres:@localhost:5432/wildflower_platform_test
       run: | 
         bundle exec rails db:setup
