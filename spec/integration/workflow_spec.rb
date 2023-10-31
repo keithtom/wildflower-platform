@@ -23,9 +23,13 @@ RSpec.describe "Workflow Feature" do
     it "should have basic associations"
 
     context "its workflow instance" do
-      let(:instance_workflow) { SSJ::Initialize.run(definition_workflow) }
+      let(:instance_workflow) { definition_workflow.instances.create! }
       let(:instance_process1) { definition_process1.instances.first }
       let(:instance_process2) { definition_process2.instances.first }
+
+      before do
+        SSJ::Initialize.run(instance_workflow.id)
+      end
 
       it "should have basic associations" do
         expect(instance_workflow.definition).to eq(definition_workflow)
@@ -59,10 +63,13 @@ RSpec.describe "Workflow Feature" do
       workflow_definition.dependencies.create!(workable: process_definition, prerequisite_workable: prerequisite_definition)
     end
 
-    let(:workflow) { SSJ::Initialize.run(workflow_definition) }
-
+    let(:workflow) { workflow_definition.instances.create! }
     let(:person1) { create(:person) }
     let(:person2) { create(:person) }
+
+    before do
+      SSJ::Initialize.run(workflow.id)
+    end
 
     it "complete in order successfully" do
       process = workflow.processes.first

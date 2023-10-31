@@ -1,25 +1,26 @@
 # This is really a workflow service
 class SSJ::Initialize < BaseService
-  def initialize(workflow_definition)
-    @workflow_definition = workflow_definition
+  def initialize(wf_instance_id)
+    @wf_instance = Workflow::Instance::Workflow.find(wf_instance_id)
+    unless @wf_instance.processes.empty?
+      raise "workflow instance #{@wf_instance.external_identifier} has already been instantiated with processes"
+    end
+    @workflow_definition = @wf_instance.definition
   end
 
   def run
-    @wf_instance = @workflow_definition.instances.create!
-
-    create_process_and_step_instances
-
-    create_dependency_instances
-
-    update_process_dependencies
-
-    @wf_instance
+    ActiveRecord::Base.transaction do
+      create_process_and_step_instances
+      create_dependency_instances
+      update_process_dependencies
+    end
+  @wf_instance
   end
 
   private
 
   def create_process_and_step_instances
-    @workflow_definition.processes.each do |process_definition|
+    @workflow_definition.processes.includes(:taggings, :steps).each do |process_definition|
 
       # puts "definition", process_definition.category_list, process_definition.phase_list
       attributes = process_definition.attributes.with_indifferent_access.slice(:title, :description, :position)
@@ -41,7 +42,7 @@ class SSJ::Initialize < BaseService
   end
 
   def create_dependency_instances
-    @workflow_definition.dependencies.each do |dependency_definition|
+    @workflow_definition.dependencies.includes(:workable, :prerequisite_workable).each do |dependency_definition|
       # this code assumes all workables are processes
       process_id = dependency_definition.workable.id
       prerequisite_process_id = dependency_definition.prerequisite_workable.id

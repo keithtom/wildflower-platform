@@ -1,6 +1,8 @@
 class V1::PeopleController < ApiController
   def index
     @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag]).all
+    @people = @people.tagged_with("Ops Guide") if params[:ops_guide]
+    @people = @people.tagged_with("Regional Entrepreneur") if params[:rgl]
     render json: V1::PersonSerializer.new(@people)
   end
 

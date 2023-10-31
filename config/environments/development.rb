@@ -67,7 +67,7 @@ Rails.application.configure do
   config.active_record.verbose_query_logs = true
 
   # Run synchronously in development
-  config.active_job.queue_adapter = :inline
+  config.active_job.queue_adapter = :good_job
     
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

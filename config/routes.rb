@@ -91,6 +91,10 @@ Rails.application.routes.draw do
         end
       end
     end
+  
+    namespace :admin do
+      put 'ssj/invite_team', to: 'ssj#invite_team'
+    end
   end
 
   put 'reset_fixtures', to: 'test#reset_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
