@@ -7,18 +7,17 @@ describe SSJ::Initialize do
   let!(:dependency_definition) { create(:workflow_definition_dependency, workflow: workflow_definition, workable: process_definition, prerequisite_workable: prerequisite_definition)}
   let!(:step_definition) { create(:workflow_definition_step, process: process_definition) }
   let!(:step2_definition) { create(:workflow_definition_step, process: prerequisite_definition) }
+  let(:workflow_instance) { workflow_definition.reload.instances.create! }
 
   before do
     workflow_definition.processes << process_definition
     workflow_definition.processes << prerequisite_definition
   end
 
-  subject { SSJ::Initialize.run(workflow_definition) }
+  subject { SSJ::Initialize.run(workflow_instance.id) }
 
   describe "#run" do
     it "should create a workflow instance and copy the processes/steps" do
-      expect(subject).to be_a(Workflow::Instance::Workflow)
-
       process_instance = subject.processes.where(definition_id: process_definition.id).first
       prerequisite_instance = subject.processes.where(definition_id: prerequisite_definition.id).first
 
