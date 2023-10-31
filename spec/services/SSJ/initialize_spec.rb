@@ -21,9 +21,13 @@ describe SSJ::Initialize do
       process_instance = subject.processes.where(definition_id: process_definition.id).first
       prerequisite_instance = subject.processes.where(definition_id: prerequisite_definition.id).first
 
-      slice = [:title, :description, :position, :category_list, :phase_list]
+      slice = [:title, :description, :position]
       expect(process_instance.attributes.with_indifferent_access.slice(*slice)).to eq(process_definition.attributes.with_indifferent_access.slice(*slice))
       expect(prerequisite_instance.attributes.with_indifferent_access.slice(*slice)).to eq(prerequisite_definition.attributes.with_indifferent_access.slice(*slice))
+      expect(process_instance.category_list).to eq(process_definition.category_list)
+      expect(process_instance.phase_list).to eq(process_definition.phase_list)
+      expect(prerequisite_instance.category_list).to eq(prerequisite_definition.category_list)
+      expect(prerequisite_instance.phase_list).to eq(prerequisite_definition.phase_list)
       expect(process_instance.title).to be_present
       expect(prerequisite_instance.title).to be_present
       expect(process_instance.category_list).to be_present
