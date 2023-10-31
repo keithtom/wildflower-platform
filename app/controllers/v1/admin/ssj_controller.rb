@@ -11,6 +11,11 @@ class V1::Admin::SSJController < AdminController
     end
   end
 
+  def teams
+    teams = SSJ::Team.all
+    render json: V1::SSJ::TeamSerializer.new(teams)
+  end
+
   private
   
   def team_params
