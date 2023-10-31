@@ -12,14 +12,18 @@ RSpec.describe SSJ::InviteTeam, type: :service do
   end
 
   describe '#run' do
+    include ActiveJob::TestHelper
+
     it 'creates users, people, a workflow instance, a team, and sends emails' do
-      expect { described_class.new(user_params, ops_guide, regional_growth_leader).run }.
-      to change { User.count }.by(2).
-      and change { Person.count }.by(2).
-      and change { SSJ::Team.count }.by(1).
-      and change { SSJ::TeamMember.count }.by(4).
-      and change { Workflow::Instance::Workflow.count }.by(1).
-      and change { ActionMailer::Base.deliveries.count }.by(3)
+      perform_enqueued_jobs do
+        expect { described_class.new(user_params, ops_guide, regional_growth_leader).run }.
+        to change { User.count }.by(2).
+        and change { Person.count }.by(2).
+        and change { SSJ::Team.count }.by(1).
+        and change { SSJ::TeamMember.count }.by(4).
+        and change { Workflow::Instance::Workflow.count }.by(1).
+        and change { ActionMailer::Base.deliveries.count }.by(3)
+      end
     end
 
     it 'raises an error if the ops guide person record is not created' do
