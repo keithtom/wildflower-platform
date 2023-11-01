@@ -29,7 +29,8 @@ class SSJ::InviteUser < BaseService
 
   def create_workflow_instance
     workflow_definition = Workflow::Definition::Workflow.find_by!(name: "National, Independent Sensible Default")
-    @workflow_instance = SSJ::Initialize.run(workflow_definition)
+    @workflow_instance = workflow_definition.instances.create!
+    SSJ::Initialize.run(workflow_instance.id)
     if @user.person.ssj_team
       @user.person.ssj_team.workflow = @workflow_instance
       @user.person.ssj_team.save!

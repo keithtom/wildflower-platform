@@ -96,7 +96,8 @@ class TestController < ApplicationController
     if ssj_team.nil?
       ops_guide = FactoryBot.create(:person, role_list: "ops_guide")
       workflow_definition = Workflow::Definition::Workflow.find_by(name: "Basic Workflow")
-      workflow_instance = SSJ::Initialize.run(workflow_definition)
+      workflow_instance = workflow_definition.instances.create!
+      SSJ::Initialize.run(workflow_instance.id)
       ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
       SSJ::TeamMember.create(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
     end

@@ -49,6 +49,9 @@ gem "audited"
 # airtable
 gem "airrecord"
 
+# Use good_job for background jobs
+gem 'good_job'
+
 group :development, :test do
   gem 'dotenv-rails'
 
@@ -84,8 +87,6 @@ group :development do
 end
 
 group :production do
-  # Use Sidekiq for background jobs
-  gem 'sidekiq'
 
   # for ActiveStorage
   gem 'aws-sdk-s3', require: false

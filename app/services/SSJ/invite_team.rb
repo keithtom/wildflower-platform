@@ -1,11 +1,11 @@
 class SSJ::InviteTeam < BaseService
-  def initialize(user_params, ops_guide_email, regional_growth_leader_email)
-    @ops_guide = User.find_by!(email: ops_guide_email)
-    raise "No ops guide found for email #{ops_guide_email}" if @ops_guide.nil?
-    raise "Ops guide's person record not created for user_id: #{@ops_guide.id}" if @ops_guide.person.nil?
-    @regional_growth_leader = User.find_by!(email: regional_growth_leader_email)
-    raise "No regional growth leader found for email #{regional_growth_leader_email}" if @regional_growth_leader.nil?
-    raise "RGL's person record not created for user_id: #{@regional_growth_leader.id}" if @regional_growth_leader.person.nil?
+  def initialize(user_params, ops_guide, regional_growth_leader)
+    @ops_guide = ops_guide
+    @ops_guide_user = User.find_by(person_id: @ops_guide.id)
+    raise "Ops guide's user record not created for person_id: #{@ops_guide.external_identifier}" if @ops_guide_user.nil?
+    @regional_growth_leader = regional_growth_leader
+    rgl_user = User.find_by(person_id: @regional_growth_leader.id)
+    raise "RGL's user record not created for person_id: #{@regional_growth_leader.external_identifier}" if rgl_user.nil?
 
     @user_params = user_params
 
@@ -18,6 +18,7 @@ class SSJ::InviteTeam < BaseService
     create_workflow_instance
     create_team
     send_emails
+    @team
   end
 
   private
@@ -35,17 +36,18 @@ class SSJ::InviteTeam < BaseService
 
   def create_workflow_instance
     workflow_definition = Workflow::Definition::Workflow.find_by!(name: "National, Independent Sensible Default")
-    @workflow_instance = SSJ::Initialize.run(workflow_definition)
+    @workflow_instance = workflow_definition.instances.create!
+    SSJ::InitializeWorkflowJob.perform_later(@workflow_instance.id)
   end
 
   def create_team 
     @team = SSJ::Team.create!(
       workflow: @workflow_instance, 
-      ops_guide_id: @ops_guide.person.id, 
-      regional_growth_lead_id: @regional_growth_leader.person.id
+      ops_guide_id: @ops_guide.id, 
+      regional_growth_lead_id: @regional_growth_leader.id
     )
-    SSJ::TeamMember.create!(person: @ops_guide.person, ssj_team: @team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
-    SSJ::TeamMember.create!(person: @regional_growth_leader.person, ssj_team: @team, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person: @ops_guide, ssj_team: @team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
+    SSJ::TeamMember.create!(person: @regional_growth_leader, ssj_team: @team, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE)
     @user_params.each do |param|
       person= Person.find_by email: param[:email]
       SSJ::TeamMember.create!(person: person, ssj_team: @team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
@@ -57,6 +59,6 @@ class SSJ::InviteTeam < BaseService
       user = User.find_by email: param[:email]
       Users::SendInviteEmail.call(user)
     end
-    Users::SendOpsGuideInviteEmail.call(@ops_guide, @team)
+    Users::SendOpsGuideInviteEmail.call(@ops_guide_user, @team)
   end
 end

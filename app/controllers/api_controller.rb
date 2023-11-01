@@ -29,4 +29,10 @@ class ApiController < ActionController::API
     query = params[:workflow_id] ? { external_identifier: params[:workflow_id] } : { id: workflow_id }
     return Workflow::Instance::Workflow.find_by!(query)
   end
+
+  def authenticate_admin!
+    if !current_user.is_admin
+      render json: { message: "Unauthorized" }, status: :unauthorized
+    end
+  end
 end
