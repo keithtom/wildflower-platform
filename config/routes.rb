@@ -93,7 +93,8 @@ Rails.application.routes.draw do
     end
   
     namespace :admin do
-      put 'ssj/invite_team', to: 'ssj#invite_team'
+      post 'ssj_teams', to: 'ssj_teams#create'
+      get 'ssj_teams', to: 'ssj_teams#index'
     end
   end
 

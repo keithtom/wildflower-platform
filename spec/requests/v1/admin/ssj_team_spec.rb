@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe V1::Admin::SSJController, type: :request do
-  describe '#invite_team' do
+RSpec.describe V1::Admin::SSJTeamsController, type: :request do
+  describe 'POST #create' do
     let(:ops_guide_user) { create(:user, :with_person) }
     let(:rgl_user) { create(:user, :with_person) }
     let(:ops_guide) { ops_guide_user.person }
@@ -32,7 +32,7 @@ RSpec.describe V1::Admin::SSJController, type: :request do
         let(:team) { create(:ssj_team, ops_guide: ops_guide, regional_growth_lead: rgl) }
 
         it 'returns a success message' do
-          put "/v1/admin/ssj/invite_team", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
+          post "/v1/admin/ssj_teams", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
           expect(response).to have_http_status(:ok)
           expect(JSON.parse(response.body)).to eq({ 'message' => "team #{team.external_identifier} invite emails sent" })
         end
@@ -47,7 +47,7 @@ RSpec.describe V1::Admin::SSJController, type: :request do
         end
 
         it 'returns an error message' do
-          put "/v1/admin/ssj/invite_team", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
+          post "/v1/admin/ssj_teams", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(JSON.parse(response.body)).to eq({ 'message' => error_message })
         end
@@ -60,9 +60,19 @@ RSpec.describe V1::Admin::SSJController, type: :request do
       end
 
       it 'returns an unauthorized error message' do
-        put "/v1/admin/ssj/invite_team", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
+        post "/v1/admin/ssj_teams", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
         expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)).to eq({ 'message' => 'Unauthorized' })
+      end
+    end
+
+    describe "GET #index" do
+      it "returns a successful response with a list of teams" do
+        team1 = create(:ssj_team_with_members)
+        team2 = create(:ssj_team_with_members)
+        get "/v1/admin/ssj_teams", headers: headers
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team1, team2]).to_json))
       end
     end
   end

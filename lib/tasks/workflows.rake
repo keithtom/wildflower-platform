@@ -35,7 +35,8 @@ namespace :workflows do
       user1 = FactoryBot.create(:user, :person => person1, email: "test#{(i)*2+1}@test.com", password: "password")
       user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+1)*2}@test.com", password: "password")
 
-      workflow_instance = SSJ::Initialize.run(workflow_definition)
+      workflow_instance = workflow_definition.instances.create!
+      SSJ::Initialize.run(workflow_instance.id)
       ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
@@ -141,7 +142,8 @@ namespace :workflows do
       user1 = FactoryBot.create(:user, :person => person1, email: "fake#{(i)*2+1}@test.com", password: "password")
       user2 = FactoryBot.create(:user, :person => person2, email: "fake#{(i+1)*2}@test.com", password: "password")
     
-      workflow_instance = SSJ::Initialize.run(workflow_definition)
+      workflow_instance = workflow_definition.instances.create!
+      SSJ::Initialize.run(workflow_instance.id)
       ssj_team = SSJ::Team.create! workflow: workflow_instance
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)

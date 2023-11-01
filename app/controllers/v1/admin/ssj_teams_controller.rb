@@ -1,5 +1,5 @@
-class V1::Admin::SSJController < AdminController
-  def invite_team
+class V1::Admin::SSJTeamsController < AdminController
+  def create
     begin
       ops_guide = Person.find_by!(external_identifier: team_params[:ops_guide_id])
       rgl = Person.find_by!(external_identifier: team_params[:rgl_id])
@@ -11,8 +11,8 @@ class V1::Admin::SSJController < AdminController
     end
   end
 
-  def teams
-    teams = SSJ::Team.all
+  def index
+    teams = SSJ::Team.all.includes([:partner_members])
     render json: V1::SSJ::TeamSerializer.new(teams)
   end
 

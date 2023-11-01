@@ -60,8 +60,8 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       get "/v1/ssj/dashboard/team", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response["hasPartner"]).to be false
-      expect(json_response["expectedStartDate"]).to eq(expected_start_date.to_formatted_s("yyyy-mm-dd"))
+      expect(json_response["data"]["attributes"]["hasPartner"]).to be false
+      expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(expected_start_date.to_formatted_s("yyyy-mm-dd"))
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     it "succeeds" do
       put "/v1/ssj/dashboard/team", headers: headers, params: { team: { expected_start_date: new_start_date }}
       expect(response).to have_http_status(:success)
-      expect(json_response["expectedStartDate"]).to eq(new_start_date)
+      expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(new_start_date)
       ssj_team = SSJ::TeamMember.find_by(person_id: user.person_id).ssj_team
       expect(ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
     end
@@ -89,7 +89,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
         }
       }
       expect(response).to have_http_status(:success)
-      expect(json_response["hasPartner"]).to eq(true)
+      expect(json_response["data"]["attributes"]["hasPartner"]).to eq(true)
       person = user.person
       team = person.ssj_team
       expect(SSJ::TeamMember.where(ssj_team_id: team.id, status: SSJ::TeamMember::INVITED)).to_not be_empty

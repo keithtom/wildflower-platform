@@ -49,7 +49,7 @@ class V1::SSJ::DashboardController < ApiController
   # this can be a turned to a team resource
   def team
     if team = find_team
-      render json: V1::SSJ::TeamSerializer.new(team)
+      render json: V1::SSJ::TeamSerializer.new(team, {include: ['partners']})
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
