@@ -67,9 +67,11 @@ Rails.application.routes.draw do
       get "dashboard/progress", to: "dashboard#progress"
       get 'dashboard/resources', to: 'dashboard#resources'
       get 'dashboard/assigned_steps', to: 'dashboard#assigned_steps'
-      get 'dashboard/team', to: 'dashboard#team'
-      put 'dashboard/team', to: 'dashboard#update_team'
+      get 'dashboard/team', to: 'dashboard#team' # DEPRECATE
+      put 'dashboard/team', to: 'dashboard#update_team' # DEPRECATE
       put 'dashboard/invite_partner', to: 'dashboard#invite_partner'
+    
+      resources :teams, only: [:create, :index, :show, :update]
     end
 
     namespace :workflow do
@@ -90,10 +92,6 @@ Rails.application.routes.draw do
           put :unassign
         end
       end
-    end
-  
-    namespace :admin do
-      put 'ssj/invite_team', to: 'ssj#invite_team'
     end
   end
 
