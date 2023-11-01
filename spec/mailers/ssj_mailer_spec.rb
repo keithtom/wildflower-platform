@@ -2,12 +2,14 @@ require "rails_helper"
 
 RSpec.describe SSJMailer, type: :mailer do
   describe "invite" do
-    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
-    let(:mail) { SSJMailer.invite(user) }
+    let(:user) { create(:user, authentication_token: Devise.friendly_token) }
+    let(:ops_guide) { create(:user) }
+    let(:mail) { SSJMailer.invite(user.id, ops_guide.id) }
 
     it "renders the headers" do
       expect(mail.subject).to eq("Welcome to the School Startup Journey!")
       expect(mail.to).to eq([user.email])
+      expect(mail.cc).to eq([ops_guide.email])
       expect(mail.from).to eq(["platform@email.wildflowerschools.org"])
       expect(mail.reply_to).to eq(["support@wildflowerschools.org"])
     end
@@ -45,12 +47,14 @@ RSpec.describe SSJMailer, type: :mailer do
   end
 
   describe "invite" do
-    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
-    let(:mail) { SSJMailer.invite(user) }
+    let(:user) { create(:user, authentication_token: Devise.friendly_token) }
+    let(:ops_guide) { create(:user) }
+    let(:mail) { SSJMailer.invite(user.id, ops_guide.id) }
 
     it "renders the headers" do
       expect(mail.subject).to eq("Welcome to the School Startup Journey!")
       expect(mail.to).to eq([user.email])
+      expect(mail.cc).to eq([ops_guide.email])
       expect(mail.from).to eq(["platform@email.wildflowerschools.org"])
     end
 

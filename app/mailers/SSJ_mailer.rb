@@ -21,15 +21,16 @@ class SSJMailer < ApplicationMailer
     mail to: @user.email, subject: "Welcome to the School Startup Journey!"
   end
 
-  def invite(user)
-    @user = user # the ETL who is being invited
+  def invite(user_id, ops_guide_id)
+    @user = User.find(user_id) # the ETL who is being invited
+    @ops_guide = User.find(ops_guide_id)
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
     # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
     link = CGI.escape("#{ENV['FRONTEND_URL']}/welcome/new-etl")
-    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{@user.authentication_token}&redirect=#{link}"
 
-    mail to: @user.email, subject: "Welcome to the School Startup Journey!"
+    mail to: @user.email, cc: @ops_guide.email, subject: "Welcome to the School Startup Journey!"
   end
 
   def invite_ops_guide(user, ssj_team)
