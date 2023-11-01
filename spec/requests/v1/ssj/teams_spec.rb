@@ -85,37 +85,22 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
   end
 
   context "existing team" do
-    let(:workflow) { create(:workflow_instance_workflow) }
     let(:person) { create(:person) }
     let(:user) { create(:user, person_id: person.id) }
-    let!(:step) { create(:workflow_instance_step) }
-    # let!(:decision_step) { create(:workflow_instance_step, :decision) }
-    let(:workflow) { step.process.workflow }
     let(:expected_start_date) { Date.today + 7.days }
-    let(:phase) { SSJ::Phase::PHASES.first }
     let(:team) { person.ssj_team }
 
     before do
       sign_in(user)
-      team = SSJ::Team.new(expected_start_date: expected_start_date)
-      team.workflow = workflow
+      team = SSJ::Team.new(expected_start_date: expected_start_date, workflow_id: create(:workflow_instance_workflow).id)
       team.save!
       SSJ::TeamMember.create!(ssj_team: team, person: person, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
-      p = step.definition.process
-      p.category_list << "Finance"
-      p.category_list << "Human Resources"
-      p.category_list << "unknown category"
-      p.save!
-      step.assignments.create!(assignee: person)
-      p.phase_list << phase
-      p.save!
     end
 
     describe "GET #show" do
       it "succeeds" do
         get "/v1/ssj/teams/#{team.external_identifier}", headers: headers
         expect(response).to have_http_status(:success)
-        puts json_response
         expect(json_response["data"]["attributes"]["hasPartner"]).to be false
         expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(expected_start_date.to_formatted_s("yyyy-mm-dd"))
       end
