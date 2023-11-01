@@ -46,6 +46,24 @@ class V1::SSJ::DashboardController < ApiController
     render json: V1::Workflow::StepSerializer.new(steps, serialization_options)
   end
 
+ # DEPRECATE
+  def team
+    if team = find_team
+      render json: V1::SSJ::TeamSerializer.new(team)
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
+
+  # DEPRECATE
+  def update_team
+    if team = find_team
+      team.update!(team_params)
+      render json: V1::SSJ::TeamSerializer.new(team)
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
 
   # this can be a turned to a team resource
   def invite_partner
@@ -67,6 +85,11 @@ class V1::SSJ::DashboardController < ApiController
   # end
 
   protected
+
+  # DEPRECATE
+  def team_params
+    params.require(:team).permit(:expected_start_date)
+  end
 
   def person_params
     params.require(:person).permit(:email, :first_name, :last_name, :primary_language, :race_ethnicity_other, :lgbtqia,
