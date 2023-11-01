@@ -1,4 +1,19 @@
-class V1::Admin::SSJTeamsController < AdminController
+class V1::SSJ::TeamsController < ApiController
+  before_action :authenticate_admin!, only: :create
+
+  def index
+    teams = SSJ::Team.all.includes([:partner_members])
+    render json: V1::SSJ::TeamSerializer.new(teams)
+  end
+
+  def show
+    if team = SSJ::Team.find_by!(external_identifier: params[:id])
+      render json: V1::SSJ::TeamSerializer.new(team, {include: ['partners']})
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
+
   def create
     begin
       ops_guide = Person.find_by!(external_identifier: team_params[:ops_guide_id])
@@ -9,11 +24,6 @@ class V1::Admin::SSJTeamsController < AdminController
     rescue => e
       render json: { message: e.message}, status: :unprocessable_entity
     end
-  end
-
-  def index
-    teams = SSJ::Team.all.includes([:partner_members])
-    render json: V1::SSJ::TeamSerializer.new(teams)
   end
 
   private
