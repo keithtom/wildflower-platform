@@ -69,7 +69,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
   end
 
   describe "GET #index" do
-    let(:user) {create(:user) }
+    let(:user) {create(:user, :admin) }
 
     before do
       sign_in(user)
