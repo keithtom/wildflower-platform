@@ -26,13 +26,23 @@ class V1::SSJ::TeamsController < ApiController
     end
   end
 
+  def update
+    if team = SSJ::Team.find_by!(external_identifier: params[:id])
+      team.update!(team_params)
+      render json: V1::SSJ::TeamSerializer.new(team)
+    else
+      render json: { message: "unable to update team"}, status: :unprocessable_entity
+    end
+  end
+
   private
   
   def team_params
     params.require(:team).permit(
       [:etl_people_params => [:first_name, :last_name, :email]],
       :ops_guide_id,
-      :rgl_id
+      :rgl_id,
+      :expected_start_date
     )
   end
 end

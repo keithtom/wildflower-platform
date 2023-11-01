@@ -44,7 +44,8 @@ module V1
             opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
             regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
             expectedStartDate: ssj_team.expected_start_date,
-            workflowId: workflow.external_identifier
+            workflowId: workflow.external_identifier,
+            teamId: ssj_team.external_identifier
           }
       end
     end

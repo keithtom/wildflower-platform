@@ -54,18 +54,6 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     end
   end
 
-  describe "PUT /v1/ssj/dashboard/team" do
-    let(:new_start_date) { "2023-03-01" }
-
-    it "succeeds" do
-      put "/v1/ssj/dashboard/team", headers: headers, params: { team: { expected_start_date: new_start_date }}
-      expect(response).to have_http_status(:success)
-      expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(new_start_date)
-      ssj_team = SSJ::TeamMember.find_by(person_id: user.person_id).ssj_team
-      expect(ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
-    end
-  end
-
   describe "PUT /v1/ssj/dashboard/invite_partner" do
     let(:email) { Faker::Internet.unique.email  }
 

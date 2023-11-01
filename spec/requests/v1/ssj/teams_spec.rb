@@ -84,7 +84,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
     end
   end
 
-  describe "GET #show" do
+  context "existing team" do
     let(:workflow) { create(:workflow_instance_workflow) }
     let(:person) { create(:person) }
     let(:user) { create(:user, person_id: person.id) }
@@ -93,6 +93,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
     let(:workflow) { step.process.workflow }
     let(:expected_start_date) { Date.today + 7.days }
     let(:phase) { SSJ::Phase::PHASES.first }
+    let(:team) { person.ssj_team }
 
     before do
       sign_in(user)
@@ -110,12 +111,26 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
       p.save!
     end
 
-    it "succeeds" do
-      get "/v1/ssj/teams/#{person.ssj_team.external_identifier}", headers: headers
-      expect(response).to have_http_status(:success)
-      puts json_response
-      expect(json_response["data"]["attributes"]["hasPartner"]).to be false
-      expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(expected_start_date.to_formatted_s("yyyy-mm-dd"))
+    describe "GET #show" do
+      it "succeeds" do
+        get "/v1/ssj/teams/#{team.external_identifier}", headers: headers
+        expect(response).to have_http_status(:success)
+        puts json_response
+        expect(json_response["data"]["attributes"]["hasPartner"]).to be false
+        expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(expected_start_date.to_formatted_s("yyyy-mm-dd"))
+      end
+    end
+
+    describe "PUT #update" do
+      let(:new_start_date) { "2023-03-01" }
+
+      it "succeeds" do
+        put "/v1/ssj/teams/#{team.external_identifier}", headers: headers, params: { team: { expected_start_date: new_start_date }}
+        expect(response).to have_http_status(:success)
+        expect(json_response["data"]["attributes"]["expectedStartDate"]).to eq(new_start_date)
+        ssj_team = SSJ::TeamMember.find_by(person_id: user.person_id).ssj_team
+        expect(ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
+      end
     end
   end
 end
