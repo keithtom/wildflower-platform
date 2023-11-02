@@ -57,7 +57,7 @@ class SSJ::InviteTeam < BaseService
   def send_emails
     @user_params.each do |param|
       user = User.find_by email: param[:email]
-      Users::SendInviteEmail.call(user, @ops_guide)
+      Users::SendInviteEmail.call(user, @ops_guide_user)
     end
     # Users::SendOpsGuideInviteEmail.call(@ops_guide_user, @team)
   end
