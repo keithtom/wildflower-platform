@@ -35,10 +35,13 @@ module SSJ
       level = []
 
       partner_members.each do |member|
-        unless temp_name.empty?
-          temp_name << "-"
+        unless member.person.first_name.nil?
+          unless temp_name.empty?
+            temp_name << "-"
+          end
+          temp_name << member.person.first_name
         end
-        temp_name << member.person.first_name
+
         location = location || member.person&.address&.state
         level += member.person&.classroom_age_list
       end

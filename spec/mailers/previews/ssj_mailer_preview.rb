@@ -6,7 +6,7 @@ class SSJMailerPreview < ActionMailer::Preview
   end
 
   def invite
-    SSJMailer.invite(User.first)
+    SSJMailer.invite(User.first.id, User.last.id)
   end
 
   def invite_ops_guide
