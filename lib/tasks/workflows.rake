@@ -26,11 +26,11 @@ namespace :workflows do
     ]
 
     puts "creating 25 teams with sensible, default workflow"
-    ops_guide = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+    ops_guide = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length], active: false)
     25.times do |i|
       print "."
-      person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
-      person2 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+      person1 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length], active: false)
+      person2 = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length], active: false)
     
       user1 = FactoryBot.create(:user, :person => person1, email: "test#{(i)*2+1}@test.com", password: "password")
       user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+1)*2}@test.com", password: "password")

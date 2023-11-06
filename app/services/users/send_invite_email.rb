@@ -1,6 +1,7 @@
 class Users::SendInviteEmail < BaseCommand
-  def initialize(user)
+  def initialize(user, ops_guide)
     @user = user
+    @ops_guide = ops_guide
   end
 
   # sends an email to invite the user to the system; contains a single-click login link.
@@ -16,6 +17,6 @@ class Users::SendInviteEmail < BaseCommand
   end
 
   def send_invite_email
-    SSJMailer.invite(@user).deliver_later
+    SSJMailer.invite(@user.id, @ops_guide.id).deliver_later
   end
 end

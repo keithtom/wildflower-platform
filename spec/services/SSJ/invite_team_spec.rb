@@ -22,7 +22,7 @@ RSpec.describe SSJ::InviteTeam, type: :service do
         and change { SSJ::Team.count }.by(1).
         and change { SSJ::TeamMember.count }.by(4).
         and change { Workflow::Instance::Workflow.count }.by(1).
-        and change { ActionMailer::Base.deliveries.count }.by(3)
+        and change { ActionMailer::Base.deliveries.count }.by(2)
       end
     end
 
