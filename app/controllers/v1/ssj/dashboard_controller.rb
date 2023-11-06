@@ -46,7 +46,7 @@ class V1::SSJ::DashboardController < ApiController
     render json: V1::Workflow::StepSerializer.new(steps, serialization_options)
   end
 
-    # this can be a turned to a team resource
+  # this can be a turned to a team resource
   def invite_partner
     if team = find_team
       SSJ::InvitePartner.run(person_params, team, current_user)
