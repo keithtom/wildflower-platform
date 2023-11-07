@@ -35,5 +35,21 @@ RSpec.describe SSJ::InviteTeam, type: :service do
       User.find_by(person_id: regional_growth_leader.id).destroy
       expect { described_class.new(user_params, ops_guide, regional_growth_leader).run }.to raise_error(RuntimeError, "RGL's user record not created for person_id: #{regional_growth_leader.external_identifier}")
     end
+  
+    context "email is typed in with uppercase" do
+      let(:user_params) { [{ email: Faker::Internet.email.upcase_first, first_name: 'Test', last_name: 'One' }, { email: Faker::Internet.email, first_name: 'Test', last_name: 'Two' }] }
+
+      it 'creates users, people, a workflow instance, a team, and sends emails' do
+        perform_enqueued_jobs do
+          expect { described_class.new(user_params, ops_guide, regional_growth_leader).run }.
+          to change { User.count }.by(2).
+          and change { Person.count }.by(2).
+          and change { SSJ::Team.count }.by(1).
+          and change { SSJ::TeamMember.count }.by(4).
+          and change { Workflow::Instance::Workflow.count }.by(1).
+          and change { ActionMailer::Base.deliveries.count }.by(2)
+        end
+      end
+    end
   end
 end
