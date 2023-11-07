@@ -80,7 +80,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
       team2 = create(:ssj_team_with_members)
       get "/v1/ssj/teams", headers: headers
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team1, team2]).to_json))
+      expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1]).to_json))
     end
   end
 
