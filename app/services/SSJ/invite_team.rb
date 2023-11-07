@@ -25,7 +25,7 @@ class SSJ::InviteTeam < BaseService
 
   def create_users_and_people
     @user_params.each do |param|
-      create_user_person(param[:email], param[:first_name], param[:last_name])
+      create_user_person(param[:email].downcase, param[:first_name], param[:last_name])
     end
   end
 
@@ -49,14 +49,14 @@ class SSJ::InviteTeam < BaseService
     SSJ::TeamMember.create!(person: @ops_guide, ssj_team: @team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)
     SSJ::TeamMember.create!(person: @regional_growth_leader, ssj_team: @team, role: SSJ::TeamMember::RGL, status: SSJ::TeamMember::ACTIVE)
     @user_params.each do |param|
-      person= Person.find_by email: param[:email]
+      person= Person.find_by email: param[:email].downcase
       SSJ::TeamMember.create!(person: person, ssj_team: @team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
     end
   end
 
   def send_emails
     @user_params.each do |param|
-      user = User.find_by email: param[:email]
+      user = User.find_by email: param[:email].downcase
       Users::SendInviteEmail.call(user, @ops_guide_user)
     end
     # Users::SendOpsGuideInviteEmail.call(@ops_guide_user, @team)
