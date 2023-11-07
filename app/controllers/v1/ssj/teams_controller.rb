@@ -2,7 +2,7 @@ class V1::SSJ::TeamsController < ApiController
   before_action :authenticate_admin!, only: [:create, :index]
 
   def index
-    teams = SSJ::Team.all.includes([:partner_members])
+    teams = SSJ::Team.all.includes([:partner_members]).order(created_at: :desc)
     render json: V1::SSJ::TeamSerializer.new(teams)
   end
 
