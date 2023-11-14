@@ -37,6 +37,7 @@ RSpec.describe SSJMailer, type: :mailer do
       expect(mail.subject).to eq("Welcome to the School Startup Journey!")
       expect(mail.to).to eq([user.email])
       expect(mail.from).to eq(["platform@email.wildflowerschools.org"])
+      expect(mail.cc).to eq([team.ops_guide.email, "support@wildflowerschools.org"])
     end
 
     it "renders the body" do
