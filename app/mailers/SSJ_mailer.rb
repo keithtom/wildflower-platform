@@ -18,7 +18,7 @@ class SSJMailer < ApplicationMailer
     link = CGI.escape("#{ENV['FRONTEND_URL']}/welcome/existing-tl")
     @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
 
-    mail to: @user.email, subject: "Welcome to the School Startup Journey!"
+    mail to: @user.email, cc: [@ops_guide.email, "support@wildflowerschools.org"], subject: "Welcome to the School Startup Journey!"
   end
 
   def invite(user_id, ops_guide_id)
