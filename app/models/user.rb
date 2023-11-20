@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   belongs_to :person, optional: true
 
-  validates :name, uniqueness: true
+  validates :email, uniqueness: true
 
   def password_required?
     false
