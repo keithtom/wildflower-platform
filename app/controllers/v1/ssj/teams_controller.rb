@@ -1,9 +1,13 @@
 class V1::SSJ::TeamsController < ApiController
-  before_action :authenticate_admin!, only: [:create, :index]
+  before_action :authenticate_admin!, only: [:create]
 
   def index
-    teams = SSJ::Team.all.includes([:partner_members]).order(created_at: :desc)
-    render json: V1::SSJ::TeamSerializer.new(teams)
+    if current_user.is_admin || current_user&.person&.is_og?
+      teams = SSJ::Team.all.includes([:workflow, partner_members: [person: [:address, :taggings]]]).order(created_at: :desc)
+      render json: V1::SSJ::TeamSerializer.new(teams)
+    else
+      render json: { message: "Unauthorized" }, status: :unauthorized
+    end
   end
 
   def show
