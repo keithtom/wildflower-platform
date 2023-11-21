@@ -40,6 +40,8 @@ class Person < ApplicationRecord
 
   has_one_attached :profile_image
 
+  validates :email, uniqueness: true
+
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
