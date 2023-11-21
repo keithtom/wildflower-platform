@@ -22,7 +22,7 @@ class V1::SSJ::TeamsController < ApiController
       team = SSJ::InviteTeam.run(team_params[:etl_people_params], ops_guide, rgl)
       render json: { message: "team #{team.external_identifier} invite emails sent" }
     rescue => e
-      render json: { message: e.record.errors.full_messages}, status: :unprocessable_entity
+      render json: { message: e.message }, status: :unprocessable_entity
     end
   end
 
