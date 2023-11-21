@@ -5,7 +5,7 @@ module V1
     attributes :email, :first_name, :middle_name, :last_name, :phone, :journey_state,
       :personal_email, :about, :primary_language, :updated_at, :race_ethnicity_other, :lgbtqia, :gender, :pronouns, :household_income, 
       :primary_language_other, :gender_other, :pronouns_other, :montessori_certified,
-      :start_date, :end_date, :active, :is_onboarded
+      :start_date, :end_date, :active, :is_onboarded, :is_og?, :is_rgl?
 
 
     # done this way to avoid n+1 queries

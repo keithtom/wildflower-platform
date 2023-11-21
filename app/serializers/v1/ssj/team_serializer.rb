@@ -1,6 +1,10 @@
 class V1::SSJ::TeamSerializer < ApplicationSerializer
-  attributes :expected_start_date, :temp_name
+  attributes :expected_start_date, :temp_name, :workflow_id, :temp_location
   
+  attribute :current_phase do |team|
+    team.workflow&.current_phase
+  end
+
   attribute :has_partner do |team|
     team.partners.count > 1
   end

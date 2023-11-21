@@ -5,6 +5,8 @@ class Person < ApplicationRecord
 
   audited
 
+  ROLES = [OPS_GUIDE = "Ops Guide", RGL = "Regional Entrepreneur"]
+
   searchkick callbacks: :async, word_middle: [:name, :schools, :about, :montessori_certified_levels], text_middle: [:languages, :race_ethnicities, :roles, :genders]
   include Person::Workflow
   include Person::SSJ
@@ -78,6 +80,14 @@ class Person < ApplicationRecord
 
   def name
     "#{first_name} #{middle_name} #{last_name}"
+  end
+
+  def is_og?
+    role_list.include?(OPS_GUIDE)
+  end
+
+  def is_rgl?
+    role_list.include?(RGL)
   end
 
   private
