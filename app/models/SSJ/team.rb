@@ -28,6 +28,15 @@ module SSJ
     end
     belongs_to :workflow, class_name: "Workflow::Instance::Workflow"
   
+    def temp_location
+      location = nil
+      partner_members.each do |member|
+        location = location || member.person&.address&.state
+      end
+
+      return location
+    end
+  
     # Returns a temporary name for the team based on its partner members' first names, location, and level.
     def temp_name
       temp_name = ""
