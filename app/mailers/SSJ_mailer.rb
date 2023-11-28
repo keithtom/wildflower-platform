@@ -1,5 +1,5 @@
 class SSJMailer < ApplicationMailer
-  default bcc: "maggie.paulin@wildflowerschools.org"
+  default bcc: "support@wildflowerschools.org"
   
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
