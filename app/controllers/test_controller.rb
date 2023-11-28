@@ -49,7 +49,6 @@ class TestController < ApplicationController
   private
 
   def destroy_test_records
-    return
     User.where("lower(email) like ?", "cypress_test%").where("created_at < ?", 1.days.ago).each do |user|
       person = user&.person
       user&.destroy! 
