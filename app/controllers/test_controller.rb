@@ -108,7 +108,7 @@ class TestController < ApplicationController
   end
 
 def create_test_user(email, is_onboarded = false)
-    person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, is_onboarded: is_onboarded)
+    person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, is_onboarded: is_onboarded, email: email)
     user = User.create!(email: email, password: 'password', person_id: person.id)
     Address.create!(addressable: person) if person.address.nil?
 

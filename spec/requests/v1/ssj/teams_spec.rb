@@ -69,18 +69,54 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
   end
 
   describe "GET #index" do
-    let(:user) {create(:user, :admin) }
+    context "for admin" do
+      let(:user) {create(:user, :admin) }
 
-    before do
-      sign_in(user)
+      before do
+        sign_in(user)
+      end
+
+      it "returns a successful response with a list of teams" do
+        team1 = create(:ssj_team_with_members)
+        team2 = create(:ssj_team_with_members)
+        get "/v1/ssj/teams", headers: headers
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1]).to_json))
+      end
     end
 
-    it "returns a successful response with a list of teams" do
-      team1 = create(:ssj_team_with_members)
-      team2 = create(:ssj_team_with_members)
-      get "/v1/ssj/teams", headers: headers
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1]).to_json))
+    context "for og" do
+      let(:user) {create(:user, :with_person) }
+
+      before do
+        user.person.role_list.add(Person::OPS_GUIDE)
+        user.person.save
+        sign_in(user)
+      end
+
+      it "returns a successful response with a list of teams" do
+        team1 = create(:ssj_team_with_members)
+        team2 = create(:ssj_team_with_members)
+        get "/v1/ssj/teams", headers: headers
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1]).to_json))
+      end
+    end
+
+    context 'when a non-admin makes the request' do
+      let(:user) {create(:user, :with_person) }
+
+      before do
+        sign_in(user)
+      end
+
+      it 'returns an unauthorized error message' do
+        team1 = create(:ssj_team_with_members)
+        team2 = create(:ssj_team_with_members)
+        get "/v1/ssj/teams", headers: headers
+        expect(response).to have_http_status(:unauthorized)
+        expect(JSON.parse(response.body)).to eq({ 'message' => 'Unauthorized' })
+      end
     end
   end
 

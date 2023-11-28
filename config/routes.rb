@@ -76,6 +76,7 @@ Rails.application.routes.draw do
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]
         get :resources
+        get '/assigned_steps', to: 'workflows#assigned_steps'
       end
       resources :processes, only: [:show] do
         resources :steps, only: [:create, :show]
