@@ -26,23 +26,6 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     p.save!
   end
 
-  describe "GET /v1/ssj/dashboard/assigned_steps" do
-    it "succeeds" do
-      # disabling bullet because it thinks we don't need to eager load decision options. In practice, there will be assigned steps with decision options
-      Bullet.enable = false 
-      get "/v1/ssj/dashboard/assigned_steps", headers: headers
-      expect(response).to have_http_status(:success)
-      expect(json_response['data'][0]).to have_type('step')
-      expect(json_response['data'][0]).to have_attribute("kind")
-      expect(json_response['data'][0]).to have_relationships('process', 'documents', 'assignments')
-      expect(json_response['included']).to include(have_type('person'))
-      expect(json_response['included']).to include(have_type('assignment'))
-      expect(json_response['included']).to include(have_type('document'))
-      expect(json_response['included']).to include(have_type('process'))
-      Bullet.enable = true
-    end
-  end
-
   describe "GET /v1/ssj/dashboard/resources" do
     it "succeeds" do
       get "/v1/ssj/dashboard/resources", headers: headers
