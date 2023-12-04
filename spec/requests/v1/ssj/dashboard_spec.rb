@@ -26,6 +26,12 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     p.save!
   end
 
+  describe "GET /v1/ssj/dashboard/progress" do
+    it "succeeds" do
+      
+    end
+  end
+
   describe "GET /v1/ssj/dashboard/assigned_steps" do
     it "succeeds" do
       # disabling bullet because it thinks we don't need to eager load decision options. In practice, there will be assigned steps with decision options

@@ -2,7 +2,7 @@
 
 module V1
   class PersonBasicSerializer < ApplicationSerializer
-    attributes :email, :first_name, :middle_name, :last_name, :phone, :is_og?, :is_rgl?,
+    attributes :email, :first_name, :middle_name, :last_name, :phone,
                :role_list,
                :show_ssj,
                :updated_at
