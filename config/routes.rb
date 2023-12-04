@@ -66,7 +66,6 @@ Rails.application.routes.draw do
     namespace :ssj do
       get "dashboard/progress", to: "dashboard#progress"
       get 'dashboard/resources', to: 'dashboard#resources'
-      get 'dashboard/assigned_steps', to: 'dashboard#assigned_steps'
       put 'dashboard/invite_partner', to: 'dashboard#invite_partner'
     
       resources :teams, only: [:create, :index, :show, :update]
