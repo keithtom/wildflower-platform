@@ -49,7 +49,7 @@ class TestController < ApplicationController
   private
 
   def destroy_test_records
-    User.where("lower(email) like ?", "cypress_test%").where("created_at < ?", 1.days.ago).each do |user|
+    User.where("lower(email) like ?", "cypress_test%").where("lower(email) like ?", "newemail%").where("created_at < ?", 1.day.ago).each do |user|
       person = user&.person
       user&.destroy! 
       if person
@@ -68,8 +68,10 @@ class TestController < ApplicationController
           ssj_team.save!
 
           ssj_team.team_members.each do |team_member|
-            User.where(person_id: team_member.person_id).destroy_all
-            team_member.person&.destroy!
+            unless team_member.person.email.include?("wildflower")
+              User.where(person_id: team_member.person_id).destroy_all
+              team_member.person&.destroy!
+            end
             team_member.destroy!
           end
           ssj_team.destroy!
