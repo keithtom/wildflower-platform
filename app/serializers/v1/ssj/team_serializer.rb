@@ -1,6 +1,10 @@
 class V1::SSJ::TeamSerializer < ApplicationSerializer
-  attributes :expected_start_date, :temp_name, :workflow_id, :temp_location
+  attributes :expected_start_date, :temp_name, :temp_location
   
+  attribute :workflow_id do |team|
+  team.workflow&.external_identifier
+  end
+
   attribute :current_phase do |team|
     team.workflow&.current_phase
   end
