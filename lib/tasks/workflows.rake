@@ -170,6 +170,18 @@ namespace :workflows do
     SSJ::InviteUser.run(user, ops_guide_email)
     puts "invited #{email} to SSJ workflow"
   end
+
+  desc 'set ETL role for ETL persons'
+  task set_etl_role: :environment do
+    updated = 0
+    SSJ::TeamMember.where(role: SSJ::TeamMember::PARTNER).each do |member|
+      member.person.role_list.add(Person::ETL)
+      member.person.save
+      print "."
+      updated += 1
+    end
+    puts "Set ETL role for #{updated} people rows"
+  end
 end
 
 # Team of 4
