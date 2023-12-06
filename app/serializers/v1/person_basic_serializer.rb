@@ -5,7 +5,8 @@ module V1
     attributes :email, :first_name, :middle_name, :last_name, :phone, :is_og?, :is_rgl?,
                :role_list,
                :show_ssj,
-               :updated_at
+               :updated_at,
+               :is_onboarded
     
     attribute :image_url do |person|
       if person.profile_image.attached?

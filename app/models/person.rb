@@ -5,7 +5,7 @@ class Person < ApplicationRecord
 
   audited
 
-  ROLES = [OPS_GUIDE = "Ops Guide", RGL = "Regional Entrepreneur"]
+  ROLES = [OPS_GUIDE = "Ops Guide", RGL = "Regional Entrepreneur", ETL = "Emerging Teacher Leader", TL = "Teacher Leader"]
 
   searchkick callbacks: :async, word_middle: [:name, :schools, :about, :montessori_certified_levels], text_middle: [:languages, :race_ethnicities, :roles, :genders]
   include Person::Workflow
