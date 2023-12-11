@@ -9,12 +9,12 @@ class V1::SSJ::TeamsController < ApiController
     else
       return render json: { message: "Unauthorized" }, status: :unauthorized
     end
-    render json: V1::SSJ::TeamSerializer.new(teams)
+    render json: V1::SSJ::TeamSerializer.new(teams, team_options)
   end
 
   def show
     if team = SSJ::Team.find_by!(external_identifier: params[:id])
-      render json: V1::SSJ::TeamSerializer.new(team, {include: ['partners']})
+      render json: V1::SSJ::TeamSerializer.new(team, team_options)
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class V1::SSJ::TeamsController < ApiController
   def update
     if team = SSJ::Team.find_by!(external_identifier: params[:id])
       team.update!(team_params)
-      render json: V1::SSJ::TeamSerializer.new(team)
+      render json: V1::SSJ::TeamSerializer.new(team, team_options)
     else
       render json: { message: "unable to update team"}, status: :unprocessable_entity
     end
@@ -50,5 +50,11 @@ class V1::SSJ::TeamsController < ApiController
       :rgl_id,
       :expected_start_date
     )
+  end
+
+  def team_options
+    options = {}
+    options[:include] = ['partners']
+    return options
   end
 end
