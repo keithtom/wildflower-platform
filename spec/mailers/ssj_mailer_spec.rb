@@ -21,11 +21,11 @@ RSpec.describe SSJMailer, type: :mailer do
   end
 
   describe "invite_partner" do
-    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
-    let(:inviter) { build(:user, person: person) }
-    let(:person) { build(:person) }
+    let(:user) { create(:user, authentication_token: Devise.friendly_token) }
+    let(:inviter) { create(:user, person: person) }
+    let(:person) { create(:person) }
     let(:team) { create(:ssj_team) }
-    let(:mail) { SSJMailer.invite_partner(user, inviter) }
+    let(:mail) { SSJMailer.invite_partner(user.id, inviter.id, team.ops_guide_id) }
 
     before do
       SSJ::TeamMember.create(person: person, ssj_team: team, status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::PARTNER)
