@@ -87,6 +87,8 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
 
     context "for og" do
       let(:user) {create(:user, :with_person) }
+      let!(:team1) { create(:ssj_team_with_members, ops_guide_id: user.person_id) }
+      let!(:team2) { create(:ssj_team_with_members, ops_guide_id: user.person_id) }
 
       before do
         user.person.role_list.add(Person::OPS_GUIDE)
@@ -95,8 +97,6 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
       end
 
       it "returns a successful response with a list of teams" do
-        team1 = create(:ssj_team_with_members)
-        team2 = create(:ssj_team_with_members)
         get "/v1/ssj/teams", headers: headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1]).to_json))
