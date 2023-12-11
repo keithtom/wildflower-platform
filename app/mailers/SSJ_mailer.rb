@@ -8,15 +8,15 @@ class SSJMailer < ApplicationMailer
   #
   # from: should ideally come from their operations guide or the platform?
   # cc: ops guide?
-  def invite_partner(user, inviter)
-    @user = user
-    @inviter = inviter
-    @ops_guide = SSJ::TeamMember.find_by!(status: SSJ::TeamMember::ACTIVE, role: SSJ::TeamMember::OPS_GUIDE)&.person
+  def invite_partner(user_id, inviter_id, ops_guide_id)
+    @user = User.find(user_id)
+    @inviter = User.find(inviter_id)
+    @ops_guide = Person.find(ops_guide_id)
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
     # TODO: this should specify a redirect to the SSJ onboard if we are inviting them into the SSJ
     link = CGI.escape("#{ENV['FRONTEND_URL']}/welcome/new-etl")
-    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{@user.authentication_token}&redirect=#{link}"
 
     mail to: @user.email, cc: [@ops_guide.email, "support@wildflowerschools.org"], subject: "Welcome to the School Startup Journey!"
   end
