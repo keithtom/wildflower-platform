@@ -15,7 +15,7 @@ RSpec.describe NetworkMailer, type: :subjecter do
 
     it "renders the body" do
       expect(subject.body.encoded).to match(ENV['APP_NAME'])
-      expect(subject.body.encoded).to match(CGI.escape("/welcome/existing-member"))
+      expect(subject.body.encoded).to match(CGI.escape("/welcome"))
       expect(subject.body.encoded).to match(user.authentication_token)
     end
   end
