@@ -71,7 +71,7 @@ class TestController < ApplicationController
             ssj_team.save!
 
             ssj_team.team_members.each do |team_member|
-              unless team_member.person.email.include?("wildflower")
+              unless team_member.person&.email&.include?("wildflower")
                 User.where(person_id: team_member.person_id).destroy_all
                 team_member.person&.destroy!
               end
