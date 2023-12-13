@@ -153,5 +153,24 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         expect(ssj_team.reload.expected_start_date.to_formatted_s("yyyy-mm-dd")).to eq(new_start_date)
       end
     end
+
+    describe "PUT /v1/ssj/teams/[team_id]/invite_partner" do
+      let(:email) { Faker::Internet.unique.email  }
+
+      it "succeeds" do
+        put "/v1/ssj/teams/#{team.external_identifier}/invite_partner", headers: headers, params: {
+          person: {
+            email: email, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, primary_language: "English",
+            race_ethnicity_other: "Asian, White", lgbtqia: true, gender: "Gender Non-Conforming", pronouns: "They/Them/Theirs",
+            household_income: "Middle income", address_attributes: {city: 'Boston', state: 'Massachusetts'}
+          }
+        }
+        expect(response).to have_http_status(:success)
+        expect(json_response["data"]["attributes"]["hasPartner"]).to eq(true)
+        person = user.person
+        team = person.ssj_team
+        expect(SSJ::TeamMember.where(ssj_team_id: team.id, status: SSJ::TeamMember::INVITED)).to_not be_empty
+      end
+    end
   end
 end

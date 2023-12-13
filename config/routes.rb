@@ -68,7 +68,9 @@ Rails.application.routes.draw do
       get 'dashboard/resources', to: 'dashboard#resources'
       put 'dashboard/invite_partner', to: 'dashboard#invite_partner'
     
-      resources :teams, only: [:create, :index, :show, :update]
+      resources :teams, only: [:create, :index, :show, :update] do
+        put '/invite_partner', to: 'teams#invite_partner'
+      end
     end
 
     namespace :workflow do

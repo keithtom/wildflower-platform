@@ -17,7 +17,7 @@ class V1::SSJ::DashboardController < ApiController
     render json: V1::SSJ::ResourcesByCategorySerializer.new(documents)
   end
 
-  # this can be a turned to a team resource
+  # DEPRECATED
   def invite_partner
     if team = find_team
       SSJ::InvitePartner.run(person_params, team, current_user)

@@ -41,6 +41,15 @@ class V1::SSJ::TeamsController < ApiController
     end
   end
 
+  def invite_partner
+    if team = SSJ::Team.find_by!(external_identifier: params[:team_id])
+      SSJ::InvitePartner.run(person_params, team, current_user)
+      render json: V1::SSJ::TeamSerializer.new(team)
+    else
+      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+    end
+  end
+
   private
   
   def team_params
@@ -56,5 +65,10 @@ class V1::SSJ::TeamsController < ApiController
     options = {}
     options[:include] = ['partners']
     return options
+  end
+
+  def person_params
+    params.require(:person).permit(:email, :first_name, :last_name, :primary_language, :race_ethnicity_other, :lgbtqia,
+                                   :gender, :pronouns, :household_income, :image_url, address_attributes: [:city, :state])
   end
 end
