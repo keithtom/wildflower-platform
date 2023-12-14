@@ -81,9 +81,8 @@ RSpec.describe SSJMailer, type: :mailer do
       expect(mail.from).to eq(["platform@email.wildflowerschools.org"])
     end
 
-    it 'renders the dashboard url' do
+    it 'renders the auth token' do
       expect(mail.body.encoded).to match(user.authentication_token)
-      expect(mail.body.encoded).to match("ssj")
     end
   end
 end

@@ -43,7 +43,7 @@ module SSJ
       location = nil
       level = []
 
-      partner_members.each do |member|
+      partner_members.includes(person: [:address, :taggings]).each do |member|
         unless member.person.first_name.nil?
           unless temp_name.empty?
             temp_name << "-"
