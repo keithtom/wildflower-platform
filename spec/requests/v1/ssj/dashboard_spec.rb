@@ -37,6 +37,7 @@ RSpec.describe "V1::SSJ::Dashboard", type: :request do
     end
   end
 
+  # DEPRECATED
   describe "PUT /v1/ssj/dashboard/invite_partner" do
     let(:email) { Faker::Internet.unique.email  }
 

@@ -1,6 +1,4 @@
 class LoginMailer < ApplicationMailer
-  include RedirectHelper
-
   default bcc: "support@wildflowerschools.org"
   
   # Subject can be set in your I18n file at config/locales/en.yml
@@ -11,8 +9,7 @@ class LoginMailer < ApplicationMailer
 
   def login(user)
     @user = user
-    link = CGI.escape("#{ENV['FRONTEND_URL']}#{redirect_path(user)}")
-    @login_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}&redirect=#{link}"
+    @login_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}"
     mail to: @user.email, subject: "Login to My Wildflower Platform"
   end
 end
