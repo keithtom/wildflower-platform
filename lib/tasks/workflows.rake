@@ -126,7 +126,7 @@ namespace :workflows do
       'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
     ]
 
-    ops_guide = FactoryBot.create(:person, image_url: image_rotation[i%image_rotation.length])
+    ops_guide = FactoryBot.create(:person, image_url: image_rotation.sample)
     
     # Create many of theses
     puts "creating 25 teams with dummy workflow"
@@ -144,7 +144,7 @@ namespace :workflows do
     
       workflow_instance = workflow_definition.instances.create!
       SSJ::Initialize.run(workflow_instance.id)
-      ssj_team = SSJ::Team.create! workflow: workflow_instance
+      ssj_team = SSJ::Team.create! workflow: workflow_instance, ops_guide_id: ops_guide.id
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create!(person: ops_guide, ssj_team: ssj_team, role: SSJ::TeamMember::OPS_GUIDE, status: SSJ::TeamMember::ACTIVE)

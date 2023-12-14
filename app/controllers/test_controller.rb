@@ -32,8 +32,7 @@ class TestController < ApplicationController
   def invite_email_link
     user = create_test_user_with_ssj(params[:email], nil, params[:is_onboarded])
     Users::GenerateToken.call(user)
-    link = helpers.redirect_path(user)
-    invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
+    invite_url = "/token?token=#{user.authentication_token}"
 
     render json: { invite_url: invite_url }
   end
@@ -42,8 +41,7 @@ class TestController < ApplicationController
     person = Person.create!(email: params[:email], is_onboarded: params[:is_onboarded])
     user = User.create!(email: params[:email], person_id: person.id)
     Users::GenerateToken.call(user)
-    link = helpers.redirect_path(user)
-    invite_url = "/token?token=#{user.authentication_token}&redirect=#{link}"
+    invite_url = "/token?token=#{user.authentication_token}"
 
     render json: { invite_url: invite_url }
   end
