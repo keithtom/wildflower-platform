@@ -17,25 +17,6 @@ class V1::SSJ::DashboardController < ApiController
     render json: V1::SSJ::ResourcesByCategorySerializer.new(documents)
   end
 
-  # DEPRECATED
-  def invite_partner
-    if team = find_team
-      SSJ::InvitePartner.run(person_params, team, current_user)
-      render json: V1::SSJ::TeamSerializer.new(team)
-    else
-      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
-    end
-  end
-
-  # def add_partner
-    # if team = SSJ::TeamMember.find_by!(person_id: current_user&.person.id, current: true, role: 'partner')&.ssj_team
-      # SSJ::AddPartner.run(person_params, team, current_user)
-      # render json: V1::SSJ::TeamSerializer.new(team)
-    # else
-      # render json: { message: "current user is not part of team"}, status: :unprocessable_entity
-    # end
-  # end
-
   protected
 
   def person_params
