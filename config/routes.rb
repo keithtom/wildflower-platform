@@ -66,7 +66,6 @@ Rails.application.routes.draw do
     namespace :ssj do
       get "dashboard/progress", to: "dashboard#progress"
       get 'dashboard/resources', to: 'dashboard#resources'
-      put 'dashboard/invite_partner', to: 'dashboard#invite_partner' # DEPRECATED
     
       resources :teams, only: [:create, :index, :show, :update] do
         put '/invite_partner', to: 'teams#invite_partner'
