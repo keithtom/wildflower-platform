@@ -47,7 +47,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /resource/email_login
   # send an email to a user to login via link
   def email_login
-    if user = User.find_by(email: params[:email])
+    if user = User.find_by(email: params[:email].downcase)
       Users::GenerateToken.call(user)
       LoginMailer.login(user).deliver_now
     end
