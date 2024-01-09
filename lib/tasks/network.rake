@@ -101,6 +101,26 @@ namespace :network do
   task sync_airtable: [:environment] do
     Network::UpdateAirtableRecords.call
   end
+
+  desc "Send reminder to TL's to login to network"
+  task send_remind_login: [:environment] do
+    users_emailed = 0
+    unsuccessful_emails = []
+    User.all.each do |user|
+      begin
+        if user.person&.active?
+          NetworkMailer.remind_login(user)
+          users_emailed += 1
+        end
+      rescue => e
+        puts e.message
+        puts "error sending remind_login to user #{user.email}"
+        unsuccessful_emails << user.email
+      end
+    end
+    puts "#{users_emailed} emails sent out"
+    puts "Unable to send emails to #{unsuccessful_emails}" unless unsuccessful_emails.empty?
+  end
 end
 
 def parse_addressable(addressable)
