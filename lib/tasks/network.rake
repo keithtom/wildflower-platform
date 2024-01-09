@@ -108,7 +108,8 @@ namespace :network do
     unsuccessful_emails = []
     User.all.each do |user|
       begin
-        if user.person&.active?
+        next unless person = user.person
+        if person.active? && person.role_list.include?(Person::TL)
           NetworkMailer.remind_login(user)
           users_emailed += 1
         end
