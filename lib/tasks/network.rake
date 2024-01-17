@@ -110,7 +110,7 @@ namespace :network do
       begin
         next unless person = user.person
         if person.active? && person.role_list.include?(Person::TL)
-          NetworkMailer.remind_login(user)
+          NetworkMailer.remind_login(user).deliver_now
           users_emailed += 1
         end
       rescue => e
