@@ -7,7 +7,7 @@
 # Access-Control-Allow-Origin
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "localhost:3000", "localhost:3001", "https://platform.wildflowerschools.org", "https://platform-dev.wildflowerschools.org", "https://platform-staging.wildflowerschools.org", /\Ahttps:\/\/.+\.vercel\.app\z/
+    origins "localhost:3000", "localhost:3001", "https://my.wildflowerschools.org", "https://my-dev.wildflowerschools.org", "https://my-staging.wildflowerschools.org", "https://platform.wildflowerschools.org", "https://platform-dev.wildflowerschools.org", "https://platform-staging.wildflowerschools.org", /\Ahttps:\/\/.+\.vercel\.app\z/
     # origins "localhost:3000", "localhost:3001"
     resource "*",
       headers: :any,
