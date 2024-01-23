@@ -44,7 +44,7 @@ pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
-if Rails.env.staging?
+if ENV.fetch('RAILS_ENV') == 'staging'
   before_fork do
     GoodJob.shutdown
   end
