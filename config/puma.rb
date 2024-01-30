@@ -61,4 +61,4 @@ if ENV.fetch('RAILS_ENV') == 'staging'
   at_exit do
     GoodJob.shutdown if Process.pid == MAIN_PID
   end
-end
+# d# 
