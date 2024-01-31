@@ -95,6 +95,7 @@ Rails.application.configure do
 
   # Enable cron in production
   config.good_job.enable_cron = true
+  config.good_job.on_thread_error = -> (exception) { Rails.error.report(exception) }
   # schedule cron job like jobs via good_job gem
   config.good_job.cron = {
     # Every day, enqueue `UpdateAirtableJob.set(priority: -10).perform_later()`
