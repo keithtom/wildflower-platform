@@ -92,6 +92,19 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Enable cron in staging 
+  config.good_job.enable_cron = true
+  # schedule cron job like jobs via good_job gem
+  config.good_job.cron = {
+    # Every 15 minutes, enqueue `CleanupTestFixturesJob.set(priority: -10).perform_later()`
+    cleanup_fixture_task: { # each recurring job must have a unique key
+      cron: "0 15 * * *", # cron-style scheduling format by fugit gem
+      class: "UpdateAirtableJob", # name of the job class as a String; must reference an Active Job job class
+      set: { priority: -10 }, # additional Active Job properties; can also be a lambda/proc e.g. `-> { { priority: [1,2].sample } }`
+      description: "Update airtable records by sending new and updated records to it", # optional description that appears in Dashboard
+    },
+  }
 end
 
 ActionMailer::Base.smtp_settings = {
