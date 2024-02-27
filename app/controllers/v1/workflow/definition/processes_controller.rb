@@ -1,6 +1,16 @@
 class V1::Workflow::Definition::ProcessesController < ApiController
-  before_action :authenticate_admin!, only: [:create, :update]
+  before_action :authenticate_admin!
+ 
+  def index
+    processes = Workflow::Definition::Process.all
+    render json: V1::Workflow::Definition::ProcessSerializer.new(processes)
+  end
 
+  def show
+    process = Workflow::Definition::Process.find(params[:id])
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process)
+  end
+ 
   def create
     process = Workflow::Definition::Process.create!(process_params)
     render json: V1::Workflow::Definition::ProcessSerializer.new(process)
@@ -12,6 +22,13 @@ class V1::Workflow::Definition::ProcessesController < ApiController
     # TODO run command that updates the instances
     render json: V1::Workflow::Definition::ProcessSerializer.new(process)
   end
+
+  def destroy
+    process = Workflow::Definition::Process.find(params[:id])
+    process.destroy!
+    render json: { message: 'Process deleted successfully' }
+  end
+
 
   private
 

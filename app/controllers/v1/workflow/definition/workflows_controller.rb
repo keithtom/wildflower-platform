@@ -1,5 +1,15 @@
 class V1::Workflow::Definition::WorkflowsController < ApiController
-  before_action :authenticate_admin!, only: [:create, :update]
+  before_action :authenticate_admin!
+
+  def index
+    workflows = Workflow::Definition::Workflow.all
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflows)
+  end
+
+  def show
+    workflow = Workflow::Definition::Workflow.find(params[:id])
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow)
+  end
 
   def create
     workflow = Workflow::Definition::Workflow.create!(workflow_params)
