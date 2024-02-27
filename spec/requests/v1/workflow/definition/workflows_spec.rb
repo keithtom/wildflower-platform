@@ -2,9 +2,10 @@ require 'rails_helper'
 
 RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
   describe 'POST #create' do
+    let(:valid_params) { { workflow: { version: '1.0', name: 'Test Workflow', description: 'This is a test workflow' } } }
+
     context 'when authenticated as admin' do
       let(:admin) { create(:user, :admin) }
-      let(:valid_params) { { workflow: { version: '1.0', name: 'Test Workflow', description: 'This is a test workflow' } } }
 
       before do
         sign_in(admin)
@@ -25,7 +26,6 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
 
     context 'when not authenticated as admin' do
       let(:user) { create(:user) }
-      let(:valid_params) { { workflow: { version: '1.0', name: 'Test Workflow', description: 'This is a test workflow' } } }
 
       before do
         sign_in(user)
