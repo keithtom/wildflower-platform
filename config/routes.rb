@@ -75,6 +75,7 @@ Rails.application.routes.draw do
     namespace :workflow do
       namespace :definition do
         resources :workflows, only: [:create, :update]
+        resources :processes, only: [:create, :update]
       end
 
       resources :workflows, only: [:show] do
