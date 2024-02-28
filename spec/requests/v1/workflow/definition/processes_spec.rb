@@ -1,6 +1,91 @@
 require 'rails_helper'
 
 RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
+   describe 'GET #index' do
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        get '/v1/workflow/definition/processes'
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns all processes as JSON' do
+        processes = create_list(:workflow_definition_process, 3)
+        get '/v1/workflow/definition/processes'
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(processes).to_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+
+    context 'when not authenticated as admin' do
+      let(:user) { create(:user) }
+
+      before do
+        sign_in(user)
+      end
+
+      it 'returns unauthorized status' do
+        get '/v1/workflow/definition/processes'
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let(:process) { create(:workflow_definition_process) }
+
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        get "/v1/workflow/definition/processes/#{process.id}"
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns the process as JSON' do
+        get "/v1/workflow/definition/processes/#{process.id}"
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process).to_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:process) { create(:workflow_definition_process) }
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        delete "/v1/workflow/definition/processes/#{process.id}"
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'deletes the process' do
+        expect {
+          delete "/v1/workflow/definition/processes/#{process.id}"
+        }.to change(Workflow::Definition::Process, :count).by(-1)
+      end
+
+      it 'returns a success message' do
+        delete "/v1/workflow/definition/processes/#{process.id}"
+        expect(response.body).to eq({ message: 'Process deleted successfully' }.to_json)
+      end
+    end
+  end
+
   describe 'POST #create' do
     let(:valid_params) { { process: { version: '1.0', title: 'Test Workflow', description: 'This is a test process', position: 0 } } }
 
