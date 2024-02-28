@@ -1,9 +1,14 @@
 class V1::PeopleController < ApiController
   def index
-    @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag]).all
+    @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag])
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
     @people = @people.tagged_with(Person::RGL) if params[:rgl]
-    render json: V1::PersonSerializer.new(@people)
+    if params[:etl]
+      @people = @people.tagged_with(Person::RGL)
+      render json: V1::PersonBasicSerializer.new(@people.all)
+    else
+      render json: V1::PersonSerializer.new(@people.all)
+    end
   end
 
   def show
