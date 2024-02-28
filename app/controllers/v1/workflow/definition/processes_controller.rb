@@ -2,7 +2,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   before_action :authenticate_admin!
  
   def index
-    processes = Workflow::Definition::Process.all
+    processes = Workflow::Definition::Process.includes([:taggings, :categories]).all
     render json: V1::Workflow::Definition::ProcessSerializer.new(processes)
   end
 
