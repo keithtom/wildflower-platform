@@ -104,4 +104,89 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
       end
     end
   end
+
+  describe 'GET #index' do
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        get '/v1/workflow/definition/steps'
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns all steps as JSON' do
+        steps = create_list(:workflow_definition_step, 3)
+        get '/v1/workflow/definition/steps'
+        expected_json = V1::Workflow::Definition::StepSerializer.new(steps).to_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+
+    context 'when not authenticated as admin' do
+      let(:user) { create(:user) }
+
+      before do
+        sign_in(user)
+      end
+
+      it 'returns unauthorized status' do
+        get '/v1/workflow/definition/steps'
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let(:step) { create(:workflow_definition_step) }
+
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        get "/v1/workflow/definition/steps/#{step.id}"
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns the step as JSON' do
+        get "/v1/workflow/definition/steps/#{step.id}"
+        expected_json = V1::Workflow::Definition::StepSerializer.new(step).to_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:step) { create(:workflow_definition_step) }
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        delete "/v1/workflow/definition/steps/#{step.id}"
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'deletes the step' do
+        expect {
+          delete "/v1/workflow/definition/steps/#{step.id}"
+        }.to change(Workflow::Definition::Step, :count).by(-1)
+      end
+
+      it 'returns a success message' do
+        delete "/v1/workflow/definition/steps/#{step.id}"
+        expect(response.body).to eq({ message: 'Step deleted successfully' }.to_json)
+      end
+    end
+  end
 end

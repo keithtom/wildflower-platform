@@ -1,6 +1,76 @@
 require 'rails_helper'
 
 RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
+  describe 'GET #index' do
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        get '/v1/workflow/definition/workflows'
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns all workflows as JSON' do
+        workflows = create_list(:workflow_definition_workflow, 3)
+        get '/v1/workflow/definition/workflows'
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflows).to_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+
+    context 'when not authenticated as admin' do
+      let(:user) { create(:user) }
+
+      before do
+        sign_in(user)
+      end
+
+      it 'returns unauthorized status' do
+        get '/v1/workflow/definition/workflows'
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let(:workflow) { create(:workflow_definition_workflow) }
+
+    context 'when authenticated as admin' do
+      let(:admin) { create(:user, :admin) }
+
+      before do
+        sign_in(admin)
+      end
+
+      it 'returns a success response' do
+        get "/v1/workflow/definition/workflows/#{workflow.id}"
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns the workflow as JSON' do
+        get "/v1/workflow/definition/workflows/#{workflow.id}"
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow).to_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+
+    context 'when not authenticated as admin' do
+      let(:user) { create(:user) }
+
+      before do
+        sign_in(user)
+      end
+
+      it 'returns unauthorized status' do
+        get "/v1/workflow/definition/workflows/#{workflow.id}"
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
   describe 'POST #create' do
     let(:valid_params) { { workflow: { version: '1.0', name: 'Test Workflow', description: 'This is a test workflow' } } }
 

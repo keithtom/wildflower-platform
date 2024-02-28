@@ -1,5 +1,15 @@
 class V1::Workflow::Definition::StepsController < ApiController
-  before_action :authenticate_admin!, only: [:create, :update]
+  before_action :authenticate_admin!
+
+  def index
+    steps = Workflow::Definition::Step.includes([:process]).all
+    render json: V1::Workflow::Definition::StepSerializer.new(steps)
+  end
+
+  def show
+    step = Workflow::Definition::Step.find(params[:id])
+    render json: V1::Workflow::Definition::StepSerializer.new(step)
+  end
 
   def create
     puts step_params.inspect
@@ -12,6 +22,12 @@ class V1::Workflow::Definition::StepsController < ApiController
     step.update!(step_params)
     # TODO run command that updates the instances
     render json: V1::Workflow::Definition::StepSerializer.new(step)
+  end
+
+  def destroy
+    step = Workflow::Definition::Step.find(params[:id])
+    step.destroy
+    render json: { message: 'Step deleted successfully' }
   end
 
   private
