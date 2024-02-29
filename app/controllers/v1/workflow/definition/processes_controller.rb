@@ -23,16 +23,16 @@ class V1::Workflow::Definition::ProcessesController < ApiController
     render json: V1::Workflow::Definition::ProcessSerializer.new(process)
   end
 
-  def destroy
+  def destroy 
     process = Workflow::Definition::Process.find(params[:id])
     process.destroy!
     render json: { message: 'Process deleted successfully' }
   end
 
-
   private
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :position)
+    params.require(:process).permit(:version, :title, :description, :position, 
+    steps_attributes: [:title, :description, :position, :kind, :completion_type])
   end
 end
