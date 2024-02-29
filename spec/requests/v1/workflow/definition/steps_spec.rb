@@ -5,7 +5,9 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
     let(:process) { create(:workflow_definition_process)}
     let(:valid_params) { { 
       step: { process_id: process.id, title: 'Test Step', description: 'This is a test step', kind: Workflow::Definition::Step::DEFAULT, 
-      position: 1, completion_type: Workflow::Definition::Step::EACH_PERSON, decision_question: 'are you sure?' 
+      position: 1, completion_type: Workflow::Definition::Step::EACH_PERSON, decision_question: 'are you sure?',               
+      decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
+      documents_attributes: [{title: "document title", link: "www.example.com"}]
     } } }
 
     context 'when authenticated as admin' do
@@ -19,6 +21,8 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
       it 'creates a new step' do
         expect(response).to have_http_status(:success)
         expect(Workflow::Definition::Step.count).to eq(1)
+        expect(Workflow::DecisionOption.count).to eq(2)
+        expect(Document.count).to eq(1)
       end
 
       it 'returns the created step as JSON' do

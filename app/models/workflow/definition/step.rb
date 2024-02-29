@@ -4,8 +4,10 @@ module Workflow
 
     belongs_to :process
     has_many :documents, as: :documentable
+    accepts_nested_attributes_for :documents
     has_many :instances, class_name: 'Workflow::Instance::Step', foreign_key: 'definition_id'
-    has_many :decision_options, class_name: 'Workflow::DecisionOption', foreign_key: 'decision_id'
+    has_many :decision_options, class_name: 'Workflow::DecisionOption', foreign_key: 'decision_id', inverse_of: :decision
+    accepts_nested_attributes_for :decision_options
 
     before_create :set_position
 
