@@ -4,9 +4,9 @@ class CleanupTestFixturesJob < ActiveJob::Base
   queue_as :default
 
   def perform
-    User.where("lower(email) like ? OR lower(email) like ?", "cypress_test%", "newemail%").limit(25).each do |user|
+    Person.where("lower(email) like ? OR lower(email) like ?", "cypress_test%", "newemail%").limit(100).each do |person|
       begin
-        person = user&.person
+        user = User.find_by(person_id: person.id)
         user&.destroy! 
         if person
           person.address&.destroy!
