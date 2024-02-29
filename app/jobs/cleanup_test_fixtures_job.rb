@@ -45,6 +45,7 @@ class CleanupTestFixturesJob < ActiveJob::Base
             workflow_instance.destroy!
           end
         end
+        person.destroy!
         Rails.logger.info("Successfully completed cleaning up test fixtures")
       rescue => e
         Rails.logger.error("Unable to detroy user record and associated records for id #{user.id}: #{e.message}")
