@@ -1,6 +1,6 @@
 # README
 
-This application only deals with workflow instances.
+This application only deals with workflow instances, most of the time. Admin will need to create/edit definitions.
 We must know what version to stamp new workflows out with; so we need to get access to a definition; or at least initialize a new instance for a user.
 Update state on that workflow:
   Update conditional data context
