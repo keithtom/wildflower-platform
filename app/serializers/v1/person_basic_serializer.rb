@@ -26,7 +26,7 @@ module V1
 
     attribute :ssj_phase do |person|
       if person.ssj_team
-        person.ssj_team.workflow.current_phase
+        person.ssj_team&.workflow&.current_phase
       end
     end
 
