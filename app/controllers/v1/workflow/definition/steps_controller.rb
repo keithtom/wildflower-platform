@@ -12,7 +12,6 @@ class V1::Workflow::Definition::StepsController < ApiController
   end
 
   def create
-    puts step_params.inspect
     step = Workflow::Definition::Step.create!(step_params)
     render json: V1::Workflow::Definition::StepSerializer.new(step)
   end
@@ -33,6 +32,7 @@ class V1::Workflow::Definition::StepsController < ApiController
   private
 
   def step_params
-    params.require(:step).permit(:process_id, :title, :description, :kind, :position, :completion_type, :decision_question)
+    params.require(:step).permit(:process_id, :title, :description, :kind, :position, :completion_type, 
+    :decision_question, decision_options_attributes: [:id, :description], documents_attributes: [:id, :title, :link])
   end
 end

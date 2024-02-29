@@ -87,7 +87,24 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
   end
 
   describe 'POST #create' do
-    let(:valid_params) { { process: { version: '1.0', title: 'Test Workflow', description: 'This is a test process', position: 0 } } }
+    let(:valid_params) { 
+      { 
+        process: { 
+          version: '1.0', 
+          title: 'Test Workflow', 
+          description: 'This is a test process', 
+          position: 0,
+          steps_attributes: [
+            { 
+              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, 
+              decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
+              documents_attributes: [{title: "document title", link: "www.example.com"}]
+            },
+            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
+          ]
+        } 
+      } 
+    }
 
     context 'when authenticated as admin' do
       let(:admin) { create(:user, :admin) }
@@ -100,6 +117,9 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
       it 'creates a new process' do
         expect(response).to have_http_status(:success)
         expect(Workflow::Definition::Process.count).to eq(1)
+        expect(Workflow::Definition::Step.count).to eq(2)
+        expect(Workflow::DecisionOption.count).to eq(2)
+        expect(Document.count).to eq(1)
       end
 
       it 'returns the created process as JSON' do
