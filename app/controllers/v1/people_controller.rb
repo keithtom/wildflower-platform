@@ -4,7 +4,7 @@ class V1::PeopleController < ApiController
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
     @people = @people.tagged_with(Person::RGL) if params[:rgl]
     if params[:etl]
-      @people = @people.tagged_with(Person::ETL)
+      @people = @people.includes([:ssj_team]).tagged_with(Person::ETL)
       render json: V1::PersonBasicSerializer.new(@people.all)
     else
       render json: V1::PersonSerializer.new(@people.all)
