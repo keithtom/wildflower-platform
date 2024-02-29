@@ -24,6 +24,12 @@ module V1
     #   person.schools
     # end
 
+    attribute :ssj_phase do |person|
+      if person.ssj_team
+        person.ssj_team.workflow.current_phase
+      end
+    end
+
     has_one :address, id_method_name: :external_identifier do |person|
       person.address
     end
