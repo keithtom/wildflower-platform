@@ -3,24 +3,24 @@ class V1::Workflow::Definition::ProcessesController < ApiController
  
   def index
     processes = Workflow::Definition::Process.includes([:taggings, :categories]).all
-    render json: V1::Workflow::Definition::ProcessSerializer.new(processes)
+    render json: V1::Workflow::Definition::ProcessSerializer.new(processes, serialization_options)
   end
 
   def show
     process = Workflow::Definition::Process.find(params[:id])
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process)
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
  
   def create
     process = Workflow::Definition::Process.create!(process_params)
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process)
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
 
   def update
     process = Workflow::Definition::Process.find(params[:id])
     process.update!(process_params)
     # TODO run command that updates the instances
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process)
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
 
   def destroy 
@@ -36,5 +36,9 @@ class V1::Workflow::Definition::ProcessesController < ApiController
     steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, 
     decision_options_attributes: [:description],
     documents_attributes: [:id, :title, :link]])
+  end
+
+  def serialization_options
+    { include: ['steps'] }
   end
 end

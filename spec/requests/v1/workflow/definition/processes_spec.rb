@@ -16,8 +16,11 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
       it 'returns all processes as JSON' do
         processes = create_list(:workflow_definition_process, 3)
+        process_with_steps = processes.first
+        process_with_steps.steps = create_list(:workflow_definition_step, 2, process_id: process_with_steps.id)
         get '/v1/workflow/definition/processes'
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(processes).to_json
+        processes.first.reload
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(processes, {include: ['steps']}).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -53,7 +56,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
       it 'returns the process as JSON' do
         get "/v1/workflow/definition/processes/#{process.id}"
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps'] }).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -124,7 +127,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
       it 'returns the created process as JSON' do
         process = Workflow::Definition::Process.last
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps']}).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -169,7 +172,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
       end
 
       it 'returns the updated process as JSON' do
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process.reload).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process.reload, { include: ['steps'] }).to_json
         expect(response.body).to eq(expected_json)
       end
     end
