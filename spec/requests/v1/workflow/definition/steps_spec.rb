@@ -5,7 +5,9 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
     let(:process) { create(:workflow_definition_process)}
     let(:valid_params) { { 
       step: { process_id: process.id, title: 'Test Step', description: 'This is a test step', kind: Workflow::Definition::Step::DEFAULT, 
-      position: 1, completion_type: Workflow::Definition::Step::EACH_PERSON, decision_question: 'are you sure?' 
+      position: 1, completion_type: Workflow::Definition::Step::EACH_PERSON, decision_question: 'are you sure?',               
+      decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
+      documents_attributes: [{title: "document title", link: "www.example.com"}]
     } } }
 
     context 'when authenticated as admin' do
@@ -19,11 +21,13 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
       it 'creates a new step' do
         expect(response).to have_http_status(:success)
         expect(Workflow::Definition::Step.count).to eq(1)
+        expect(Workflow::DecisionOption.count).to eq(2)
+        expect(Document.count).to eq(1)
       end
 
       it 'returns the created step as JSON' do
         step = Workflow::Definition::Step.last
-        expected_json = V1::Workflow::Definition::StepSerializer.new(step).to_json
+        expected_json = V1::Workflow::Definition::StepSerializer.new(step, serializer_options).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -75,7 +79,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
       end
 
       it 'returns the updated step as JSON' do
-        expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload).to_json
+        expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -121,7 +125,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
       it 'returns all steps as JSON' do
         steps = create_list(:workflow_definition_step, 3)
         get '/v1/workflow/definition/steps'
-        expected_json = V1::Workflow::Definition::StepSerializer.new(steps).to_json
+        expected_json = V1::Workflow::Definition::StepSerializer.new(steps, serializer_options).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -157,7 +161,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
 
       it 'returns the step as JSON' do
         get "/v1/workflow/definition/steps/#{step.id}"
-        expected_json = V1::Workflow::Definition::StepSerializer.new(step).to_json
+        expected_json = V1::Workflow::Definition::StepSerializer.new(step, serializer_options).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -189,4 +193,8 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
       end
     end
   end
+end
+
+def serializer_options
+  { include: ['documents', 'decision_options']}
 end
