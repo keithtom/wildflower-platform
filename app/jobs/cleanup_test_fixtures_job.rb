@@ -4,9 +4,9 @@ class CleanupTestFixturesJob < ActiveJob::Base
   queue_as :default
 
   def perform
-    User.where("lower(email) like ? OR lower(email) like ?", "cypress_test%", "newemail%").limit(25).each do |user|
+    Person.where("lower(email) like ? OR lower(email) like ?", "cypress_test%", "newemail%").limit(500).each do |person|
       begin
-        person = user&.person
+        user = User.find_by(person_id: person.id)
         user&.destroy! 
         if person
           person.address&.destroy!
@@ -45,6 +45,7 @@ class CleanupTestFixturesJob < ActiveJob::Base
             workflow_instance.destroy!
           end
         end
+        person.destroy!
         Rails.logger.info("Successfully completed cleaning up test fixtures")
       rescue => e
         Rails.logger.error("Unable to detroy user record and associated records for id #{user.id}: #{e.message}")
