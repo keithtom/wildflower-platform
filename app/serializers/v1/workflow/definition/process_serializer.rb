@@ -17,6 +17,10 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
     process.selected_processes.order(:position)
   end
 
+  has_many :prerequisites, serializer: V1::Workflow::Definition::ProcessSerializer do |process|
+    process.prerequisites
+  end
+
   attribute :categories do |process|
     get_categories(process)
   end

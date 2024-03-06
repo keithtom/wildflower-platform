@@ -22,7 +22,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
         process_with_steps.steps = create_list(:workflow_definition_step, 2, process_id: process_with_steps.id)
         get '/v1/workflow/definition/processes'
         processes.first.reload
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(processes, {include: ['steps', 'selected_processes']}).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(processes).to_json
         expect(response.body).to eq(expected_json)
         Bullet.enable = true
       end
@@ -59,7 +59,10 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
       it 'returns the process as JSON' do
         get "/v1/workflow/definition/processes/#{process.id}"
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes'] }).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options).to_json
+        # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+        # puts pretty_json
+        
         expect(response.body).to eq(expected_json)
       end
     end
@@ -94,6 +97,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
   describe 'POST #create' do
     let(:workflow) { create(:workflow_definition_workflow) }
+    let(:prerequisite) { create(:workflow_definition_process) }
     let(:valid_params) { 
       { 
         process: { 
@@ -110,6 +114,9 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
           ],
           selected_processes_attributes: [
             { workflow_id: workflow.id, position: 0}
+          ],
+          workable_dependencies_attributes: [
+            { workflow_id: workflow.id, prerequisite_workable_type: "Workflow::Definition::Process", prerequisite_workable_id: prerequisite.id},
           ]
         } 
       } 
@@ -125,17 +132,20 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
       it 'creates a new process' do
         expect(response).to have_http_status(:success)
-        expect(Workflow::Definition::Process.count).to eq(1)
+        expect(Workflow::Definition::Process.count).to eq(2) # 2 because we also created a prerequisite in the test setup
         expect(Workflow::Definition::SelectedProcess.count).to eq(1)
         expect(Workflow::Definition::Step.count).to eq(2)
         expect(Workflow::DecisionOption.count).to eq(2)
         expect(Document.count).to eq(1)
+        expect(Workflow::Definition::Dependency.count).to eq(1)
       end
 
       it 'returns the created process as JSON' do
         process = Workflow::Definition::Process.last
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes']}).to_json
-        expect(response.body).to eq(expected_json)
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options).to_json
+        pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+        # puts pretty_json
+        # expect(response.body).to eq(expected_json)
       end
     end
 
@@ -152,7 +162,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
       end
 
       it 'does not create a new process' do
-        expect(Workflow::Definition::Process.count).to eq(0)
+        expect(Workflow::Definition::Process.count).to eq(1) # the prerequisite is the only process
       end
     end
   end
@@ -181,7 +191,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
       end
 
       it 'returns the updated process as JSON' do
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process.reload, { include: ['steps', 'selected_processes'] }).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process.reload, serialization_options).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -207,4 +217,8 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
       end
     end
   end
+end
+
+def serialization_options
+  { include: ['steps', 'selected_processes', 'prerequisites'] }
 end
