@@ -182,6 +182,22 @@ namespace :workflows do
     end
     puts "Set ETL role for #{updated} people rows"
   end
+
+  desc 'set position for selected_processes'
+  task set_position: :environment do
+    updated = 0
+    workflows = 0
+    
+    Workflow::Definition::SelectedProcess.select(:workflow_id).distinct.pluck(:workflow_id).each do |workflow_id|
+      workflows += 1
+      Workflow::Definition::SelectedProcess.where(workflow_id: workflow_id).order(:created_at).each_with_index do |sp, index|
+        sp.position = index * Workflow::Definition::SelectedProcess::DEFAULT_INCREMENT
+        sp.save!
+        updated += 1
+      end
+    end
+    puts "Set positions on #{workflows} workflows and a total of #{updated} selected_processes"
+  end
 end
 
 # Team of 4

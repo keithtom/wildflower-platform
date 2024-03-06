@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_30_160428) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_05_205235) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -500,7 +500,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_30_160428) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "position"
   end
 
   create_table "workflow_definition_selected_processes", force: :cascade do |t|
@@ -508,6 +507,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_30_160428) do
     t.bigint "process_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
     t.index ["process_id"], name: "index_workflow_definition_selected_processes_on_process_id"
     t.index ["workflow_id"], name: "index_workflow_definition_selected_processes_on_workflow_id"
   end

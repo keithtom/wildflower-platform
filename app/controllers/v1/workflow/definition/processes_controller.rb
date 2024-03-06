@@ -2,8 +2,8 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   before_action :authenticate_admin!
  
   def index
-    processes = Workflow::Definition::Process.includes([:taggings, :categories]).all
-    render json: V1::Workflow::Definition::ProcessSerializer.new(processes, serialization_options)
+    processes = Workflow::Definition::Process.includes([:taggings, :categories, steps: [:decision_options, :documents]]).all
+    render json: V1::Workflow::Definition::ProcessSerializer.new(processes)
   end
 
   def show
@@ -32,13 +32,15 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   private
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :position, 
+    params.require(:process).permit(:version, :title, :description, 
     steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
     decision_options_attributes: [:description],
-    documents_attributes: [:id, :title, :link]])
+    documents_attributes: [:id, :title, :link]],
+    selected_processes_attributes: [:id, :workflow_id, :position],
+    workable_dependencies_attributes: [:id, :workflow_id, :prerequisite_workable_type, :prerequisite_workable_id])
   end
 
   def serialization_options
-    { include: ['steps'] }
+    { include: ['steps', 'selected_processes', 'prerequisites'] }
   end
 end
