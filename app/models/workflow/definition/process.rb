@@ -13,8 +13,6 @@ module Workflow
 
     acts_as_taggable_on :categories, :phase
 
-    scope :by_position, -> { order("workflow_definition_processes.position ASC") }
-  
     accepts_nested_attributes_for :steps
   end
 end
