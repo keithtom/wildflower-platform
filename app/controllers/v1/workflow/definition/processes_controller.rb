@@ -12,8 +12,17 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   end
  
   def create
-    process = Workflow::Definition::Process.create!(process_params)
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
+    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
+    if workflow
+      process = Workflow::Definition::Process.create!(process_params)
+      Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id)
+      render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
+    else
+      render json: {
+        status: 422,
+        message: "workflow_id required"
+      }, status: :unprocessable_entity
+    end
   end
 
   def update
