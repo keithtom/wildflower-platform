@@ -33,7 +33,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
 
   def process_params
     params.require(:process).permit(:version, :title, :description, 
-    steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, 
+    steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
     decision_options_attributes: [:description],
     documents_attributes: [:id, :title, :link]],
     selected_processes_attributes: [:id, :workflow_id, :position])
