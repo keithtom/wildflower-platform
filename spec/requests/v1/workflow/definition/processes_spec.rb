@@ -106,7 +106,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
           description: 'This is a test process', 
           steps_attributes: [
             { 
-              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, 
+              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
               decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
               documents_attributes: [{title: "document title", link: "www.example.com"}]
             },
