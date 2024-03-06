@@ -2,7 +2,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   before_action :authenticate_admin!
  
   def index
-    processes = Workflow::Definition::Process.includes([:taggings, :categories]).all
+    processes = Workflow::Definition::Process.includes([:taggings, :categories, steps: [:decision_options, :documents]]).all
     render json: V1::Workflow::Definition::ProcessSerializer.new(processes, serialization_options)
   end
 
@@ -12,17 +12,8 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   end
  
   def create
-    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
-    if workflow
-      process = Workflow::Definition::Process.create!(process_params)
-      Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id)
-      render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
-    else
-      render json: {
-        status: 422,
-        message: "workflow_id required"
-      }, status: :unprocessable_entity
-    end
+    process = Workflow::Definition::Process.create!(process_params)
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
 
   def update
@@ -41,13 +32,14 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   private
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :position, 
+    params.require(:process).permit(:version, :title, :description, 
     steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, 
     decision_options_attributes: [:description],
-    documents_attributes: [:id, :title, :link]])
+    documents_attributes: [:id, :title, :link]],
+    selected_processes_attributes: [:id, :workflow_id, :position])
   end
 
   def serialization_options
-    { include: ['steps'] }
+    { include: ['steps', 'selected_processes'] }
   end
 end

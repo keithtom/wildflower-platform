@@ -13,6 +13,10 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
     process.steps.by_position
   end
 
+  has_many :selected_processes, serializer: V1::Workflow::Definition::SelectedProcessSerializer do |process|
+    process.selected_processes.order(:position)
+  end
+
   attribute :categories do |process|
     get_categories(process)
   end

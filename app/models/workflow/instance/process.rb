@@ -30,10 +30,6 @@ module Workflow
       super || self.definition.description
     end
 
-    def position
-      super || self.definition.position
-    end
-
     def phase
       self.definition.phase
     end
