@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
     resources :documents, only: [:create, :destroy]
 
+    resources :tags, only: [:index, :create, :update, :destroy]
+
     namespace :advice do
       resources :people, :only => [] do
         get "decisions/draft", to: 'decisions#index'
