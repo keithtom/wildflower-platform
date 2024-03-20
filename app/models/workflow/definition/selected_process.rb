@@ -7,6 +7,12 @@ module Workflow
     belongs_to :workflow
     belongs_to :process
 
+    belongs_to :previous_version, class_name: 'Workflow::Definition::SelectedProcess', foreign_key: 'previous_version_id'
+    has_one :next_version, class_name: 'Workflow::Definition::SelectedProcess', foreign_key: 'previous_version_id'
+
+    belongs_to :parent, class_name: 'Workflow::Definition::SelectedProcess', foreign_key: 'parent_id'
+    has_many :children, class_name: 'Workflow::Definition::SelectedProcess', foreign_key: 'parent_id'
+
     before_create :set_position
 
     def set_position
