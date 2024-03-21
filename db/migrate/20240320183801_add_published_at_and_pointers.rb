@@ -7,7 +7,6 @@ class AddPublishedAtAndPointers < ActiveRecord::Migration[7.0]
     add_column :workflow_definition_processes, :previous_version_id, :bigint
 
     add_column :workflow_definition_selected_processes, :previous_version_id, :bigint
-    add_column :workflow_definition_selected_processes, :parent_id, :bigint
     add_column :workflow_definition_selected_processes, :state, :string
   end
 end

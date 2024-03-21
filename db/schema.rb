@@ -511,7 +511,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_20_183801) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.bigint "previous_version_id"
-    t.bigint "parent_id"
     t.string "state"
     t.index ["process_id"], name: "index_workflow_definition_selected_processes_on_process_id"
     t.index ["workflow_id"], name: "index_workflow_definition_selected_processes_on_workflow_id"
