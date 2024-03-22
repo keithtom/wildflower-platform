@@ -19,5 +19,11 @@ module Workflow
 
     acts_as_taggable_on :categories, :phase
 
+    belongs_to :previous_version, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_version_id', optional: true
+    has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
+  
+    def published?
+      !published_at.nil?
+    end
   end
 end
