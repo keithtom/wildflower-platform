@@ -143,9 +143,9 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
       it 'returns the created process as JSON' do
         process = Workflow::Definition::Process.last
         expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options).to_json
-        pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+        # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
         # puts pretty_json
-        # expect(response.body).to eq(expected_json)
+        expect(response.body).to eq(expected_json)
       end
     end
 

@@ -8,7 +8,7 @@ RSpec.describe SSJ::InviteTeam, type: :service do
   before do
     create(:user, person_id: ops_guide.id)
     create(:user, person_id: regional_growth_leader.id)
-    create(:workflow_definition_workflow)
+    create(:workflow_definition_workflow, name: "National, Independent Sensible Default")
   end
 
   describe '#run' do
