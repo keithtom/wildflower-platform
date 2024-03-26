@@ -14,4 +14,8 @@ class V1::Workflow::Definition::WorkflowSerializer < ApplicationSerializer
   attribute :published do |workflow|
     workflow.published?
   end
+  
+  has_many :processes, serializer: V1::Workflow::Definition::BasicProcessSerializer do |workflow|
+    workflow.processes.order(:position)
+  end
 end
