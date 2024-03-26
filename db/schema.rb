@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_20_183801) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_26_162002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -539,6 +539,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_20_183801) do
     t.datetime "updated_at", null: false
     t.datetime "published_at"
     t.bigint "previous_version_id"
+    t.index ["name", "version"], name: "index_workflow_definition_workflows_on_name_and_version", unique: true
   end
 
   create_table "workflow_instance_dependencies", force: :cascade do |t|

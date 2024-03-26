@@ -16,6 +16,8 @@ module Workflow
 
     scope :latest_versions, -> { select('DISTINCT ON (name) *').order('name, version DESC') }
 
+    validates :name, uniqueness: { scope: :version, message: "and version combination must be unique" }
+
     def published?
       !published_at.nil?
     end

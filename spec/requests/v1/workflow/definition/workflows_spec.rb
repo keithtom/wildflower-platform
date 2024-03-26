@@ -15,7 +15,10 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
 
       it 'returns all workflows as JSON' do
-        workflows = create_list(:workflow_definition_workflow, 3)
+        workflow1 = create(:workflow_definition_workflow, name: "basic 1", version: "v0")
+        workflow2 = create(:workflow_definition_workflow, name: "basic 1", version: "v1")
+        workflow3 = create(:workflow_definition_workflow, name: "charter 1", version: "v0")
+        workflows = [workflow2, workflow3]
         get '/v1/workflow/definition/workflows'
         expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflows).to_json
         expect(response.body).to eq(expected_json)
