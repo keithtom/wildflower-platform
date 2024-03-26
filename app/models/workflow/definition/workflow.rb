@@ -26,7 +26,7 @@ module Workflow
     private
 
     def check_published
-      if published_was && (name_changed? || version_changed? || description_changed? )
+      if published? && (name_changed? || version_changed? || description_changed? )
         errors.add(:base, "Updates to name, description or version can only be made if unpublished")
       end
     end
