@@ -17,7 +17,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       it 'returns all workflows as JSON' do
         workflows = create_list(:workflow_definition_workflow, 3)
         get '/v1/workflow/definition/workflows'
-        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflows).to_json
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflows, { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -53,7 +53,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
 
       it 'returns the workflow as JSON' do
         get "/v1/workflow/definition/workflows/#{workflow.id}"
-        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow).to_json
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow, { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -89,7 +89,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
 
       it 'returns the created workflow as JSON' do
         workflow = Workflow::Definition::Workflow.last
-        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow).to_json
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow, { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
     end
@@ -132,7 +132,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
 
       it 'returns the updated workflow as JSON' do
-        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow.reload).to_json
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow.reload, { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
     end
