@@ -160,4 +160,70 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
     end
   end
+
+  describe 'POST #add_process' do
+    let(:admin) { create(:user, :admin) }
+    let(:workflow) { create(:workflow_definition_workflow) }
+    let(:prerequisite) { create(:workflow_definition_process) }
+    let(:process_params) { 
+      { 
+        process: { 
+          version: '1.0', 
+          title: 'Test Workflow', 
+          description: 'This is a test process', 
+          steps_attributes: [
+            { 
+              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
+              decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
+              documents_attributes: [{title: "document title", link: "www.example.com"}]
+            },
+            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
+          ],
+          workable_dependencies_attributes: [
+            { workflow_id: workflow.id, prerequisite_workable_type: "Workflow::Definition::Process", prerequisite_workable_id: prerequisite.id},
+          ]
+        } 
+      } 
+    }
+
+    before do
+      sign_in(admin)
+    end
+
+    context 'when the workflow is published' do
+      before do
+        workflow.update(published_at: DateTime.now)
+        post "/v1/workflow/definition/workflows/#{workflow.id}/processes", params: process_params
+      end
+
+      it 'returns an error response' do
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['error']).to eq('Cannot add processes to a published workflow. Please create a new version to continue.')
+      end
+    end
+
+    context 'when the workflow is not published' do
+      before do
+        post "/v1/workflow/definition/workflows/#{workflow.id}/processes", params: process_params
+      end
+
+      it 'creates a new process and associates it with the workflow' do
+        expect(response).to have_http_status(:success)
+        expect(Workflow::Definition::Process.count).to eq(2) # 2 because we also created a prerequisite in the test setup
+        expect(Workflow::Definition::SelectedProcess.count).to eq(1)
+        expect(Workflow::Definition::Step.count).to eq(2)
+        expect(Workflow::DecisionOption.count).to eq(2)
+        expect(Document.count).to eq(1)
+        expect(Workflow::Definition::Dependency.count).to eq(1)
+
+        process = Workflow::Definition::Process.last
+        expect(workflow.processes.last).to eq(process)
+
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
+        # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+        # puts pretty_json
+        expect(response.body).to eq(expected_json)
+      end
+    end
+  end
 end
