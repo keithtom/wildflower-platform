@@ -2,7 +2,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   before_action :authenticate_admin!
 
   def index
-    workflows = Workflow::Definition::Workflow.all
+    workflows = Workflow::Definition::Workflow.latest_versions
     render json: V1::Workflow::Definition::WorkflowSerializer.new(workflows)
   end
 

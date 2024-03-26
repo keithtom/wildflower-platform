@@ -13,7 +13,9 @@ module Workflow
     
     belongs_to :previous_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id', optional: true
     has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
-  
+
+    scope :latest_versions, -> { select('DISTINCT ON (name) *').order('name, version DESC') }
+
     def published?
       !published_at.nil?
     end
