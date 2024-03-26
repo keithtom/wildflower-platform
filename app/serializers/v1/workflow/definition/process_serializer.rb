@@ -24,4 +24,8 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
   attribute :categories do |process|
     get_categories(process)
   end
+
+  attribute :num_of_instances do |process|
+    process.instances.count
+  end
 end
