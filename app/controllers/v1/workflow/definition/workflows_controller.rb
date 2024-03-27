@@ -8,19 +8,19 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
 
   def show
     workflow = Workflow::Definition::Workflow.find(params[:id])
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options)
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
   end
 
   def create
     workflow = Workflow::Definition::Workflow.create!(workflow_params)
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options)
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
   end
 
   def update
     workflow = Workflow::Definition::Workflow.find(params[:id])
     workflow.update!(workflow_params)
     # TODO run command that updates the instances
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options)
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
   end
 
   def add_process
@@ -51,6 +51,6 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   end
 
   def serializer_options
-    { include: ['processes'] }
+    { include: ['processes', 'processes.selected_processes'] }
   end
 end
