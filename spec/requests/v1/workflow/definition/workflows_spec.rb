@@ -193,7 +193,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     context 'when the workflow is published' do
       before do
         workflow.update(published_at: DateTime.now)
-        post "/v1/workflow/definition/workflows/#{workflow.id}/processes", params: process_params
+        post "/v1/workflow/definition/workflows/#{workflow.id}/add_process", params: process_params
       end
 
       it 'returns an error response' do
@@ -204,7 +204,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
 
     context 'when the workflow is not published' do
       before do
-        post "/v1/workflow/definition/workflows/#{workflow.id}/processes", params: process_params
+        post "/v1/workflow/definition/workflows/#{workflow.id}/add_process", params: process_params
       end
 
       it 'creates a new process and associates it with the workflow' do

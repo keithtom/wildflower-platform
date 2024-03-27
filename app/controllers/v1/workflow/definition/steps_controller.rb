@@ -1,23 +1,19 @@
 class V1::Workflow::Definition::StepsController < ApiController
   before_action :authenticate_admin!
 
-  def index
-    steps = Workflow::Definition::Step.includes([:decision_options, :documents]).all
-    render json: V1::Workflow::Definition::StepSerializer.new(steps, serializer_options)
-  end
-
   def show
     step = Workflow::Definition::Step.find(params[:id])
     render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
   end
 
   def create
-    step = Workflow::Definition::Step.create!(step_params)
+    process = Workflow::Definition::Process.find_by!(id: params[:process_id])
+    step = Workflow::Definition::Step.create!(step_params.merge!(process_id: process.id))
     render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
   end
 
   def update
-    step = Workflow::Definition::Step.find(params[:id])
+    step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
     step.update!(step_params)
     # TODO run command that updates the instances
     render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
