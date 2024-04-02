@@ -16,7 +16,7 @@ class V1::Workflow::Definition::StepsController < ApiController
     step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
     step.update!(step_params)
     # TODO run command that updates the instances
-    render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
+    render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)
   end
 
   def destroy
@@ -29,7 +29,7 @@ class V1::Workflow::Definition::StepsController < ApiController
 
   def step_params
     params.require(:step).permit(:process_id, :title, :description, :kind, :position, :completion_type, :min_worktime, :max_worktime,
-    :decision_question, decision_options_attributes: [:id, :description], documents_attributes: [:external_identifier, :title, :link])
+    :decision_question, decision_options_attributes: [:id, :description], documents_attributes: [:id, :title, :link])
   end
 
   def serializer_options
