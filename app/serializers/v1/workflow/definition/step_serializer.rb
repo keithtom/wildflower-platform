@@ -7,7 +7,7 @@ class V1::Workflow::Definition::StepSerializer < ApplicationSerializer
     step.decision_options
   end
 
-  has_many :documents, serializer: V1::DocumentSerializerAdmin do |step|
+  has_many :documents, serializer: V1::AdminDocumentSerializer do |step|
     step.documents
   end
 end
