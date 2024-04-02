@@ -7,7 +7,7 @@ class V1::Workflow::Definition::StepSerializer < ApplicationSerializer
     step.decision_options
   end
 
-  has_many :documents, serializer: V1::DocumentSerializer, id_method_name: :external_identifier do |step|
+  has_many :documents, serializer: V1::DocumentSerializerAdmin do |step|
     step.documents
   end
 end
