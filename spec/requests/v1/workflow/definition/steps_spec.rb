@@ -84,6 +84,27 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
         expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options).to_json
         expect(response.body).to eq(expected_json)
       end
+    
+      context 'instantaneous change' do
+        let(:valid_params) { { step: { 
+          title: 'Updated Step', description: 'This is an updated step', 
+          kind: Workflow::Definition::Step::DECISION, position: 2, 
+          completion_type: Workflow::Definition::Step::ONE_PER_GROUP, decision_question: 'Are you sure?',
+          documents_attributes: [{title: "basic resource", link: "www.example.com"}]
+        } } }
+
+        it 'updates the step instances' do
+          step.reload
+          expect(response).to have_http_status(:success)
+          expect(step.title).to eq('Updated Step')
+          expect(step.description).to eq('This is an updated step')
+          expect(step.kind).to eq(Workflow::Definition::Step::DECISION)
+          expect(step.position).to eq(2)
+          expect(step.completion_type).to eq(Workflow::Definition::Step::ONE_PER_GROUP)
+          expect(step.decision_question).to eq('Are you sure?')
+          expect(step.documents.last.title).to eq('basic resource')
+        end
+      end
     end
 
     context 'when not authenticated as admin' do
