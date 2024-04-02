@@ -29,7 +29,7 @@ class V1::Workflow::Definition::StepsController < ApiController
 
   def step_params
     params.require(:step).permit(:process_id, :title, :description, :kind, :position, :completion_type, :min_worktime, :max_worktime,
-    :decision_question, decision_options_attributes: [:id, :description], documents_attributes: [:id, :title, :link])
+    :decision_question, decision_options_attributes: [:id, :description], documents_attributes: [:external_identifier, :title, :link])
   end
 
   def serializer_options
