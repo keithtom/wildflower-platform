@@ -18,7 +18,7 @@ class V1::Workflow::Definition::StepsController < ApiController
 
     # if process is not published, that means it's a rollout change
     if step&.process&.published?
-      Workflow::Definition::Step::PropogateInstantaneousChange.run(step, step_params)
+      Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
     end
 
     render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)

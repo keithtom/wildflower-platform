@@ -1,7 +1,7 @@
 module Workflow
   module Definition
     class Step
-      class PropogateInstantaneousChange < BaseService
+      class PropagateInstantaneousChange < BaseService
         VALID_ATTR_CHANGES = [
           :title, :description, :position, :completion_type, :min_worktime, :max_worktime, :decision_question, 
         ]

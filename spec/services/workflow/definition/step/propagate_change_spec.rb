@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Workflow::Definition::Step::PropogateInstantaneousChange do
+describe Workflow::Definition::Step::PropagateInstantaneousChange do
   describe "#validate_param_changes" do
     let(:step) { create(:workflow_definition_step) }
     let(:param_changes) { 
