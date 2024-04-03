@@ -15,7 +15,12 @@ class V1::Workflow::Definition::StepsController < ApiController
   def update
     step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
     step.update!(step_params)
-    # TODO run command that updates the instances
+
+    # if process is not published, that means it's a rollout change
+    if step.process.published?
+      Workflow::Definition::Step::PropogateInstantaneousChange.run(step, step_params)
+    end
+
     render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)
   end
 

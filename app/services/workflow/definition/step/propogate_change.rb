@@ -1,7 +1,7 @@
 module Workflow
   module Definition
     class Step
-      class PropogateChange
+      class PropogateInstantaneousChange < BaseService
         VALID_ATTR_CHANGES = [
           :title, :description, :position, :completion_type, :min_worktime, :max_worktime, :decision_question, 
         ]
@@ -19,6 +19,7 @@ module Workflow
       
         private 
         def scrub_param_changes
+          # these attributes were not copied over to the instance
           @param_changes.delete(:documents_attributes)
           @param_changes.delete(:decision_option_attributes)
         end
