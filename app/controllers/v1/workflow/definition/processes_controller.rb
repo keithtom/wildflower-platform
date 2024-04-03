@@ -19,7 +19,10 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   def update
     process = Workflow::Definition::Process.find(params[:id])
     process.update!(process_params)
-    # TODO run command that updates the instances
+    
+    unless process.published? # if published, then changes will be a rollout change
+      # TODO run command that updates the instances
+    end
     render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
 

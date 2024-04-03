@@ -54,6 +54,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
     let(:process) { create(:workflow_definition_process)}
     let(:process2) { create(:workflow_definition_process)}
     let!(:step) { create(:workflow_definition_step, process_id: process.id) }
+    let!(:instance_step) { create(:workflow_instance_step, definition: step, title: "A Step", description: "original, unupdated step") }
     let(:valid_params) { { step: { 
       process_id: process2.id,
       title: 'Updated Step', description: 'This is an updated step', 
@@ -87,22 +88,24 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
     
       context 'instantaneous change' do
         let(:valid_params) { { step: { 
-          title: 'Updated Step', description: 'This is an updated step', 
-          kind: Workflow::Definition::Step::DECISION, position: 2, 
+          title: 'Updated Step', description: 'This is an updated step', position: 2, 
           completion_type: Workflow::Definition::Step::ONE_PER_GROUP, decision_question: 'Are you sure?',
           documents_attributes: [{title: "basic resource", link: "www.example.com"}]
         } } }
+        let(:process) { create(:workflow_definition_process, published_at: DateTime.now)}
 
         it 'updates the step instances' do
           step.reload
           expect(response).to have_http_status(:success)
           expect(step.title).to eq('Updated Step')
           expect(step.description).to eq('This is an updated step')
-          expect(step.kind).to eq(Workflow::Definition::Step::DECISION)
           expect(step.position).to eq(2)
           expect(step.completion_type).to eq(Workflow::Definition::Step::ONE_PER_GROUP)
           expect(step.decision_question).to eq('Are you sure?')
           expect(step.documents.last.title).to eq('basic resource')
+        
+          expect(instance_step.reload.title).to eq('Updated Step')
+          expect(instance_step.description).to eq('This is an updated step')
         end
       end
     end
