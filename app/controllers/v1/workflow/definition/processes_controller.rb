@@ -38,7 +38,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
       process.destroy!
       render json: { message: 'Process deleted successfully' }
     else
-      render json: { message: 'Cannot delete process because it has instances' }, status: :bad_request
+      render json: { message: 'Cannot delete process because it has instances' }, status: :unprocessable_entity
     end
   end
 
