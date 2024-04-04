@@ -35,6 +35,13 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     end
   end
 
+  def new_version
+    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
+    new_version = Workflow::Definition::Workflow::NewVersion.run(workflow)
+
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+  end
+
   private
 
   def workflow_params

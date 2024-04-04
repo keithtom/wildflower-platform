@@ -226,4 +226,23 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
     end
   end
+
+  describe "POST #new_version" do
+    let(:workflow) { create(:workflow_definition_workflow) }
+    let(:admin) { create(:user, :admin) }
+
+    before do
+      sign_in(admin)
+    end
+
+    it "creates a new version of the workflow" do
+      post "/v1/workflow/definition/workflows/#{workflow.id}/new_version"
+
+      expect(response).to have_http_status(:success)
+
+      new_version = JSON.parse(response.body)
+      expect(new_version["data"]["id"]).to_not eq(workflow.id)
+      expect(new_version["data"]["attributes"]["name"]).to eq(workflow.name)
+    end
+  end
 end
