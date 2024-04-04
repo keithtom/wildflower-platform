@@ -77,8 +77,10 @@ Rails.application.routes.draw do
     namespace :workflow do
       namespace :definition do
         resources :workflows, only: [:index, :show, :create, :update] do
-          post '/add_process', to: 'workflows#add_process'
+          post '/add_process', to: 'workflows#create_process'
           post '/new_version', to: 'workflows#new_version'
+          put '/add_process/:process_id', to: 'workflows#add_process'
+          put '/remove_process/:process_id', to: 'workflows#add_process'
         end
         resources :processes, only: [:index, :show, :create, :update, :destroy] do
           resources :steps, only: [:show, :create, :update, :destroy]
