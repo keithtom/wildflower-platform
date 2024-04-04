@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Workflow::Definition::Step::PropagateInstantaneousChange do
-  describe "#validate_param_changes" do
+  describe "#run" do
     let(:step) { create(:workflow_definition_step) }
     let(:param_changes) { 
       {
@@ -23,7 +23,8 @@ describe Workflow::Definition::Step::PropagateInstantaneousChange do
       expect { described_class.run(step, param_changes) }.to raise_error(StandardError, "Attribute(s) cannot be an instantaneously changed: kind")
     end
 
-    it "should raise an error for unpermitted attribute changes" do
+
+    it "should update instances" do
       step_instance = create(:workflow_instance_step, definition: step)
       expect(step_instance.title).to_not eq("Updated Step")
 

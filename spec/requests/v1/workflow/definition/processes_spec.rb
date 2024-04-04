@@ -178,21 +178,73 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
       before do
         sign_in(admin)
-        put "/v1/workflow/definition/processes/#{process.id}", params: valid_params
       end
 
-      it 'updates the process' do
-        process.reload
-        expect(response).to have_http_status(:success)
-        expect(process.version).to eq('2.0')
-        expect(process.title).to eq('Updated Process')
-        expect(process.description).to eq('This is an updated process')
-        expect(process.selected_processes.first.position).to eq(5)
-      end
+      context 'when it is not published' do
+        before do
+          put "/v1/workflow/definition/processes/#{process.id}", params: valid_params
+        end
 
-      it 'returns the updated process as JSON' do
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process.reload, serialization_options).to_json
-        expect(response.body).to eq(expected_json)
+        it 'updates the process' do
+          process.reload
+          expect(response).to have_http_status(:success)
+          expect(process.version).to eq('2.0')
+          expect(process.title).to eq('Updated Process')
+          expect(process.description).to eq('This is an updated process')
+          expect(process.selected_processes.first.position).to eq(5)
+        end
+
+        it 'returns the updated process as JSON' do
+          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process.reload, serialization_options).to_json
+          expect(response.body).to eq(expected_json)
+        end
+      end
+    
+      context 'when it is published' do
+        let!(:process) { create(:workflow_definition_process, published_at: DateTime.now) }
+
+        context 'with invalid params' do
+          let(:invalid_params) { { process: { version: '2.0', title: 'Updated Process' }}}
+
+          before do
+            put "/v1/workflow/definition/processes/#{process.id}", params: invalid_params
+          end
+        
+          it 'does not update the definition or instances' do
+            expect(response).to have_http_status(400)
+            expect(JSON.parse(response.body)["message"]).to eq("Attribute(s) cannot be an instantaneously changed: version")
+            expect(process.reload.version).to_not eq('2.0')
+            expect(process.title).to_not eq('Updated Process')
+          end
+        end
+
+        context 'with valid params' do
+          let(:valid_params) { { process: { category_list: ['Finance', 'Admin'], title: 'Updated Process', 
+            selected_processes_attributes: [{id: selected_process.id, workflow_id: workflow.id, position: 5}]
+          }}}
+          let(:workflow_instance) { create(:workflow_instance_workflow, definition_id: workflow.id)}
+          let!(:process_instance) { create(:workflow_instance_process, definition_id: process.id, workflow_id: workflow_instance.id)}
+
+          before do
+            put "/v1/workflow/definition/processes/#{process.id}", params: valid_params
+          end
+          
+          it 'updates the process' do
+            process.reload
+            expect(response).to have_http_status(:success)
+            expect(process.category_list).to eq(['Finance', 'Admin'])
+            expect(process.title).to eq('Updated Process')
+            expect(process.selected_processes.first.position).to eq(5)
+          end
+        
+          it 'updates the instances associated to the process' do
+            process_instance.reload
+            expect(response).to have_http_status(:success)
+            expect(process_instance.category_list).to eq(['Finance', 'Admin'])
+            expect(process_instance.title).to eq('Updated Process')
+            expect(process_instance.position).to eq(5)
+          end
+        end
       end
     end
 

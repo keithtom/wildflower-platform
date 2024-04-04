@@ -18,11 +18,17 @@ class V1::Workflow::Definition::ProcessesController < ApiController
 
   def update
     process = Workflow::Definition::Process.find(params[:id])
-    process.update!(process_params)
-    
-    unless process.published? # if published, then changes will be a rollout change
-      # TODO run command that updates the instances
+
+    if process.published? # if published, then changes will be instantaneous
+      begin
+        Workflow::Definition::Process::PropagateInstantaneousChange.run(process, process_params)
+      rescue Exception => e
+        return render json: { message: e.message }, status: :bad_request
+      end
+    else 
+      process.update!(process_params)
     end
+
     render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
 
@@ -35,10 +41,10 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   private
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :phase_list, :categories_list,
+    params.require(:process).permit(:version, :title, :description, :phase_list, [:category_list => []],
     steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
-    decision_options_attributes: [:description],
-    documents_attributes: [:id, :title, :link]],
+      decision_options_attributes: [:description],
+      documents_attributes: [:id, :title, :link]],
     selected_processes_attributes: [:id, :workflow_id, :position],
     workable_dependencies_attributes: [:id, :workflow_id, :prerequisite_workable_type, :prerequisite_workable_id])
   end
