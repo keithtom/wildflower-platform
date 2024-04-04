@@ -49,20 +49,19 @@ namespace :workflows do
     workflow_definition = FactoryBot.create(:workflow_definition_workflow, name: "Basic Workflow")
 
     # Visioning
-    process1 = FactoryBot.create(:workflow_definition_process, title: "Milestone A", description: "A single milestone with 3 steps", position: 100)
+    process1 = FactoryBot.create(:workflow_definition_process, title: "Milestone A", description: "A single milestone with 3 steps")
     3.times { |i| FactoryBot.create(:workflow_definition_step, process: process1, title: "Step #{i+1}", description: "Step #{i+1} of 3", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
-    process2 = FactoryBot.create(:workflow_definition_process, title: "Milestone B-1", description: "A sequential milestone: B-1 then B-2", position: 200)
+    process2 = FactoryBot.create(:workflow_definition_process, title: "Milestone B-1", description: "A sequential milestone: B-1 then B-2")
     decision_step = FactoryBot.create(:workflow_definition_step, process: process2, title: "Decision Step 1", description: "A single decision step with 3 options", kind: Workflow::Definition::Step::DECISION, position: Workflow::Definition::Step::DEFAULT_INCREMENT)
     3.times { |i| FactoryBot.create(:workflow_decision_option, decision: decision_step, description: "Option #{i+1}") }
     
-    process3 = FactoryBot.create(:workflow_definition_process, title: "Milestone B-2", description: "The second milestone B-2 should be worked on after B-1 is done.", position: 300)
+    process3 = FactoryBot.create(:workflow_definition_process, title: "Milestone B-2", description: "The second milestone B-2 should be worked on after B-1 is done.")
     2.times { |i| FactoryBot.create(:workflow_definition_step, process: process3, title: "Step #{i+1}", description: "Step #{i+1} of 2", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
     [process1, process2, process3].each_with_index do |process, i|
       workflow_definition.processes << process
     
-      process.position = i*Workflow::Definition::Process::DEFAULT_INCREMENT
       process.phase_list = ::SSJ::Phase::VISIONING
       process.category_list = ::SSJ::Category::CATEGORIES[i]
       process.save!
@@ -70,20 +69,19 @@ namespace :workflows do
     workflow_definition.dependencies.create! workable: process3, prerequisite_workable: process2
     
     # Planning
-    process4 = FactoryBot.create(:workflow_definition_process, title: "Milestone C", description: "A milestone that unlocks 2 other milestones: C-X and C-Y", position: 400)
-    2.times { |i| FactoryBot.create(:workflow_definition_step, process: process4, title: "Step #{i+1}", description: "Step #{i+1} of 2", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
+    process4 = FactoryBot.create(:workflow_definition_process, title: "Milestone C", description: "A milestone that unlocks 2 other milestones: C-X and C-Y")
+    2.times { |i| FactoryBot.create(:workflow_definition_step, process: process4, title: "Step #{i+1}", description: "Step #{i+1} of 2") }
     
-    process5 = FactoryBot.create(:workflow_definition_process, title: "Milestone C-X", description: "This milestone gets unlocked after C is done.", position: 500)
+    process5 = FactoryBot.create(:workflow_definition_process, title: "Milestone C-X", description: "This milestone gets unlocked after C is done.")
     decision_step = FactoryBot.create(:workflow_definition_step, process: process5, title: "Collaborative Decision Step 1", description: "A Collaborative Decision Step with 4 options", kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, position: Workflow::Definition::Step::DEFAULT_INCREMENT)
     4.times { |i| FactoryBot.create(:workflow_decision_option, decision: decision_step, description: "Option #{i+1}") }
     
-    process6 = FactoryBot.create(:workflow_definition_process, title: "Milestone C-Y", description: "This milestone gets unlocked after C is done.", position: 600)
+    process6 = FactoryBot.create(:workflow_definition_process, title: "Milestone C-Y", description: "This milestone gets unlocked after C is done.")
     2.times { |i| FactoryBot.create(:workflow_definition_step, process: process6, title: "Step #{i+1}", description: "Step #{i+1} of 2", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
     [process4, process5, process6].each_with_index do |process, i|
       workflow_definition.processes << process
     
-      process.position = i*Workflow::Definition::Process::DEFAULT_INCREMENT
       process.phase_list = ::SSJ::Phase::PLANNING
       process.category_list = ::SSJ::Category::CATEGORIES[i+3]
       process.save!
@@ -92,19 +90,18 @@ namespace :workflows do
     workflow_definition.dependencies.create! workable: process6, prerequisite_workable: process4
     
     # Startup
-    process7 = FactoryBot.create(:workflow_definition_process, title: "Milestone D", description: "A milestone that is 1 of 2 pre-requisites for Milestone D-E-F", position: 700)
+    process7 = FactoryBot.create(:workflow_definition_process, title: "Milestone D", description: "A milestone that is 1 of 2 pre-requisites for Milestone D-E-F")
     1.times { |i| FactoryBot.create(:workflow_definition_step, process: process7, title: "Step #{i+1}", description: "A single step", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
-    process8 = FactoryBot.create(:workflow_definition_process, title: "Milestone E", description: "A milestone that is 1 of 2 pre-requisites for Milestone D-E-F", position: 800)
+    process8 = FactoryBot.create(:workflow_definition_process, title: "Milestone E", description: "A milestone that is 1 of 2 pre-requisites for Milestone D-E-F")
     1.times { |i| FactoryBot.create(:workflow_definition_step, process: process8, title: "Step #{i+1}", description: "A single step", position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
-    process9 = FactoryBot.create(:workflow_definition_process, title: "Milestone D-E-F", description: "Unlocked only when BOTH Milestone D & E are completed", position: 900)
+    process9 = FactoryBot.create(:workflow_definition_process, title: "Milestone D-E-F", description: "Unlocked only when BOTH Milestone D & E are completed")
     2.times { |i| FactoryBot.create(:workflow_definition_step, process: process9, title: "Collaborative Step #{i+1}", description: "Collaborative Step #{i+1} of 2", completion_type: Workflow::Definition::Step::ONE_PER_GROUP, position: i*Workflow::Definition::Step::DEFAULT_INCREMENT) }
     
     [process7, process8, process9].each_with_index do |process, i|
       workflow_definition.processes << process
     
-      process.position = i*Workflow::Definition::Process::DEFAULT_INCREMENT
       process.phase_list = ::SSJ::Phase::STARTUP
       process.category_list = ::SSJ::Category::CATEGORIES[i]
       process.save!
@@ -181,6 +178,22 @@ namespace :workflows do
       updated += 1
     end
     puts "Set ETL role for #{updated} people rows"
+  end
+
+  desc 'set position for selected_processes'
+  task set_position: :environment do
+    updated = 0
+    workflows = 0
+    
+    Workflow::Definition::SelectedProcess.select(:workflow_id).distinct.pluck(:workflow_id).each do |workflow_id|
+      workflows += 1
+      Workflow::Definition::SelectedProcess.where(workflow_id: workflow_id).order(:created_at).each_with_index do |sp, index|
+        sp.position = index * Workflow::Definition::SelectedProcess::DEFAULT_INCREMENT
+        sp.save!
+        updated += 1
+      end
+    end
+    puts "Set positions on #{workflows} workflows and a total of #{updated} selected_processes"
   end
 end
 

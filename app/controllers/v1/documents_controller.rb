@@ -1,4 +1,6 @@
 class V1::DocumentsController < ApiController
+  before_action :authenticate_admin!, only: [:destroy]
+
   def create
     # scope permissions of documentable...
     @decision = Advice::Decision.find_by!(external_identifier: document_params[:documentable_id])
@@ -7,9 +9,7 @@ class V1::DocumentsController < ApiController
   end
 
   def destroy
-    # scope permissions
-    # hard since it can come from multiple objects.
-    @document = Document.find_by!(external_identifier: params[:id])
+    @document = Document.find(params[:id])
     @document.destroy!
     head :ok
   end
