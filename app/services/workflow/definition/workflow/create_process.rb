@@ -2,15 +2,17 @@ module Workflow
   module Definition
     class Workflow
       # Add a process to workflow
-      class AddProcess < BaseService
-        def initialize(workflow, process)
+      class CreateProcess < BaseService
+        def initialize(workflow, process_params)
           @workflow = workflow
-          @process = process
+          @process_params = process_params
+          @process = nil
         end
       
         def run
           validate_workflow_state
-          create_association
+          create_process
+          return @process
         end
       
         def validate_workflow_state
@@ -19,8 +21,9 @@ module Workflow
           end
         end
       
-        def create_association
-          Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+        def create_process
+          @process = ::Workflow::Definition::Process.create!(@process_params)
+          ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
         end
       end
     end

@@ -23,16 +23,54 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
   end
 
+  def destroy
+    workflow = Workflow::Definition::Workflow.find(params[:id])
+    if workflow.published?
+      workflow.destroy!
+      render json: { message: 'Successfully deleted workflow'}
+    else
+      render json: { message: 'Cannot delete a published workflow'}, status: :unprocessable_entity
+    end
+  end
+
+  def create_process
+    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
+    begin
+      process = Workflow::Definition::Workflow::CreateProcess.run(workflow, process_params)
+    rescue Exception => e
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] })
+  end
+
   def add_process
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
-    if workflow&.published?
-      render json: { error: "Cannot add processes to a published workflow. Please create a new version to continue." }, status: :unprocessable_entity
-    else
-      process = Workflow::Definition::Process.create!(process_params)
-      Workflow::Definition::SelectedProcess.create(workflow_id: workflow.id, process_id: process.id)
+    process = Workflow::Definition::Process.find(params[:process_id])
 
-      render json: V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] })
+    begin
+      Workflow::Definition::Workflow::AddProcess.run(workflow, process)
+    rescue Exception => e
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
     end
+
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process.reload, { include: ['steps', 'selected_processes', 'prerequisites'] })
+  end
+
+  def remove_process
+    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
+    process = Workflow::Definition::Process.find(params[:process_id])
+
+    begin
+      Workflow::Definition::Workflow::RemoveProcess.run(workflow, process)
+    rescue Exception => e
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
+    render json: { message: "Successfull removed process" }
   end
 
   def new_version
