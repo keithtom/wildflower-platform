@@ -3,11 +3,11 @@ class V1::Workflow::Definition::StepSerializer < ApplicationSerializer
 
   attributes :title, :description, :kind, :position, :completion_type, :decision_question, :min_worktime, :max_worktime
 
-  has_many :decision_options, serializer: V1::Workflow::DecisionOptionSerializer do |step|
+  has_many :decision_options, serializer: V1::Workflow::AdminDecisionOptionSerializer do |step|
     step.decision_options
   end
 
-  has_many :documents, serializer: V1::DocumentSerializer, id_method_name: :external_identifier do |step|
+  has_many :documents, serializer: V1::AdminDocumentSerializer do |step|
     step.documents
   end
 end

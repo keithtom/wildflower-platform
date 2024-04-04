@@ -1,26 +1,30 @@
 class V1::Workflow::Definition::StepsController < ApiController
   before_action :authenticate_admin!
 
-  def index
-    steps = Workflow::Definition::Step.includes([:decision_options, :documents]).all
-    render json: V1::Workflow::Definition::StepSerializer.new(steps, serializer_options)
-  end
-
   def show
     step = Workflow::Definition::Step.find(params[:id])
     render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
   end
 
   def create
-    step = Workflow::Definition::Step.create!(step_params)
+    process = Workflow::Definition::Process.find_by!(id: params[:process_id])
+    step = Workflow::Definition::Step.create!(step_params.merge!(process_id: process.id))
     render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
   end
 
   def update
-    step = Workflow::Definition::Step.find(params[:id])
+    step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
+
+    if step&.process&.published? # if process is published, its an instantaneous change
+      begin
+        Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
+      rescue Exception => e
+        return render json: { message: e.message }, status: :bad_request
+      end
+    end
     step.update!(step_params)
-    # TODO run command that updates the instances
-    render json: V1::Workflow::Definition::StepSerializer.new(step, serializer_options)
+
+    render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)
   end
 
   def destroy

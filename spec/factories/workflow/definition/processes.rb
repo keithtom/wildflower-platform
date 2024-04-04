@@ -3,10 +3,5 @@ FactoryBot.define do
     title { Faker::Company.name }
     description { Faker::Lorem.paragraph }
 
-    position { rand(100)*Workflow::Definition::Process::DEFAULT_INCREMENT }
-    # after(:create) do |process|
-    #   w = create(:workflow_definition_workflow)
-    #   w.processes << process
-    # end
   end
 end

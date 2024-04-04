@@ -23,9 +23,10 @@ class SSJ::Initialize < BaseService
     @workflow_definition.processes.includes(:taggings, :steps).each do |process_definition|
 
       # puts "definition", process_definition.category_list, process_definition.phase_list
-      attributes = process_definition.attributes.with_indifferent_access.slice(:title, :description, :position)
+      attributes = process_definition.attributes.with_indifferent_access.slice(:title, :description)
       # puts "attributes", attributes.as_json
-      attributes.merge!(workflow: @wf_instance)
+      position = process_definition.selected_processes.where(workflow_id: @workflow_definition.id).first.position
+      attributes.merge!(workflow: @wf_instance, position: position)
       process_instance = process_definition.instances.create!(attributes)
       process_instance.category_list = process_definition.category_list
       process_instance.phase_list = process_definition.phase_list

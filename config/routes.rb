@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
     resources :documents, only: [:create, :destroy]
 
+    resources :tags, only: [:index, :create, :update, :destroy]
+
     namespace :advice do
       resources :people, :only => [] do
         get "decisions/draft", to: 'decisions#index'
@@ -74,9 +76,13 @@ Rails.application.routes.draw do
 
     namespace :workflow do
       namespace :definition do
-        resources :workflows, only: [:index, :show, :create, :update]
-        resources :processes, only: [:index, :show, :create, :update, :destroy]
-        resources :steps, only: [:index, :show, :create, :update, :destroy]
+        resources :workflows, only: [:index, :show, :create, :update] do
+          post '/add_process', to: 'workflows#add_process'
+        end
+        resources :processes, only: [:index, :show, :create, :update, :destroy] do
+          resources :steps, only: [:show, :create, :update, :destroy]
+        end
+        # resources :steps, only: [:index, :show, :create, :update, :destroy]
       end
 
       resources :workflows, only: [:show] do
