@@ -14,8 +14,16 @@ class V1::Workflow::Definition::StepsController < ApiController
 
   def update
     step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
+
+    if step&.process&.published? # if process is published, its an instantaneous change
+      begin
+        Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
+      rescue Exception => e
+        return render json: { message: e.message }, status: :bad_request
+      end
+    end
     step.update!(step_params)
-    # TODO run command that updates the instances
+
     render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)
   end
 
