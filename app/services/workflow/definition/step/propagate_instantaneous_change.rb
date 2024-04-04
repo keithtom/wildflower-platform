@@ -27,9 +27,8 @@ module Workflow
           begin
             ActionController::Parameters.new(@param_changes).permit(VALID_ATTR_CHANGES)
           rescue ActionController::UnpermittedParameters => e
-            raise StandardError.new("Attribute(s) cannot be an instantaneously changed: #{e.params.join(", ")}")
-
             ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
+            raise StandardError.new("Attribute(s) cannot be an instantaneously changed: #{e.params.join(", ")}")
           end
 
           ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
