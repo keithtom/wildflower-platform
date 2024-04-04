@@ -101,9 +101,9 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
           process.instances.create!(workflow_id: workflow.id)
         end
       
-        it 'returns a bad request response' do
+        it 'returns an unprocessable entity response' do
           delete "/v1/workflow/definition/processes/#{process.id}"
-          expect(response).to have_http_status(:bad_request)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
     end
