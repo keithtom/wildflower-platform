@@ -77,20 +77,34 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
         sign_in(admin)
       end
 
-      it 'returns a success response' do
-        delete "/v1/workflow/definition/processes/#{process.id}"
-        expect(response).to have_http_status(:success)
-      end
-
-      it 'deletes the process' do
-        expect {
+      context 'when it has not instances' do
+        it 'returns a success response' do
           delete "/v1/workflow/definition/processes/#{process.id}"
-        }.to change(Workflow::Definition::Process, :count).by(-1)
-      end
+          expect(response).to have_http_status(:success)
+        end
 
-      it 'returns a success message' do
-        delete "/v1/workflow/definition/processes/#{process.id}"
-        expect(response.body).to eq({ message: 'Process deleted successfully' }.to_json)
+        it 'deletes the process' do
+          expect {
+            delete "/v1/workflow/definition/processes/#{process.id}"
+          }.to change(Workflow::Definition::Process, :count).by(-1)
+        end
+
+        it 'returns a success message' do
+          delete "/v1/workflow/definition/processes/#{process.id}"
+          expect(response.body).to eq({ message: 'Process deleted successfully' }.to_json)
+        end
+      end
+    
+      context 'when it has instances' do
+        before do
+          workflow = create(:workflow_instance_workflow)
+          process.instances.create!(workflow_id: workflow.id)
+        end
+      
+        it 'returns a bad request response' do
+          delete "/v1/workflow/definition/processes/#{process.id}"
+          expect(response).to have_http_status(:bad_request)
+        end
       end
     end
   end
