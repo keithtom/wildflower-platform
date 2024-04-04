@@ -23,6 +23,16 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
   end
 
+  def destroy
+    workflow = Workflow::Definition::Workflow.find(params[:id])
+    if workflow.published?
+      workflow.destroy!
+      render json { message: 'Successfully deleted workflow'}
+    else
+      render json { message: 'Cannot delete a published workflow'}, status: :unprocessable_entity
+    end
+  end
+
   def create_process
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
     begin
