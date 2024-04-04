@@ -4,6 +4,7 @@ module Workflow
       class PropagateInstantaneousChange < BaseService
         VALID_ATTR_CHANGES = [
           :title, :description, :position, :completion_type, :min_worktime, :max_worktime, :decision_question, 
+          documents_attributes: [:id, :title, :link], decision_options_attributes: [:id, :description]       
         ]
 
         def initialize(step_definition, param_changes)
@@ -12,18 +13,13 @@ module Workflow
         end
       
         def run
-          scrub_param_changes
           validate_param_changes
+          update_definition
+          scrub_param_changes
           update_instances
         end
       
         private 
-        def scrub_param_changes
-          # these attributes were not copied over to the instance
-          @param_changes.delete(:documents_attributes)
-          @param_changes.delete(:decision_option_attributes)
-        end
-
         def validate_param_changes
           action_on_unpermitted_parameters = ActionController::Parameters.action_on_unpermitted_parameters
           ActionController::Parameters.action_on_unpermitted_parameters = :raise
@@ -38,6 +34,17 @@ module Workflow
 
           ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
         end
+
+        def update_definition
+          @step_definition.update!(@param_changes)
+        end
+
+        def scrub_param_changes
+          # these attributes are not copied over to the instance
+          @param_changes.delete(:documents_attributes)
+          @param_changes.delete(:decision_option_attributes)
+        end
+
       
         def update_instances
           @step_definition.instances.update_all(@param_changes)

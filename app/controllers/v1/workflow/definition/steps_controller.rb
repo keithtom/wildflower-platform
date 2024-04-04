@@ -14,12 +14,15 @@ class V1::Workflow::Definition::StepsController < ApiController
 
   def update
     step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
-    step.update!(step_params)
 
-    # if process is not published, that means it's a rollout change
-    if step&.process&.published?
-      Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
+    if step&.process&.published? # if process is published, its an instantaneous change
+      begin
+        Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
+      rescue Exception => e
+        return render json: { message: e.message }, status: :bad_request
+      end
     end
+    step.update!(step_params)
 
     render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)
   end

@@ -66,27 +66,32 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
 
       before do
         sign_in(admin)
-        put "/v1/workflow/definition/processes/#{process.id}/steps/#{step.id}", params: valid_params
       end
 
-      it 'updates the step' do
-        step.reload
-        expect(response).to have_http_status(:success)
-        expect(step.process_id).to eq(process2.id)
-        expect(step.title).to eq('Updated Step')
-        expect(step.description).to eq('This is an updated step')
-        expect(step.kind).to eq(Workflow::Definition::Step::DECISION)
-        expect(step.position).to eq(2)
-        expect(step.completion_type).to eq(Workflow::Definition::Step::ONE_PER_GROUP)
-        expect(step.decision_question).to eq('Are you sure?')
-      end
+      context 'when parent process is not published' do
+        before do
+          put "/v1/workflow/definition/processes/#{process.id}/steps/#{step.id}", params: valid_params
+        end
 
-      it 'returns the updated step as JSON' do
-        expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options).to_json
-        expect(response.body).to eq(expected_json)
+        it 'updates the step' do
+          step.reload
+          expect(response).to have_http_status(:success)
+          expect(step.process_id).to eq(process2.id)
+          expect(step.title).to eq('Updated Step')
+          expect(step.description).to eq('This is an updated step')
+          expect(step.kind).to eq(Workflow::Definition::Step::DECISION)
+          expect(step.position).to eq(2)
+          expect(step.completion_type).to eq(Workflow::Definition::Step::ONE_PER_GROUP)
+          expect(step.decision_question).to eq('Are you sure?')
+        end
+
+        it 'returns the updated step as JSON' do
+          expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options).to_json
+          expect(response.body).to eq(expected_json)
+        end
       end
     
-      context 'instantaneous change' do
+      context 'parent process is published' do
         let(:valid_params) { { step: { 
           title: 'Updated Step', description: 'This is an updated step', position: 2, 
           completion_type: Workflow::Definition::Step::ONE_PER_GROUP, decision_question: 'Are you sure?',
@@ -94,18 +99,39 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
         } } }
         let(:process) { create(:workflow_definition_process, published_at: DateTime.now)}
 
-        it 'updates the step instances' do
-          step.reload
-          expect(response).to have_http_status(:success)
-          expect(step.title).to eq('Updated Step')
-          expect(step.description).to eq('This is an updated step')
-          expect(step.position).to eq(2)
-          expect(step.completion_type).to eq(Workflow::Definition::Step::ONE_PER_GROUP)
-          expect(step.decision_question).to eq('Are you sure?')
-          expect(step.documents.last.title).to eq('basic resource')
-        
-          expect(instance_step.reload.title).to eq('Updated Step')
-          expect(instance_step.description).to eq('This is an updated step')
+        context 'with valid params' do
+          before do
+            put "/v1/workflow/definition/processes/#{process.id}/steps/#{step.id}", params: valid_params
+          end
+
+          it 'updates the step instances instantaneously' do
+            step.reload
+            expect(response).to have_http_status(:success)
+            expect(step.title).to eq('Updated Step')
+            expect(step.description).to eq('This is an updated step')
+            expect(step.position).to eq(2)
+            expect(step.completion_type).to eq(Workflow::Definition::Step::ONE_PER_GROUP)
+            expect(step.decision_question).to eq('Are you sure?')
+            expect(step.documents.last.title).to eq('basic resource')
+          
+            expect(instance_step.reload.title).to eq('Updated Step')
+            expect(instance_step.description).to eq('This is an updated step')
+          end
+        end
+
+        context 'with invalid params' do
+          let(:invalid_params) { {step: {title: 'Updated Step', kind: 'Decision'}}}
+
+          before do
+            put "/v1/workflow/definition/processes/#{process.id}/steps/#{step.id}", params: invalid_params
+          end
+
+          it 'does not update the definition or instances' do
+            expect(response).to have_http_status(400)
+            expect(JSON.parse(response.body)["message"]).to eq("Attribute(s) cannot be an instantaneously changed: kind")
+            expect(step.reload.title).to_not eq('Updated Step')
+            expect(instance_step.reload.title).to_not eq('Updated Step')
+          end
         end
       end
     end

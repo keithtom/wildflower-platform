@@ -23,6 +23,15 @@ describe Workflow::Definition::Step::PropagateInstantaneousChange do
       expect { described_class.run(step, param_changes) }.to raise_error(StandardError, "Attribute(s) cannot be an instantaneously changed: kind")
     end
 
+    it "should update definition" do
+      described_class.run(step, param_changes)
+
+      expect(step.reload.title).to eq("Updated Step")
+      expect(step.description).to eq("This is an updated step")
+      expect(step.position).to eq(2)
+      expect(step.decision_question).to eq("Are you sure?")
+      expect(step.documents.last.title).to eq("basic resource")
+    end
 
     it "should update instances" do
       step_instance = create(:workflow_instance_step, definition: step)
