@@ -86,7 +86,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
 
     new_version = Workflow::Definition::Process::NewVersion.run(process, workflow)
 
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process.reload, { include: ['steps', 'selected_processes', 'prerequisites'] })
+    render json: V1::Workflow::Definition::ProcessSerializer.new(new_version, { include: ['steps', 'selected_processes', 'prerequisites'] })
   end
 
   private

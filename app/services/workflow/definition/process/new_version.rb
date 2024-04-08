@@ -11,7 +11,8 @@ module Workflow
         def run
           create_new_version
           clone_steps
-          clone_dependencies
+          update_dependencies
+          update_selected_process
           return @new_version
         end
       
@@ -39,18 +40,25 @@ module Workflow
           
             step.decision_options.each do |decision_option|
               new_decision_option = decision_option.dup
-              new_decision_option.decision = step
+              new_decision_option.decision = new_step
               new_decision_option.save!
             end
           end
         end
       
-        def clone_dependencies
-          process.workable_dependencies.each do |dependency|
-            new_dependency = dependency.dup
-            new_dependency.workable = @new_version
+        # dependencies were already cloned when workflow definition was cloned. Update the process id here.
+        def update_dependencies
+          @process.workable_dependencies.each do |dependency|
+            dependency.workable = @new_version
             new_dependency.save!
           end
+        end
+      
+        def update_selected_process
+          selected_process = Workflow::Definition::SelectedProcess.find_by(workflow_id: @workflow.id, process_id: @process.id)
+          selected_process.process_id = @new_version.id
+          # TODO: set selected_process state to updated
+          selected_process.save!
         end
       end
     end
