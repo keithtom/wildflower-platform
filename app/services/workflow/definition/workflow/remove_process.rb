@@ -10,7 +10,7 @@ module Workflow
       
         def run
           validate_workflow_state
-          create_association
+          destroy_association
         end
       
         def validate_workflow_state
@@ -19,8 +19,8 @@ module Workflow
           end
         end
       
-        def create_association
-          selected_process = Workflow::Definition::SelectedProcess.where(workflow_id: @workflow.id, process_id: @process.id).last
+        def destroy_association
+          selected_process = Workflow::Definition::SelectedProcess.find(workflow_id: @workflow.id, process_id: @process.id)
           selected_process.destroy!
         end
       end

@@ -45,7 +45,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       process = Workflow::Definition::Workflow::CreateProcess.run(workflow, process_params)
     rescue Exception => e
-      Rails.logger.error(e.message)
+      log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -60,7 +60,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       Workflow::Definition::Workflow::AddProcess.run(workflow, process)
     rescue Exception => e
-      Rails.logger.error(e.message)
+      log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -75,7 +75,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       Workflow::Definition::Workflow::RemoveProcess.run(workflow, process)
     rescue Exception => e
-      Rails.logger.error(e.message)
+      log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -90,7 +90,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       new_version = Workflow::Definition::Process::NewVersion.run(workflow, process)
     rescue Exception => e
-      Rails.logger.error(e.message)
+      log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -115,5 +115,10 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
 
   def serializer_options
     { include: ['processes', 'processes.selected_processes'] }
+  end
+
+  def log_error(e)
+    Rails.logger.error(e.message)
+    Rails.logger.error(e.backtrace.join("\n"))
   end
 end

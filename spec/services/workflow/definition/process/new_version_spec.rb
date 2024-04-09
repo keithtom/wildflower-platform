@@ -4,7 +4,7 @@ RSpec.describe Workflow::Definition::Process::NewVersion, type: :service do
   let(:workflow) { create(:workflow_definition_workflow) }
   let(:process) { create(:workflow_definition_process, version: "v1") }
   let(:new_version_service) { described_class.new(workflow, process) }
-  let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id)}
+  let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id, state: 'replicated')}
   let!(:step_with_document) { create(:workflow_definition_step, process: process)}
   let!(:step_with_decision) { create(:workflow_definition_step_decision, process: process)}
   let!(:dependency) { Workflow::Definition::Dependency.create!(workflow_id: workflow.id, workable_type: Workflow::Definition::Process, workable_id: process.id, 

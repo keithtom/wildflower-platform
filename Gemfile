@@ -37,6 +37,7 @@ gem "will_paginate", "~> 3.3.0"
 
 # models
 gem 'acts-as-taggable-on'
+gem 'aasm'
 
 # highlight.io
 gem 'highlight_io'

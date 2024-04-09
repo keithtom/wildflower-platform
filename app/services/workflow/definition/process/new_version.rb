@@ -66,7 +66,7 @@ module Workflow
         def update_selected_process
           selected_process = ::Workflow::Definition::SelectedProcess.find_by!(workflow_id: @workflow.id, process_id: @process.id)
           selected_process.process_id = @new_version.id
-          # TODO: set selected_process state to updated
+          selected_process.upgrade!
           selected_process.save!
         end
       end

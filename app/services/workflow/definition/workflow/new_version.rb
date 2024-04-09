@@ -29,7 +29,7 @@ module Workflow
             new_sp = sp.dup
             new_sp.workflow_id = @new_version.id
             new_sp.previous_version_id = sp.id
-            # TODO: set new_sp's status to cloned
+            new_sp.replicate!
             new_sp.save!
           end
         end

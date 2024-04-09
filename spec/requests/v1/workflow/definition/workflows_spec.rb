@@ -249,7 +249,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
   describe "POST #new_process_version" do
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:process) { create(:workflow_definition_process, version: "v1") }
-    let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id)}
+    let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id, state: "replicated")}
     let(:admin) { create(:user, :admin) }
 
     before do
@@ -259,8 +259,8 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     it "creates a new version of the process" do
       post "/v1/workflow/definition/workflows/#{workflow.id}/new_version/#{process.id}"
 
-      expect(response).to have_http_status(:success)
       new_version = JSON.parse(response.body)
+      expect(response).to have_http_status(:success)
 
       expect(selected_process.reload.process_id).to_not eq(process.id)
       expect(selected_process.process_id.to_s).to eq(new_version["data"]["id"])
