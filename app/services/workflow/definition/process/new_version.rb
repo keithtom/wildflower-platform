@@ -9,6 +9,7 @@ module Workflow
         end
       
         def run
+          validate
           create_new_version
           clone_steps
           update_dependencies
@@ -17,6 +18,12 @@ module Workflow
         end
       
         private
+
+        def validate
+          if @process.version.nil?
+            raise Error.new("process must have a version")
+          end
+        end
 
         def create_new_version
           @new_version = @process.dup
