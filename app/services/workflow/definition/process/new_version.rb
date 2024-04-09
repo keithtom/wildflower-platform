@@ -2,9 +2,9 @@ module Workflow
   module Definition
     class Process
       class NewVersion < BaseService
-        def initialize(process, workflow)
-          @process = process
+        def initialize(workflow, process)
           @workflow = workflow
+          @process = process
           @new_version = nil
         end
       
@@ -33,15 +33,17 @@ module Workflow
             new_step.save!
           
             step.documents.each do |document|
-              new_document = document.dup
-              new_document.documentable = new_step
-              new_document.save!
+              # documents have external identifier, cannot use dup to clone
+              attributes = document.attributes.with_indifferent_access.slice(:documentable_type, :inheritance_type, :title, :link)
+              attributes.merge!(documentable_id: new_step.id)
+              new_document = Document.create!(attributes)
             end
           
             step.decision_options.each do |decision_option|
-              new_decision_option = decision_option.dup
-              new_decision_option.decision = new_step
-              new_decision_option.save!
+              # decision options have external identifier, cannot use dup to clone
+              attributes = decision_option.attributes.with_indifferent_access.slice(:description)
+              attributes.merge!(decision_id: new_step.id)
+              new_decision_option = ::Workflow::DecisionOption.create!(attributes)
             end
           end
         end
@@ -50,12 +52,12 @@ module Workflow
         def update_dependencies
           @process.workable_dependencies.each do |dependency|
             dependency.workable = @new_version
-            new_dependency.save!
+            dependency.save!
           end
         end
       
         def update_selected_process
-          selected_process = Workflow::Definition::SelectedProcess.find_by(workflow_id: @workflow.id, process_id: @process.id)
+          selected_process = ::Workflow::Definition::SelectedProcess.find_by!(workflow_id: @workflow.id, process_id: @process.id)
           selected_process.process_id = @new_version.id
           # TODO: set selected_process state to updated
           selected_process.save!

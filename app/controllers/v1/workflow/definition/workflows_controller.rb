@@ -84,7 +84,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
     process = Workflow::Definition::Process.find(params[:process_id])
 
-    new_version = Workflow::Definition::Process::NewVersion.run(process, workflow)
+    new_version = Workflow::Definition::Process::NewVersion.run(workflow, process)
 
     render json: V1::Workflow::Definition::ProcessSerializer.new(new_version, { include: ['steps', 'selected_processes', 'prerequisites'] })
   end
