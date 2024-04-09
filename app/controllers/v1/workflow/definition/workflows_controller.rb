@@ -45,6 +45,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       process = Workflow::Definition::Workflow::CreateProcess.run(workflow, process_params)
     rescue Exception => e
+      Rails.logger.error(e.message)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -59,6 +60,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       Workflow::Definition::Workflow::AddProcess.run(workflow, process)
     rescue Exception => e
+      Rails.logger.error(e.message)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -73,6 +75,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       Workflow::Definition::Workflow::RemoveProcess.run(workflow, process)
     rescue Exception => e
+      Rails.logger.error(e.message)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -84,7 +87,13 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
     process = Workflow::Definition::Process.find(params[:process_id])
 
-    new_version = Workflow::Definition::Process::NewVersion.run(workflow, process)
+    begin
+      new_version = Workflow::Definition::Process::NewVersion.run(workflow, process)
+    rescue Exception => e
+      Rails.logger.error(e.message)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
 
     render json: V1::Workflow::Definition::ProcessSerializer.new(new_version, { include: ['steps', 'selected_processes', 'prerequisites'] })
   end
