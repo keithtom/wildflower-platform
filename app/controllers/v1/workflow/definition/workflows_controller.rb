@@ -33,11 +33,19 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     end
   end
 
+  def new_version
+    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
+    new_version = Workflow::Definition::Workflow::NewVersion.run(workflow)
+
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+  end
+
   def create_process
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
     begin
       process = Workflow::Definition::Workflow::CreateProcess.run(workflow, process_params)
     rescue Exception => e
+      Rails.logger.error(e.message)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -52,6 +60,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       Workflow::Definition::Workflow::AddProcess.run(workflow, process)
     rescue Exception => e
+      Rails.logger.error(e.message)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -66,6 +75,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     begin
       Workflow::Definition::Workflow::RemoveProcess.run(workflow, process)
     rescue Exception => e
+      Rails.logger.error(e.message)
       render json: { error: e.message }, status: :unprocessable_entity
       return
     end
@@ -73,11 +83,19 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     render json: { message: "Successfull removed process" }
   end
 
-  def new_version
+  def new_process_version
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
-    new_version = Workflow::Definition::Workflow::NewVersion.run(workflow)
+    process = Workflow::Definition::Process.find(params[:process_id])
 
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    begin
+      new_version = Workflow::Definition::Process::NewVersion.run(workflow, process)
+    rescue Exception => e
+      Rails.logger.error(e.message)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
+    render json: V1::Workflow::Definition::ProcessSerializer.new(new_version, { include: ['steps', 'selected_processes', 'prerequisites'] })
   end
 
   private

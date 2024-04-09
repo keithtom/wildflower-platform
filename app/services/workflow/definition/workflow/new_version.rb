@@ -10,6 +10,7 @@ module Workflow
         def run
           create_new_version
           clone_selected_processes
+          clone_dependencies
           return @new_version
         end
       
@@ -28,7 +29,16 @@ module Workflow
             new_sp = sp.dup
             new_sp.workflow_id = @new_version.id
             new_sp.previous_version_id = sp.id
+            # TODO: set new_sp's status to cloned
             new_sp.save!
+          end
+        end
+      
+        def clone_dependencies
+          @workflow.dependencies.each do |dependency|
+            new_dependency = dependency.dup
+            new_dependency.workflow_id = @new_version.id
+            new_dependency.save!
           end
         end
       end

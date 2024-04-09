@@ -3,11 +3,15 @@ require 'rails_helper'
 RSpec.describe Workflow::Definition::Workflow::NewVersion, type: :service do
   let(:workflow) { create(:workflow_definition_workflow, version: "v1") }
   let(:new_version_service) { described_class.new(workflow) }
+  let(:prerequisite) { create(:workflow_definition_process) }
+  let(:workable_process) { create(:workflow_definition_process) }
 
   before do
     3.times do
       Workflow::Definition::SelectedProcess.create(workflow_id: workflow.id, process_id: create(:workflow_definition_process).id)
     end
+  
+    Workflow::Definition::Dependency.create!(workflow: workflow, workable: workable_process, prerequisite_workable:prerequisite)
   end
 
   describe "#run" do
@@ -17,6 +21,10 @@ RSpec.describe Workflow::Definition::Workflow::NewVersion, type: :service do
 
     it "creates new selected processes" do
       expect { new_version_service.run }.to change { Workflow::Definition::SelectedProcess.count }.by(workflow.selected_processes.count)
+    end
+
+    it "creates new dependencies" do
+      expect { new_version_service.run }.to change { Workflow::Definition::Dependency.count }.by(workflow.dependencies.count)
     end
 
     it "clones the attributes for the previous version" do
