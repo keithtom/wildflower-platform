@@ -20,7 +20,8 @@ module Workflow
         end
       
         def create_association
-          Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+          sp = Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+          sp.add!
         end
       end
     end

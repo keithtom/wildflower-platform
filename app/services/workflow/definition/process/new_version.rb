@@ -23,6 +23,10 @@ module Workflow
           if @process.version.nil?
             raise Error.new("process must have a version")
           end
+         
+          if @workflow.published?
+            raise Error.new("workflow cannot be published")
+          end
         end
 
         def create_new_version

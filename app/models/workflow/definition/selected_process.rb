@@ -27,6 +27,9 @@ module Workflow
       end
     
       event :revert do
+        before do
+          revert_to_previous_version
+        end
         transitions from: [:removed, :upgraded], to: :replicated
       end
     
@@ -39,6 +42,8 @@ module Workflow
       end
     end
 
+    private
+
     def set_position
       if self.position.nil?
         self.position = self.workflow.selected_processes.order(:position).last.try(:position).to_i + ::Workflow::Definition::SelectedProcess::DEFAULT_INCREMENT
@@ -49,6 +54,14 @@ module Workflow
       unless initialized? || added?
         raise StandardError.new("Cannot delete in current state: #{state}")
       end
+    end
+  
+    def revert_to_previous_version
+      if upgraded?
+        process.destroy!
+      end
+
+      self.process = previous_version.process
     end
   end
 end

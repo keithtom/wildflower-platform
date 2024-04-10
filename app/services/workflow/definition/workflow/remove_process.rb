@@ -21,8 +21,20 @@ module Workflow
       
         def destroy_association
           selected_process = Workflow::Definition::SelectedProcess.find(workflow_id: @workflow.id, process_id: @process.id)
-          selected_process.destroy!
+          if selected_process.added?
+            selected_process.destroy!
+          elsif selected_process.replicated?
+            selected_process.remove!
+          elsif selected_process.upgraded?
+            selected_process.revert!
+            selected_process.remove!
+          else
+            raise RemoveProcessError.new("selected process is in an invalid state to be removed")
+          end
         end
+      end
+    
+      class RemoveProcessError < StandardError
       end
     end
   end
