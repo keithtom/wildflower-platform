@@ -17,14 +17,18 @@ module Workflow
       
         def validate_workflow_state
           if @workflow.published?
-            raise StandardError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
+            raise CreateProcessError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
           end
         end
       
         def create_process
           @process = ::Workflow::Definition::Process.create!(@process_params)
-          ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+          sp = ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+          sp.add!
         end
+      end
+    
+      class CreateProcessError < StandardError
       end
     end
   end
