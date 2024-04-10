@@ -138,6 +138,14 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
         expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow.reload, { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
+    
+      context "workflow is published" do
+        let!(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
+
+        it "fails" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
     end
 
     context 'when not authenticated as admin' do

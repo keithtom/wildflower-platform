@@ -18,9 +18,12 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
 
   def update
     workflow = Workflow::Definition::Workflow.find(params[:id])
-    workflow.update!(workflow_params)
-    # TODO run command that updates the instances
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    if workflow.published?
+      render json: { message: 'Cannot update a published workflow'}, status: :unprocessable_entity
+    else
+      workflow.update!(workflow_params)
+      render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    end
   end
 
   def destroy
