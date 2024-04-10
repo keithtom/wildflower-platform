@@ -1,6 +1,7 @@
 module Workflow
   # join table for workflow and process
   class Definition::SelectedProcess < ApplicationRecord
+    include AASM
     audited
     DEFAULT_INCREMENT = 1000
 
@@ -11,11 +12,56 @@ module Workflow
     has_one :next_version, class_name: 'Workflow::Definition::SelectedProcess', foreign_key: 'previous_version_id'
 
     before_create :set_position
+    before_destroy :validate_destroyable
+
+    aasm column: :state do
+      state :initialized, initial: true 
+      state :replicated, :removed, :upgraded, :added
+    
+      event :replicate do
+        transitions from: :initialized, to: :replicated
+      end
+    
+      event :remove do
+        transitions from: :replicated, to: :removed
+      end
+    
+      event :revert do
+        before do
+          revert_to_previous_version
+        end
+        transitions from: [:removed, :upgraded], to: :replicated
+      end
+    
+      event :upgrade do
+        transitions from: :replicated, to: :upgraded
+      end
+    
+      event :add do
+        transitions from: :initialized, to: :added
+      end
+    end
+
+    private
 
     def set_position
       if self.position.nil?
         self.position = self.workflow.selected_processes.order(:position).last.try(:position).to_i + ::Workflow::Definition::SelectedProcess::DEFAULT_INCREMENT
       end
+    end
+  
+    def validate_destroyable
+      unless initialized? || added?
+        raise StandardError.new("Cannot delete in current state: #{state}")
+      end
+    end
+  
+    def revert_to_previous_version
+      if upgraded?
+        process.destroy!
+      end
+
+      self.process = previous_version.process
     end
   end
 end

@@ -138,6 +138,14 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
         expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow.reload, { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
+    
+      context "workflow is published" do
+        let!(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
+
+        it "fails" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
     end
 
     context 'when not authenticated as admin' do
@@ -157,6 +165,33 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
         expect(workflow.version).not_to eq('2.0')
         expect(workflow.name).not_to eq('Updated Workflow')
         expect(workflow.description).not_to eq('This is an updated workflow')
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let(:admin) { create(:user, :admin) }
+    let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
+
+    before do
+      sign_in(admin)
+    end
+
+    context "published workflow" do
+      let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
+
+      it "request is unprocessable" do
+        delete "/v1/workflow/definition/workflows/#{workflow.id}"
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  
+    context "workflow in draft mode" do
+      let(:workflow) { create(:workflow_definition_workflow) }
+
+      it "succeeds" do
+        delete "/v1/workflow/definition/workflows/#{workflow.id}"
+        expect(response).to have_http_status(:success)
       end
     end
   end
@@ -249,7 +284,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
   describe "POST #new_process_version" do
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:process) { create(:workflow_definition_process, version: "v1") }
-    let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id)}
+    let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id, state: "replicated")}
     let(:admin) { create(:user, :admin) }
 
     before do
@@ -259,8 +294,8 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     it "creates a new version of the process" do
       post "/v1/workflow/definition/workflows/#{workflow.id}/new_version/#{process.id}"
 
-      expect(response).to have_http_status(:success)
       new_version = JSON.parse(response.body)
+      expect(response).to have_http_status(:success)
 
       expect(selected_process.reload.process_id).to_not eq(process.id)
       expect(selected_process.process_id.to_s).to eq(new_version["data"]["id"])
