@@ -161,6 +161,33 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let(:admin) { create(:user, :admin) }
+    let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
+
+    before do
+      sign_in(admin)
+    end
+
+    context "published workflow" do
+      let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
+
+      it "request is unprocessable" do
+        delete "/v1/workflow/definition/workflows/#{workflow.id}"
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  
+    context "workflow in draft mode" do
+      let(:workflow) { create(:workflow_definition_workflow) }
+
+      it "succeeds" do
+        delete "/v1/workflow/definition/workflows/#{workflow.id}"
+        expect(response).to have_http_status(:success)
+      end
+    end
+  end
+
   describe 'POST #add_process' do
     let(:admin) { create(:user, :admin) }
     let(:workflow) { create(:workflow_definition_workflow) }
