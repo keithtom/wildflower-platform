@@ -13,16 +13,21 @@ module Workflow
           create_association
         end
       
+        private
+
         def validate_workflow_state
           if @workflow.published?
-            raise StandardError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
+            raise AddProcessError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
           end
         end
       
         def create_association
-          sp = Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+          sp = ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
           sp.add!
+          return sp
         end
+      end
+      class AddProcessError < StandardError
       end
     end
   end
