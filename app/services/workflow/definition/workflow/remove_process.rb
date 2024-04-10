@@ -6,28 +6,38 @@ module Workflow
         def initialize(workflow, process)
           @workflow = workflow
           @process = process
+          @selected_process = ::Workflow::Definition::SelectedProcess.find_by(workflow_id: @workflow.id, process_id: @process.id)
         end
       
         def run
           validate_workflow_state
-          destroy_association
-        end
-      
-        def validate_workflow_state
-          if @workflow.published?
-            raise StandardError.new('Cannot remove processes from a published workflow. Please create a new version to continue.')
+          if validate_selected_process_state
+            destroy_association
           end
         end
       
+        private
+
+        def validate_workflow_state
+          if @workflow.published?
+            raise RemoveProcessError.new('Cannot remove processes from a published workflow. Please create a new version to continue.')
+          end
+        end
+      
+        def validate_selected_process_state
+          !@selected_process.removed?
+        end
+      
         def destroy_association
-          selected_process = Workflow::Definition::SelectedProcess.find(workflow_id: @workflow.id, process_id: @process.id)
-          if selected_process.added?
-            selected_process.destroy!
-          elsif selected_process.replicated?
-            selected_process.remove!
-          elsif selected_process.upgraded?
-            selected_process.revert!
-            selected_process.remove!
+          if @selected_process.added?
+            # this process was created for the rollout originally. Can be entirely removed now.
+            @selected_process.process.destroy!
+            @selected_process.destroy!
+          elsif @selected_process.replicated?
+            @selected_process.remove!
+          elsif @selected_process.upgraded?
+            @selected_process.revert!
+            @selected_process.remove!
           else
             raise RemoveProcessError.new("selected process is in an invalid state to be removed")
           end
