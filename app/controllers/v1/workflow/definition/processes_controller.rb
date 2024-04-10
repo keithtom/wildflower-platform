@@ -34,8 +34,12 @@ class V1::Workflow::Definition::ProcessesController < ApiController
 
   def destroy 
     process = Workflow::Definition::Process.find(params[:id])
-    process.destroy!
-    render json: { message: 'Process deleted successfully' }
+    if process.instances.empty?
+      process.destroy!
+      render json: { message: 'Process deleted successfully' }
+    else
+      render json: { message: 'Cannot delete process because it has instances' }, status: :unprocessable_entity
+    end
   end
 
   private
