@@ -30,8 +30,11 @@ module Workflow
       
         def destroy_association
           if @selected_process.added?
-            # this process was created for the rollout originally. Can be entirely removed now.
-            @selected_process.process.destroy!
+            process = @selected_process.process
+            unless process.published? || process.instances.count > 0
+              # this process was created for the rollout originally. Can be entirely removed now.
+              process.destroy!
+            end
             @selected_process.destroy!
           elsif @selected_process.replicated?
             @selected_process.remove!

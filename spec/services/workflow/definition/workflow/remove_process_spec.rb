@@ -30,6 +30,13 @@ RSpec.describe Workflow::Definition::Workflow::RemoveProcess do
       it "deletes the process and selected process" do
         expect { subject.run }.to change { Workflow::Definition::SelectedProcess.count }.by(-1).and change { Workflow::Definition::Process.count }.by(-1)
       end
+    
+      context "process was published" do
+        let(:process) { create(:workflow_definition_process, published_at: DateTime.now)}
+        it "only deletes the selected process" do
+          expect { subject.run }.to change { Workflow::Definition::SelectedProcess.count }.by(-1).and change { Workflow::Definition::Process.count }.by(0)
+        end
+      end
     end
 
 
