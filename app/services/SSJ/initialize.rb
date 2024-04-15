@@ -27,18 +27,10 @@ class SSJ::Initialize < BaseService
 
   def create_dependency_instances
     @workflow_definition.dependencies.includes(:workable, :prerequisite_workable).each do |dependency_definition|
-      # this code assumes all workables are processes
       process_id = dependency_definition.workable.id
-      prerequisite_process_id = dependency_definition.prerequisite_workable.id
-      
       instance_workable = @wf_instance.processes.where(definition_id: process_id).first
-      instance_prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_process_id).first
 
-      dependency_definition.instances.create!(
-        workflow: @wf_instance,
-        workable: instance_workable,
-        prerequisite_workable: instance_prerequisite_workable
-      )
+      Workflow::Instance::Dependency::Create.run(dependency_definition, @wf_instance, instance_workable)
     end
   end
 
