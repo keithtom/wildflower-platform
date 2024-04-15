@@ -19,6 +19,7 @@ class V1::Workflow::Definition::StepsController < ApiController
       begin
         Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
       rescue Exception => e
+        log_error(e)
         return render json: { message: e.message }, status: :bad_request
       end
     end
