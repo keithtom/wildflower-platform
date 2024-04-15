@@ -46,7 +46,9 @@ module Workflow
 
       
         def update_instances
-          @step_definition.instances.update_all(@param_changes)
+          unless @param_changes.empty?
+            @step_definition.instances.update_all(@param_changes)
+          end
         end
       end
     end
