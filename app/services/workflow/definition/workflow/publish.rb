@@ -15,9 +15,7 @@ module Workflow
       
         def run
           validate_workflow
-          set_rollout_started_at
-          create_summary_statistics
-          create_tracking statistics
+          set_tracking_stats
           rollout_adds
           rollout_removes
           rollout_upgrades

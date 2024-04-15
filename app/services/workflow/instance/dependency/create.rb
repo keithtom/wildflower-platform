@@ -19,7 +19,7 @@ module Workflow
         end
       
         def find_prerequisite_workable
-          prerequisite_process_id = @dependency_definition.prerequisite_workable.id
+          prerequisite_process_id = @dependency_definition.prerequisite_workable_id
           @prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_process_id).first
         end
       
