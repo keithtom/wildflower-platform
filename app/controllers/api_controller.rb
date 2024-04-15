@@ -35,4 +35,9 @@ class ApiController < ActionController::API
       render json: { message: "Unauthorized" }, status: :unauthorized
     end
   end
+  
+  def log_error(e)
+    Rails.logger.error(e.message)
+    Rails.logger.error(e.backtrace.join("\n"))
+  end
 end

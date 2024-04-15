@@ -9,6 +9,10 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
     process.phase_list.first
   end
 
+  attribute :published do |process|
+    process.published?
+  end
+
   has_many :steps, serializer: V1::Workflow::Definition::StepSerializer do |process|
     process.steps.by_position
   end

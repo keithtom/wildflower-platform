@@ -41,12 +41,14 @@ module Workflow
         def scrub_param_changes
           # these attributes are not copied over to the instance
           @param_changes.delete(:documents_attributes)
-          @param_changes.delete(:decision_option_attributes)
+          @param_changes.delete(:decision_options_attributes)
         end
 
       
         def update_instances
-          @step_definition.instances.update_all(@param_changes)
+          unless @param_changes.empty?
+            @step_definition.instances.update_all(@param_changes)
+          end
         end
       end
     end
