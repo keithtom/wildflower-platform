@@ -20,13 +20,11 @@ module Workflow
           rollout_removes
           rollout_upgrades
           finish_publish_stats
-          # create_dependency_instances
-          # update_process_dependencies
+
+           # background process
+           # database transactions
           
-          # TODO:
-          # 1. check that process compltion_status is actually set correctly
-          # 2. create dependency instances
-          # 3. update process dependencies
+          return @process_stats
         end
       
         private
@@ -47,11 +45,15 @@ module Workflow
           @workflow.selected_processes.where(state: "added").each do |sp|
             @workflow.instances.each do |workflow_instance|
               previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
-              if previous_process_by_position.completion_status !== "finished"
+              if previous_process_by_position.finished?
                 process_instance = Workflow::Instance::Process::Create.run(sp.process, workflow_instance)
                 sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
                   Workflow::Instance::Dependency::Create.run(dependency_definition, workflow_instance, process_instance)
                 end
+                if process_instance.prerequisites.empty?
+                  process.prerequisites_met!
+                end
+                @process_stats[:added] += 1
               else
                 Rails.logger.info("Previous process #{previous_process_by_position.id} has been started. Therefore, the new process definition #{sp.process_id} will not be added to this rollout")
               end
@@ -65,9 +67,10 @@ module Workflow
               where(workflow: { definition_id: @workflow.id }).
               where(definition_id: sp.process_id).each do |process_instance|
               
-              if process_instance.completion_status == "unstarted"
+              if process_instance.unstarted?
                 process_instance.destroy!
                 # TODO: delete its dependencies as well
+                @process_stats[:removed] += 1
               else
                 Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be removed in this rollout")
               end
@@ -81,7 +84,7 @@ module Workflow
               where(workflow: { definition_id: @workflow.id }).
               where(definition_id: sp.process_id).each do |process_instance|
               
-              if process_instance.completion_status == "unstarted"
+              if process_instance.unstarted?
                 workflow_instance = process_instance.workflow
                 process_instance.destroy!
                 # TODO: delete its dependencies as well
@@ -89,6 +92,10 @@ module Workflow
                 sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
                   Workflow::Instance::Dependency::Create.run(dependency_definition, workflow_instance, process_instance)
                 end
+                if process_instance.prerequisites.empty?
+                  process.prerequisites_met!
+                end
+                @process_stats[:upgraded] += 1
               else
                 Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be replaced/upgraded in this rollout")
               end
