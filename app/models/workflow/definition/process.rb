@@ -21,9 +21,20 @@ module Workflow
 
     belongs_to :previous_version, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_version_id', optional: true
     has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
+
+    before_destroy :validate_destroyable
   
     def published?
       !published_at.nil?
+    end
+    
+    private
+  
+    def validate_destroyable
+      if instances.count > 0
+        errors.add(:base, "Cannot destroy process with existing instances")
+        throw(:abort)
+      end
     end
   end
 end
