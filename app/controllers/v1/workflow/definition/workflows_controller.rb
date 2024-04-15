@@ -119,9 +119,4 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   def serializer_options
     { include: ['processes', 'processes.selected_processes'] }
   end
-
-  def log_error(e)
-    Rails.logger.error(e.message)
-    Rails.logger.error(e.backtrace.join("\n"))
-  end
 end
