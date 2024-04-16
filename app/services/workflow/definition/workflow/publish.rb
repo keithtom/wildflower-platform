@@ -45,8 +45,6 @@ module Workflow
           end
         end
 
-        private
-        
         def set_tracking_stats
           @workflow.rollout_started_at = DateTime.now
           @workflow.save!
