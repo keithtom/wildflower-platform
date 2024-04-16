@@ -43,13 +43,13 @@ describe Workflow::Definition::Process::PropagateInstantaneousChange do
       let(:param_changes) { 
         {"selected_processes_attributes"=>[{"workflow_id"=> workflow.id, "position"=>301600}] }
       }
-      let(:workflow_instance) { create(:workflow_instance_workflow, definition: definition)}
-      let(:process_instance) { create(:workflow_instance_process, definition: process, position: 1000, workflow: workflow) }
+      let!(:workflow_instance) { create(:workflow_instance_workflow, definition: workflow)}
+      let!(:process_instance) { create(:workflow_instance_process, definition: process, position: 1000, workflow: workflow_instance) }
 
       it "should update instances" do
         described_class.run(process, param_changes)
     
-        expect(process_instance.position).to eq(301600)
+        expect(process_instance.reload.position).to eq(301600)
       end
     end
   end
