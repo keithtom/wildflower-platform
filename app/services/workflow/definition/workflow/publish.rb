@@ -13,7 +13,7 @@ module Workflow
         end
       
         def run
-          validate_workflow
+          validate
           set_tracking_stats
           @workflow.instances.each do |workflow_instance|
             begin
@@ -35,9 +35,7 @@ module Workflow
           return @process_stats
         end
       
-        private
-        
-        def validate_workflow
+        def validate
           if @workflow.published?
             raise PublishError.new("workflow id #{@workflow.id} is already published")
           end
@@ -47,6 +45,8 @@ module Workflow
           end
         end
 
+        private
+        
         def set_tracking_stats
           @workflow.rollout_started_at = DateTime.now
           @workflow.save!
@@ -115,6 +115,8 @@ module Workflow
           @workflow.published_at = DateTime.now
           @workflow.rollout_completed_at = DateTime.now
           @workflow.save!
+          
+          Rails.logger.info("Finished rollout of workflow definition id #{@workflow.id}: #{@process_stats.inspect}")
         end
       end
     
