@@ -57,7 +57,9 @@ module Workflow
         end
       
         def update_instances
-          @process_definition.instances.update_all(@param_changes)
+          unless @param_changes.empty?
+            @process_definition.instances.update_all(@param_changes)
+          end
 
           if @workflow_id
             workflow_instance_ids = ::Workflow::Instance::Workflow.where(definition_id: @workflow_id).pluck(:id)
