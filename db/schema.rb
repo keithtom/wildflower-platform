@@ -617,6 +617,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
     t.string "current_phase", default: "visioning"
+    t.string "version"
     t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end

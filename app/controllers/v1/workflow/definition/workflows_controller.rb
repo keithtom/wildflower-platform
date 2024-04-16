@@ -45,16 +45,8 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   end
 
   def publish
-    workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
-    begin
-      Workflow::Definition::Workflow::Publish.run(workflow)
-    rescue Exception => e
-      log_error(e)
-      render json: { error: e.message }, status: :unprocessable_entity
-      return
-    end
-
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    PublishWorkflowJob.perform_later(params[:workflow_id])
+    render json: { message: "Rollout in progress" }, status: :success
   end
 
   def create_process
