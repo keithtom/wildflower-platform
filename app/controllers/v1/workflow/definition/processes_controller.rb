@@ -23,6 +23,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
       begin
         Workflow::Definition::Process::PropagateInstantaneousChange.run(process, process_params)
       rescue Exception => e
+        log_error(e)
         return render json: { message: e.message }, status: :bad_request
       end
     else 
