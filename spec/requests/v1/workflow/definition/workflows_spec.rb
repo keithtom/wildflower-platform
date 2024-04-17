@@ -206,6 +206,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
           version: '1.0', 
           title: 'Test Workflow', 
           description: 'This is a test process', 
+          selected_processes_attributes: [{workflow_id: workflow.id, position: 200}],
           steps_attributes: [
             { 
               title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
