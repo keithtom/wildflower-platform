@@ -32,6 +32,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       render json: { message: 'Cannot delete a published workflow'}, status: :unprocessable_entity
     else
       workflow.destroy!
+      # TODO: need to destroy the processes, steps workflow dependencies and selected processes
       render json: { message: 'Successfully deleted workflow'}
     end
   end
