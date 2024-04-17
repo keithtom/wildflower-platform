@@ -84,7 +84,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       return
     end
 
-    render json: { message: "Successfull removed process" }
+    render json: { message: "Successfully removed process" }
   end
 
   def new_process_version

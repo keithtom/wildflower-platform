@@ -80,7 +80,7 @@ Rails.application.routes.draw do
           post '/add_process', to: 'workflows#create_process'
           post '/new_version', to: 'workflows#new_version'
           put '/add_process/:process_id', to: 'workflows#add_process'
-          put '/remove_process/:process_id', to: 'workflows#add_process'
+          put '/remove_process/:process_id', to: 'workflows#remove_process'
           post '/new_version/:process_id', to: 'workflows#new_process_version'
         end
         resources :processes, only: [:index, :show, :create, :update, :destroy] do
