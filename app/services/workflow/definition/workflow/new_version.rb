@@ -29,8 +29,8 @@ module Workflow
             new_sp = sp.dup
             new_sp.workflow_id = @new_version.id
             new_sp.previous_version_id = sp.id
+            new_sp.state = "replicated"
             new_sp.save!
-            new_sp.replicate!
           end
         end
       
