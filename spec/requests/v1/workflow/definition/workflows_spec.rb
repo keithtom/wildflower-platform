@@ -303,4 +303,48 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
 
     end
   end
+
+  describe 'POST #publish' do
+    let(:workflow) { create(:workflow_definition_workflow) }
+    let(:admin) { create(:user, :admin) }
+
+    before do
+      sign_in(admin)
+    end
+    
+    context 'when the workflow is valid' do
+      before do
+        allow(Workflow::Definition::Workflow::Publish).to receive(:new).and_return(double(validate: true))
+        allow(PublishWorkflowJob).to receive(:perform_later)
+        put "/v1/workflow/definition/workflows/#{workflow.id}/publish"
+      end
+      
+      it 'returns a success status' do
+        expect(response).to have_http_status(:success)
+      end
+      
+      it 'returns a success message' do
+        expect(JSON.parse(response.body)['message']).to eq('Rollout in progress')
+      end
+      
+      it 'enqueues the PublishWorkflowJob' do
+        expect(PublishWorkflowJob).to have_received(:perform_later).with(workflow.id.to_s)
+      end
+    end
+    
+    context 'when the workflow is invalid' do
+      before do
+        allow(Workflow::Definition::Workflow::Publish).to receive(:new).and_raise(StandardError.new('Validation failed'))
+        put "/v1/workflow/definition/workflows/#{workflow.id}/publish"
+      end
+      
+      it 'returns an unprocessable entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+      
+      it 'returns an error message' do
+        expect(JSON.parse(response.body)['error']).to eq('Validation failed')
+      end
+    end
+  end
 end
