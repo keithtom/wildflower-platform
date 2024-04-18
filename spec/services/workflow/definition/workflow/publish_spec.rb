@@ -98,6 +98,17 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
         expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
         expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(1)
       end
+
+      context 'when the new process has a prerequisite' do
+        let!(:process_instance_prerequisite) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 50, completion_status: 'unstarted')}
+        let!(:workable_dependency) { create(:workflow_definition_dependency, workflow: workflow, workable: process_definition, prerequisite_workable: process_instance_prerequisite.definition)}
+
+        it 'adds a new process and workable dependency to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.dependencies.count}.by(1)
+          process_instance = process_definition.instances.last
+          expect(process_instance.prerequisites_met?).to be_falsey
+        end
+      end
     end
 
     context "if the process instance is started" do
