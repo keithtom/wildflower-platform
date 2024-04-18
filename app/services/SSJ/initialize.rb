@@ -21,7 +21,7 @@ class SSJ::Initialize < BaseService
 
   def create_process_and_step_instances
     @workflow_definition.processes.includes(:taggings, :steps).each do |process_definition|
-      Workflow::Instance::Process::Create.run(process_definition, @wf_instance)
+      Workflow::Instance::Process::Create.run(process_definition, @workflow_definition, @wf_instance)
     end
   end
 

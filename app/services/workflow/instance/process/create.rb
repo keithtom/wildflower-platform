@@ -2,8 +2,9 @@ module Workflow
   module Instance
     class Process
       class Create < BaseService
-        def initialize(process_definition, wf_instance)
+        def initialize(process_definition, workflow_definition, wf_instance)
           @process_definition = process_definition
+          @workflow_definition = workflow_definition
           @wf_instance = wf_instance
           @process_instance = nil
         end
@@ -18,7 +19,7 @@ module Workflow
           # puts "definition", process_definition.category_list, process_definition.phase_list
           attributes = @process_definition.attributes.with_indifferent_access.slice(:title, :description)
           # puts "attributes", attributes.as_json
-          position = @process_definition.selected_processes.where(workflow_id: @wf_instance.definition_id).first.position
+          position = @process_definition.selected_processes.where(workflow_id: @workflow_definition.id).first.position
           attributes.merge!(workflow: @wf_instance, position: position)
           @process_instance = @process_definition.instances.create!(attributes)
           @process_instance.category_list = @process_definition.category_list
