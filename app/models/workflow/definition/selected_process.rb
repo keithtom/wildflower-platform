@@ -61,7 +61,7 @@ module Workflow
         process.destroy!
       end
 
-      self.process = previous_version.process
+      self.process = previous_version&.process
     end
   end
 end
