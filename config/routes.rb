@@ -89,6 +89,9 @@ Rails.application.routes.draw do
         end
         # resources :steps, only: [:index, :show, :create, :update, :destroy]
         resources :dependencies, only: [:destroy]
+        resources :selected_processes do
+          put '/revert', to: 'selected_processes#revert'
+        end
       end
 
       resources :workflows, only: [:show] do
