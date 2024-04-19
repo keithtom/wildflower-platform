@@ -83,6 +83,8 @@ Rails.application.routes.draw do
           put '/add_process/:process_id', to: 'workflows#add_process'
           put '/remove_process/:process_id', to: 'workflows#remove_process'
           post '/new_version/:process_id', to: 'workflows#new_process_version'
+
+          resources :processes, only: [:show]
         end
         resources :processes, only: [:index, :show, :create, :update, :destroy] do
           resources :steps, only: [:show, :create, :update, :destroy]

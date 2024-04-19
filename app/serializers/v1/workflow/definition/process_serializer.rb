@@ -17,16 +17,28 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
     process.steps.by_position
   end
 
-  has_many :selected_processes, serializer: V1::Workflow::Definition::SelectedProcessSerializer do |process|
-    process.selected_processes.order(:position)
+  has_many :selected_processes, serializer: V1::Workflow::Definition::SelectedProcessSerializer do |process, params|
+    if params[:workflow_id]
+      process.selected_processes.order(:position).where(workflow_id: params[:workflow_id])
+    else
+      process.selected_processes.order(:position)
+    end
   end
 
-  has_many :prerequisites, serializer: V1::Workflow::Definition::ProcessSerializer do |process|
-    process.prerequisites
+  has_many :prerequisites, serializer: V1::Workflow::Definition::ProcessSerializer do |process, params|
+    if params[:workflow_id]
+      process.prerequisites.merge(Workflow::Definition::Dependency.where(workflow_id: params[:workflow_id]))
+    else
+      process.prerequisites
+    end
   end
 
-  has_many :workable_dependencies, serializer: V1::Workflow::Definition::DependencySerializer do |process|
-    process.workable_dependencies
+  has_many :workable_dependencies, serializer: V1::Workflow::Definition::DependencySerializer do |process, params|
+    if params[:workflow_id]
+      process.workable_dependencies.where(workflow_id: params[:workflow_id])
+    else
+      process.workable_dependencies
+    end
   end
 
   attribute :categories do |process|
