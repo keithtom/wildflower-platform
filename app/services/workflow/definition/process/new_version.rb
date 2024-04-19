@@ -61,7 +61,7 @@ module Workflow
       
         # dependencies were already cloned when workflow definition was cloned. Update the process id here.
         def update_dependencies
-          @process.workable_dependencies.each do |dependency|
+          @process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency|
             dependency.workable = @new_version
             dependency.save!
           end
