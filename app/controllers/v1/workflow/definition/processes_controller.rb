@@ -55,6 +55,6 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   end
 
   def serialization_options
-    { include: ['steps', 'selected_processes', 'prerequisites'] }
+    { include: ['steps', 'selected_processes', 'prerequisites', 'workable_dependencies'] }
   end
 end

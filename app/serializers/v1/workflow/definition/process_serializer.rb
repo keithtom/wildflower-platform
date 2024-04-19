@@ -25,6 +25,10 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
     process.prerequisites
   end
 
+  has_many :workable_dependencies, serializer: V1::Workflow::Definition::DependencySerializer do |process|
+    process.workable_dependencies
+  end
+
   attribute :categories do |process|
     get_categories(process)
   end

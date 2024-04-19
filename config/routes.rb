@@ -88,6 +88,7 @@ Rails.application.routes.draw do
           resources :steps, only: [:show, :create, :update, :destroy]
         end
         # resources :steps, only: [:index, :show, :create, :update, :destroy]
+        resources :dependencies, only: [:destroy]
       end
 
       resources :workflows, only: [:show] do
