@@ -74,7 +74,7 @@ module Workflow
           @workflow.selected_processes.where(state: "removed").each do |sp|
             workflow_instance.processes.where(definition_id: sp.process_id, position: sp.position).each do |process_instance|
               if process_instance.unstarted?
-                process_instance.workable_dependencies.destroy_all
+                process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.steps.destroy_all
                 process_instance.destroy!
                 @process_stats[:removed] += 1
@@ -90,7 +90,7 @@ module Workflow
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.position).each do |process_instance|
               if process_instance.unstarted?
                 workflow_instance = process_instance.workflow
-                process_instance.workable_dependencies.destroy_all
+                process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.steps.destroy_all
                 process_instance.destroy!
 
