@@ -96,6 +96,8 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :decision_options, only: [:destroy]
+
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]
         get :resources
