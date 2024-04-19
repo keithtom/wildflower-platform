@@ -33,6 +33,8 @@ module Workflow
           @new_version = @process.dup
           @new_version.previous_version_id = @process.id
           @new_version.version = "v#{@process.version[1..-1].to_i + 1}"
+          @new_version.phase_list = @process.phase_list
+          @new_version.category_list = @process.category_list
           @new_version.save!
         end
       
