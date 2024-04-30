@@ -3,9 +3,10 @@ module Workflow
     class Workflow
       # Add a process to workflow
       class AddProcess < BaseService
-        def initialize(workflow, process)
+        def initialize(workflow, process, position)
           @workflow = workflow
           @process = process
+          @position = position
         end
       
         def run
@@ -22,7 +23,7 @@ module Workflow
         end
       
         def create_association
-          sp = ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
+          sp = ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id, position: @position)
           sp.add!
           return sp
         end
