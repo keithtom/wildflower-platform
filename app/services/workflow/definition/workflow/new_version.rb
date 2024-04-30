@@ -20,6 +20,7 @@ module Workflow
           @new_version = @workflow.dup
           @new_version.previous_version_id = @workflow.id
           @new_version.version = "v#{@workflow.version[1..-1].to_i + 1}"
+          @new_version.published_at = nil
           @new_version.save!
         end
       
@@ -29,8 +30,8 @@ module Workflow
             new_sp = sp.dup
             new_sp.workflow_id = @new_version.id
             new_sp.previous_version_id = sp.id
+            new_sp.state = "replicated"
             new_sp.save!
-            new_sp.replicate!
           end
         end
       

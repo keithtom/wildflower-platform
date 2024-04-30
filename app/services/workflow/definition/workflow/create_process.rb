@@ -5,7 +5,7 @@ module Workflow
       class CreateProcess < BaseService
         def initialize(workflow, process_params)
           @workflow = workflow
-          @process_params = process_params
+          @process_params = process_params.to_hash.with_indifferent_access
           @process = nil
         end
       
@@ -19,12 +19,23 @@ module Workflow
           if @workflow.published?
             raise CreateProcessError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
           end
+        
+          if @process_params[:selected_processes_attributes].nil?
+            raise CreateProcessError.new('Must create process with a position')
+          end
+        
+          @process_params[:selected_processes_attributes].each do |sp_attr|
+            if sp_attr[:workflow_id].nil?
+              raise CreateProcessError.new('Missing workflow_id in selected_processes_attributes')
+            end
+          end
         end
       
         def create_process
           @process = ::Workflow::Definition::Process.create!(@process_params)
-          sp = ::Workflow::Definition::SelectedProcess.create!(workflow_id: @workflow.id, process_id: @process.id)
-          sp.add!
+          @process.selected_processes.each do |sp|
+            sp.add!
+          end
         end
       end
     

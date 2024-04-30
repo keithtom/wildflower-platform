@@ -206,6 +206,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
           version: '1.0', 
           title: 'Test Workflow', 
           description: 'This is a test process', 
+          selected_processes_attributes: [{workflow_id: workflow.id, position: 200}],
           steps_attributes: [
             { 
               title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
@@ -300,6 +301,50 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       expect(selected_process.reload.process_id).to_not eq(process.id)
       expect(selected_process.process_id.to_s).to eq(new_version["data"]["id"])
 
+    end
+  end
+
+  describe 'POST #publish' do
+    let(:workflow) { create(:workflow_definition_workflow) }
+    let(:admin) { create(:user, :admin) }
+
+    before do
+      sign_in(admin)
+    end
+    
+    context 'when the workflow is valid' do
+      before do
+        allow(Workflow::Definition::Workflow::Publish).to receive(:new).and_return(double(validate: true))
+        allow(PublishWorkflowJob).to receive(:perform_later)
+        put "/v1/workflow/definition/workflows/#{workflow.id}/publish"
+      end
+      
+      it 'returns a success status' do
+        expect(response).to have_http_status(:success)
+      end
+      
+      it 'returns a success message' do
+        expect(JSON.parse(response.body)['message']).to eq('Rollout in progress')
+      end
+      
+      it 'enqueues the PublishWorkflowJob' do
+        expect(PublishWorkflowJob).to have_received(:perform_later).with(workflow.id.to_s)
+      end
+    end
+    
+    context 'when the workflow is invalid' do
+      before do
+        allow(Workflow::Definition::Workflow::Publish).to receive(:new).and_raise(StandardError.new('Validation failed'))
+        put "/v1/workflow/definition/workflows/#{workflow.id}/publish"
+      end
+      
+      it 'returns an unprocessable entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+      
+      it 'returns an error message' do
+        expect(JSON.parse(response.body)['error']).to eq('Validation failed')
+      end
     end
   end
 end

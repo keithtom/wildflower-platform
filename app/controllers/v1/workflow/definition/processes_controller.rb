@@ -8,7 +8,13 @@ class V1::Workflow::Definition::ProcessesController < ApiController
 
   def show
     process = Workflow::Definition::Process.find(params[:id])
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
+    
+    process_serialization_options = serialization_options
+    if params[:workflow_id]
+      process_serialization_options.merge!({params: {workflow_id: params[:workflow_id]}})
+    end
+
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process, process_serialization_options)
   end
  
   def create
@@ -55,6 +61,6 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   end
 
   def serialization_options
-    { include: ['steps', 'selected_processes', 'prerequisites'] }
+    { include: ['steps', 'selected_processes', 'prerequisites', 'workable_dependencies'] }
   end
 end

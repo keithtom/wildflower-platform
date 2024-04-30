@@ -16,6 +16,10 @@ RSpec.describe Workflow::Definition::Workflow::AddProcess do
     end
   
     context "happy path" do
+      it "only creates one new selected process" do
+        expect { subject.run }.to change {Workflow::Definition::SelectedProcess.count}.by(1)
+      end
+
       it "returns a selected process in the state: added" do
         selected_process = subject.run
         expect(selected_process.added?).to be true

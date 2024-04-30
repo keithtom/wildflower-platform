@@ -3,7 +3,14 @@ require 'rails_helper'
 RSpec.describe Workflow::Definition::Workflow::CreateProcess do
   describe '#run' do
     let(:workflow) { create(:workflow_definition_workflow) }
-    let(:process_params) { { version: '2.0', title: 'Updated Process', description: 'This is an updated process'} }
+    let(:process_params) { 
+      { 
+        title: 'Updated Process', 
+        description: 'This is an updated process', 
+        category_list: "Finance", 
+        phase_list: "Visioning",
+        selected_processes_attributes: [{workflow_id: workflow.id, position: 109}]} 
+      }
     let(:subject) { Workflow::Definition::Workflow::CreateProcess.new(workflow, process_params) }
 
     context "workflow is published" do
@@ -15,6 +22,10 @@ RSpec.describe Workflow::Definition::Workflow::CreateProcess do
     end
   
     context "happy path" do
+      it "only creates one new selected process" do
+        expect { subject.run }.to change {Workflow::Definition::SelectedProcess.count}.by(1)
+      end
+
       it "creates a selected process in the state: added" do
         process = subject.run
         selected_process = Workflow::Definition::SelectedProcess.find_by(workflow_id: workflow.id, process_id: process.id)
