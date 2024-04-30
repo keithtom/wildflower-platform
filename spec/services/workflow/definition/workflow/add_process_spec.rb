@@ -5,7 +5,7 @@ RSpec.describe Workflow::Definition::Workflow::AddProcess do
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:process) { create(:workflow_definition_process) }
     let!(:selected_process) { create(:selected_process, workflow: workflow, process: process) }
-    let(:subject) { Workflow::Definition::Workflow::AddProcess.new(workflow, process) }
+    let(:subject) { Workflow::Definition::Workflow::AddProcess.new(workflow, process, 50) }
 
     context "workflow is published" do
       let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
