@@ -6,6 +6,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
   let!(:workflow_instance) { create(:workflow_instance_workflow, definition_id: previous_version_workflow.id)}
   let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100)}
   let(:subject) { Workflow::Definition::Workflow::Publish.new(workflow.id)}
+  let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: process_instance.definition.id, position: 100) }
 
   describe '#rollout_adds' do
     let(:process_definition) { create(:workflow_definition_process)}
@@ -59,7 +60,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
   end
 
   describe '#rollout_removes' do
-    let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_instance.definition_id, position: 100, state: "removed")}
+    let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_instance.definition_id, position: 100, state: "removed", previous_version_id: previous_sp.id)}
 
     context "if the process instance's completion status is unstarted" do
       let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'unstarted')}
@@ -127,6 +128,17 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
         expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
         expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(0)
       end
+    end
+  end
+
+  describe "#rollout_repositions" do
+    let!(:selected_process) { 
+      create(:selected_process, workflow_id: workflow.id, process_id: process_instance.definition_id, position: 200, state: "repositioned", previous_version_id: previous_sp.id)
+    }
+
+    it 'updates the position of the process instance' do
+      subject.run
+      expect(process_instance.reload.position).to eq(200)
     end
   end
 end
