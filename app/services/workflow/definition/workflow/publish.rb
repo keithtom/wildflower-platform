@@ -8,7 +8,8 @@ module Workflow
           @process_stats = {
             added: 0,
             removed: 0,
-            upgraded: 0
+            upgraded: 0,
+            repositioned: 0
           }
         end
       
@@ -21,6 +22,7 @@ module Workflow
                 rollout_adds(workflow_instance)
                 rollout_removes(workflow_instance)
                 rollout_upgrades(workflow_instance)
+                rollout_repositions(workflow_instance)
 
                 workflow_instance.version = @workflow.version
                 workflow_instance.save!
@@ -72,7 +74,7 @@ module Workflow
 
         def rollout_removes(workflow_instance)
           @workflow.selected_processes.where(state: "removed").each do |sp|
-            workflow_instance.processes.where(definition_id: sp.process_id, position: sp.position).each do |process_instance|
+            workflow_instance.processes.where(definition_id: sp.process_id, position: sp.previous_version&.position).each do |process_instance|
               if process_instance.unstarted?
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.steps.destroy_all
@@ -87,7 +89,7 @@ module Workflow
         
         def rollout_upgrades(workflow_instance)
           @workflow.selected_processes.where(state: "upgraded").each do |sp|
-            workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.position).each do |process_instance|
+            workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
               if process_instance.unstarted?
                 workflow_instance = process_instance.workflow
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
@@ -105,6 +107,16 @@ module Workflow
               else
                 Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be replaced/upgraded in this rollout")
               end
+            end
+          end
+        end
+      
+        def rollout_repositions(workflow_instance)
+          @workflow.selected_processes.where(state: "repositioned").each do |sp|
+            workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
+              process_instance.position = sp.position
+              process_instance.save!
+              @process_stats[:repositioned] += 1
             end
           end
         end

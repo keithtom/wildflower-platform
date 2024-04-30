@@ -16,7 +16,7 @@ module Workflow
 
     aasm column: :state do
       state :initialized, initial: true 
-      state :replicated, :removed, :upgraded, :added
+      state :replicated, :removed, :upgraded, :added, :repositioned
     
       event :replicate do
         transitions from: :initialized, to: :replicated
@@ -26,11 +26,15 @@ module Workflow
         transitions from: :replicated, to: :removed
       end
     
+      event :reposition do
+        transitions from: :replicated, to: :repositioned
+      end
+    
       event :revert do
         before do
           revert_to_previous_version
         end
-        transitions from: [:removed, :upgraded], to: :replicated
+        transitions from: [:removed, :upgraded, :repositioned], to: :replicated
       end
     
       event :upgrade do
@@ -62,6 +66,7 @@ module Workflow
       end
 
       self.process = previous_version&.process
+      self.position = previous_version&.position
     end
   end
 end
