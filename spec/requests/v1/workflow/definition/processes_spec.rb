@@ -43,7 +43,12 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
   end
 
   describe 'GET #show' do
+    let(:workflow) { create(:workflow_definition_workflow) }
     let(:process) { create(:workflow_definition_process) }
+    let(:prereq) { create(:workflow_definition_process) }
+    let!(:workable_dependency) { 
+      Workflow::Definition::Dependency.create(workflow_id: workflow.id, workable: process, prerequisite_workable: prereq)
+    }
 
     context 'when authenticated as admin' do
       let(:admin) { create(:user, :admin) }
@@ -286,5 +291,5 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 end
 
 def serialization_options
-  { include: ['steps', 'selected_processes', 'prerequisites'] }
+  { include: ['steps', 'selected_processes', 'prerequisites', 'workable_dependencies'] }
 end

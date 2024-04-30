@@ -32,6 +32,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       render json: { message: 'Cannot delete a published workflow'}, status: :unprocessable_entity
     else
       workflow.destroy!
+      # TODO: need to destroy the processes, steps workflow dependencies and selected processes
       render json: { message: 'Successfully deleted workflow'}
     end
   end
@@ -41,6 +42,19 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     new_version = Workflow::Definition::Workflow::NewVersion.run(workflow)
 
     render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+  end
+
+  def publish
+    begin
+      Workflow::Definition::Workflow::Publish.new(params[:workflow_id]).validate
+    rescue Exception => e
+      log_error(e)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
+    PublishWorkflowJob.perform_later(params[:workflow_id])
+    render json: { message: "Rollout in progress" }
   end
 
   def create_process
@@ -83,7 +97,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       return
     end
 
-    render json: { message: "Successfull removed process" }
+    render json: { message: "Successfully removed process" }
   end
 
   def new_process_version

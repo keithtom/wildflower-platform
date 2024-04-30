@@ -111,6 +111,10 @@ RSpec.configure do |config|
 
       # and disable callbacks
       Searchkick.disable_callbacks
+    
+      # to help debug during testing
+      # Rails.logger = Logger.new(STDOUT)
+      # Rails.logger.level = Logger::ERROR
     end
 
     config.around(:each, search: true) do |example|

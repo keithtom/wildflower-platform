@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_26_162002) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -539,6 +539,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_26_162002) do
     t.datetime "updated_at", null: false
     t.datetime "published_at"
     t.bigint "previous_version_id"
+    t.datetime "rollout_started_at"
+    t.datetime "rollout_completed_at"
     t.index ["name", "version"], name: "index_workflow_definition_workflows_on_name_and_version", unique: true
   end
 
@@ -615,6 +617,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_26_162002) do
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
     t.string "current_phase", default: "visioning"
+    t.string "version"
     t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end

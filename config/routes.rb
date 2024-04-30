@@ -79,15 +79,24 @@ Rails.application.routes.draw do
         resources :workflows, only: [:index, :show, :create, :update, :destroy] do
           post '/add_process', to: 'workflows#create_process'
           post '/new_version', to: 'workflows#new_version'
+          put '/publish', to: 'workflows#publish'
           put '/add_process/:process_id', to: 'workflows#add_process'
-          put '/remove_process/:process_id', to: 'workflows#add_process'
+          put '/remove_process/:process_id', to: 'workflows#remove_process'
           post '/new_version/:process_id', to: 'workflows#new_process_version'
+
+          resources :processes, only: [:show]
         end
         resources :processes, only: [:index, :show, :create, :update, :destroy] do
           resources :steps, only: [:show, :create, :update, :destroy]
         end
         # resources :steps, only: [:index, :show, :create, :update, :destroy]
+        resources :dependencies, only: [:destroy]
+        resources :selected_processes do
+          put '/revert', to: 'selected_processes#revert'
+        end
       end
+
+      resources :decision_options, only: [:destroy]
 
       resources :workflows, only: [:show] do
         resources :processes, only: [:index]

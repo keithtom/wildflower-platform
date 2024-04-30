@@ -39,7 +39,6 @@ RSpec.describe Workflow::Definition::Workflow::RemoveProcess do
       end
     end
 
-
     context "selected process associating process is in state: removed" do
       let!(:selected_process) { create(:selected_process, workflow: workflow, process: process, state: "removed") }
 
