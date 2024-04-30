@@ -6,6 +6,7 @@ module Workflow
           @workflow = workflow
           @process = process
           @new_version = nil
+          @selected_process = ::Workflow::Definition::SelectedProcess.find_by!(workflow_id: @workflow.id, process_id: @process.id)
         end
       
         def run
@@ -26,6 +27,10 @@ module Workflow
          
           if @workflow.published?
             raise Error.new("workflow cannot be published")
+          end
+          
+          if @selected_process.repositioned?
+            raise Error.new("process cannot have changed position beforehand")
           end
         end
 
@@ -70,10 +75,9 @@ module Workflow
         end
       
         def update_selected_process
-          selected_process = ::Workflow::Definition::SelectedProcess.find_by!(workflow_id: @workflow.id, process_id: @process.id)
-          selected_process.process_id = @new_version.id
-          selected_process.upgrade!
-          selected_process.save!
+          @selected_process.process_id = @new_version.id
+          @selected_process.upgrade!
+          @selected_process.save!
         end
       end
     end
