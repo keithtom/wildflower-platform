@@ -28,10 +28,6 @@ module Workflow
           if @workflow.published?
             raise Error.new("workflow cannot be published")
           end
-          
-          if @selected_process.repositioned?
-            raise Error.new("process cannot have changed position beforehand")
-          end
         end
 
         def create_new_version

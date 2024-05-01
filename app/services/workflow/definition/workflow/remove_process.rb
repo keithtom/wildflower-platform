@@ -38,12 +38,13 @@ module Workflow
             @selected_process.destroy!
           elsif @selected_process.replicated?
             @selected_process.remove!
+          elsif @selected_process.repositioned?
+            @selected_process.remove!
           elsif @selected_process.upgraded?
             @selected_process.revert!
             @selected_process.remove!
           else
             raise RemoveProcessError.new("selected process is in an invalid state to be removed")
-            # Note if a selected process is repositioned, it cannot be removed because the checks for propogating a removal depends on position
           end
         end
       end

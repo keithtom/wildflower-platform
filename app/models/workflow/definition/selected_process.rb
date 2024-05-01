@@ -23,11 +23,11 @@ module Workflow
       end
     
       event :remove do
-        transitions from: :replicated, to: :removed
+        transitions from: [:replicated, :repositioned], to: :removed
       end
     
       event :reposition do
-        transitions from: :replicated, to: :repositioned
+        transitions from: [:added, :replicated, :repositioned], to: :repositioned
       end
     
       event :revert do
@@ -38,7 +38,7 @@ module Workflow
       end
     
       event :upgrade do
-        transitions from: :replicated, to: :upgraded
+        transitions from: [:replicated, :repositioned], to: :upgraded
       end
     
       event :add do

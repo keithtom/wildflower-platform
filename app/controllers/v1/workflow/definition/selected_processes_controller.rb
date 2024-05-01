@@ -5,13 +5,13 @@ class V1::Workflow::Definition::SelectedProcessesController < ApiController
   def update
     selected_process = Workflow::Definition::SelectedProcess.find(params[:id])
 
-    if selected_process.replicated? && !selected_process.workflow.published?
+    if !selected_process.workflow.published?
+      selected_process.reposition! unless selected_process.upgraded? # keep the state of an upgraded selected process, even after a position change
       selected_process.update!(selected_process_params)
-      selected_process.reposition!
       render json: V1::Workflow::Definition::SelectedProcessSerializer.new(selected_process.reload)
     else
       render json: 
-        { error: "Selected process state: #{selected_process.state}, workflow published: #{selected_process.workflow.published?}" }, 
+        { error: "workflow published, please change position using other endpoint" }, 
         status: :unprocessable_entity
     end
   end
