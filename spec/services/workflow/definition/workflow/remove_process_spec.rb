@@ -39,6 +39,15 @@ RSpec.describe Workflow::Definition::Workflow::RemoveProcess do
       end
     end
 
+    context "selected process associating process is in state: repositioned" do
+      let!(:selected_process) { create(:selected_process, workflow: workflow, process: process, state: "repositioned") }
+
+      it "updates selected process state to: removed" do
+        subject.run
+        expect(selected_process.reload.removed?).to be true
+      end
+    end
+
     context "selected process associating process is in state: removed" do
       let!(:selected_process) { create(:selected_process, workflow: workflow, process: process, state: "removed") }
 
