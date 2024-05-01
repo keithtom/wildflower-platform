@@ -27,8 +27,11 @@ class TestController < ApplicationController
   end
   
   def reset_rollout_workflow
-    # delete the cypress test workflow
-    # create basic workflow
+    ActiveRecord::Base.transaction do
+      name = "Basic Workflow for Cypress Tests"
+      delete_workflow(name)
+      Workflow::Definition::Workflow::CreateDummy.run(name)
+    end
   end
   
   def invite_email_link
@@ -94,5 +97,19 @@ class TestController < ApplicationController
         'https://ca.slack-edge.com/T1BCRBEKF-U0431E2ANE6-a196fd3638aa-512',
         'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
     ].sample
+  end
+
+  def delete_workflow(name)
+    workflow = Workflow::Definition::Workflow.find_by(name: name)
+    workflow.processes.each do |process|
+      process.steps.each do |step|
+        step.decision_options.each do |decision_option|
+          decision_option.destroy!
+        end
+        step.destroy!
+      end
+      process.destroy!
+    end
+    workflow.destroy!
   end
 end
