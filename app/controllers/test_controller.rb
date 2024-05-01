@@ -26,7 +26,7 @@ class TestController < ApplicationController
     end
   end
   
-  def reset_rollout_workflow
+  def reset_rollout_workflow_fixture
     ActiveRecord::Base.transaction do
       name = "Basic Workflow for Cypress Tests"
       delete_workflow(name)
