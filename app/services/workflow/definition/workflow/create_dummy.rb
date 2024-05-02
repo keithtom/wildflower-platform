@@ -7,7 +7,7 @@ module Workflow
         end
         
         def run
-          workflow_definition = FactoryBot.create(:workflow_definition_workflow, name: @name, version: "v1")
+          workflow_definition = FactoryBot.create(:workflow_definition_workflow, name: @name, version: "v1", published_at: DateTime.now)
 
           # Visioning
           process1 = FactoryBot.create(:workflow_definition_process, title: "Milestone A", description: "A single milestone with 3 steps")

@@ -30,7 +30,9 @@ class TestController < ApplicationController
     ActiveRecord::Base.transaction do
       name = "Basic Workflow for Cypress Tests"
       delete_workflow(name)
-      Workflow::Definition::Workflow::CreateDummy.run(name)
+      workflow_definition = Workflow::Definition::Workflow::CreateDummy.run(name)
+      wf_instance = workflow_definition.instances.create!
+      SSJ::InitializeWorkflowJob.perform_later(wf_instance.id)
     end
   end
   
