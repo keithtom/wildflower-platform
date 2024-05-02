@@ -6,7 +6,7 @@ class V1::Workflow::Definition::SelectedProcessesController < ApiController
     selected_process = Workflow::Definition::SelectedProcess.find(params[:id])
 
     if !selected_process.workflow.published?
-      selected_process.reposition! unless selected_process.upgraded? # keep the state of an upgraded selected process, even after a position change
+      selected_process.reposition! unless (selected_process.upgraded? || selected_process.added?) # keep the state of an upgraded or added selected process, even after a position change
       selected_process.update!(selected_process_params)
       render json: V1::Workflow::Definition::SelectedProcessSerializer.new(selected_process.reload)
     else
