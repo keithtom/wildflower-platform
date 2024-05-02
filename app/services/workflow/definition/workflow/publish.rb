@@ -16,7 +16,7 @@ module Workflow
         def run
           validate
           set_tracking_stats
-          @workflow.previous_version.instances.each do |workflow_instance|
+          @workflow&.previous_version&.instances&.each do |workflow_instance|
             begin
               ActiveRecord::Base.transaction do
                 rollout_adds(workflow_instance)
