@@ -25,7 +25,7 @@ module Workflow
   
     def displayed_processes
       if published?
-        processes.joins(:selected_processes).where.not("workflow_definition_selected_processes.state = ?", 'removed')
+        processes.where.not("workflow_definition_selected_processes.state = ?", 'removed')
       else
         processes
       end
