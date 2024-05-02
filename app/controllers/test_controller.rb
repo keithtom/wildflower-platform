@@ -102,16 +102,20 @@ class TestController < ApplicationController
   end
 
   def delete_workflow(name)
-    workflow = Workflow::Definition::Workflow.find_by(name: name)
-    workflow.processes.each do |process|
-      process.steps.each do |step|
-        step.decision_options.each do |decision_option|
-          decision_option.destroy!
+    Workflow::Definition::Workflow.where(name: name).each do |workflow|
+      workflow.processes.each do |process|
+        process.steps.each do |step|
+          step.decision_options.each do |decision_option|
+            decision_option.destroy!
+          end
+          step.instances.destroy_all
+          step.destroy!
         end
-        step.destroy!
+        process.instances.destroy_all
+        process.destroy!
       end
-      process.destroy!
+      workflow.instances.destroy_all
+      workflow.destroy!
     end
-    workflow.destroy!
   end
 end
