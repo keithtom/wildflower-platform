@@ -25,6 +25,7 @@ module Workflow
                 rollout_repositions(workflow_instance)
 
                 workflow_instance.version = @workflow.version
+                workflow_instance.definition = @workflow
                 workflow_instance.save!
               end
             rescue Exception => e
