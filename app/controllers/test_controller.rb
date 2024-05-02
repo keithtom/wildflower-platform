@@ -106,10 +106,13 @@ class TestController < ApplicationController
         step.decision_options.each do |decision_option|
           decision_option.destroy!
         end
+        step.instances.destroy_all
         step.destroy!
       end
+      process.instances.destroy_all
       process.destroy!
     end
+    workflow.instances.destroy_all
     workflow.destroy!
   end
 end
