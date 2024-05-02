@@ -55,10 +55,11 @@ RSpec.describe "V1::Workflow::Definition::SelectedProcesses", type: :request do
         put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
       end
 
-      it 'updates the selected process' do
+      it 'updates the selected process, but the state stays as added' do
         expect(response).to have_http_status(:success)
         expect(selected_process.reload.position).to eq(200)
-        expect(selected_process.repositioned?).to be_truthy
+        expect(selected_process.repositioned?).to be_falsey
+        expect(selected_process.added?).to be_truthy
       end
     end
 
