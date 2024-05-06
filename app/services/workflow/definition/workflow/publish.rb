@@ -70,6 +70,8 @@ module Workflow
             else
               Rails.logger.info("Previous process #{previous_process_by_position.id} has been finished. Therefore, the new process definition #{sp.process_id} will not be added to this rollout")
             end
+            sp.process.published_at = DateTime.now
+            sp.process.save!
           end
         end
 
