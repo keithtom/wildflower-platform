@@ -2,6 +2,7 @@ module Workflow
   # join table for workflow and process
   class Definition::SelectedProcess < ApplicationRecord
     include AASM
+    acts_as_paranoid
     audited
     DEFAULT_INCREMENT = 1000
 

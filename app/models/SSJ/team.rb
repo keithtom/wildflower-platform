@@ -5,6 +5,7 @@ module SSJ
   class Team < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
+    acts_as_paranoid
     audited
 
     # Associations

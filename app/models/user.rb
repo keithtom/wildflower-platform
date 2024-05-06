@@ -4,6 +4,7 @@ class User < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
   include Devise::JWT::RevocationStrategies::JTIMatcher
   
+  acts_as_paranoid
   audited
 
   # Include default devise modules. Others available are:

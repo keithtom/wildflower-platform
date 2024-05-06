@@ -1,5 +1,6 @@
 module Workflow
   class Definition::Workflow < ApplicationRecord
+    acts_as_paranoid
     audited
 
     has_many :selected_processes

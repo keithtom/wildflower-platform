@@ -3,6 +3,7 @@
 class Address < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  acts_as_paranoid
   audited
 
   belongs_to :addressable, polymorphic: true, optional: true, touch: true
