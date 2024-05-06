@@ -2,6 +2,7 @@ module Workflow
   class Definition::Process < ApplicationRecord
     DEFAULT_INCREMENT = 100
     
+    acts_as_paranoid
     audited
     
     has_many :instances, class_name: 'Workflow::Instance::Process', foreign_key: 'definition_id'

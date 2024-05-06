@@ -3,6 +3,7 @@ require "ssj"
 # Represents team membership
 module SSJ
   class TeamMember < ApplicationRecord
+    acts_as_paranoid
     audited
 
     belongs_to :person

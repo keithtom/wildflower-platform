@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_06_150358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,7 +54,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier", null: false
+    t.datetime "deleted_at"
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+    t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
     t.index ["external_identifier"], name: "index_addresses_on_external_identifier", unique: true
   end
 
@@ -158,6 +160,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.string "external_identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_charters_on_deleted_at"
     t.index ["external_identifier"], name: "index_charters_on_external_identifier", unique: true
   end
 
@@ -256,6 +260,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.string "external_identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_hubs_on_deleted_at"
     t.index ["entrepreneur_id"], name: "index_hubs_on_entrepreneur_id"
     t.index ["external_identifier"], name: "index_hubs_on_external_identifier", unique: true
     t.index ["name"], name: "index_hubs_on_name", unique: true
@@ -303,7 +309,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.boolean "is_onboarded", default: false
     t.string "platform_airtable_id"
     t.datetime "airtable_sync_at"
+    t.datetime "deleted_at"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
+    t.index ["deleted_at"], name: "index_people_on_deleted_at"
     t.index ["email"], name: "index_people_on_email", unique: true
     t.index ["external_identifier"], name: "index_people_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_people_on_hub_id"
@@ -327,6 +335,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.string "external_identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_pods_on_deleted_at"
     t.index ["external_identifier"], name: "index_pods_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_pods_on_hub_id"
     t.index ["primary_contact_id"], name: "index_pods_on_primary_contact_id"
@@ -346,7 +356,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.string "airtable_id"
     t.string "platform_airtable_id"
     t.datetime "airtable_sync_at"
+    t.datetime "deleted_at"
     t.index ["airtable_id"], name: "index_school_relationships_on_airtable_id", unique: true
+    t.index ["deleted_at"], name: "index_school_relationships_on_deleted_at"
     t.index ["external_identifier"], name: "index_school_relationships_on_external_identifier", unique: true
     t.index ["person_id"], name: "index_school_relationships_on_person_id"
     t.index ["school_id"], name: "index_school_relationships_on_school_id"
@@ -388,8 +400,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.boolean "affiliated", default: true
     t.string "platform_airtable_id"
     t.datetime "airtable_sync_at"
+    t.datetime "deleted_at"
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["charter_id"], name: "index_schools_on_charter_id"
+    t.index ["deleted_at"], name: "index_schools_on_deleted_at"
     t.index ["external_identifier"], name: "index_schools_on_external_identifier", unique: true
     t.index ["hub_id"], name: "index_schools_on_hub_id"
     t.index ["pod_id"], name: "index_schools_on_pod_id"
@@ -400,6 +414,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.bigint "ssj_team_id"
     t.string "role"
     t.string "status"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_ssj_team_members_on_deleted_at"
     t.index ["person_id"], name: "index_ssj_team_members_on_person_id"
     t.index ["ssj_team_id"], name: "index_ssj_team_members_on_ssj_team_id"
   end
@@ -412,6 +428,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.datetime "updated_at", null: false
     t.bigint "ops_guide_id"
     t.bigint "regional_growth_lead_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_ssj_teams_on_deleted_at"
     t.index ["external_identifier"], name: "index_ssj_teams_on_external_identifier", unique: true
     t.index ["ops_guide_id"], name: "index_ssj_teams_on_ops_guide_id"
     t.index ["regional_growth_lead_id"], name: "index_ssj_teams_on_regional_growth_lead_id"
@@ -464,7 +482,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.string "authentication_token", limit: 30
     t.datetime "authentication_token_created_at"
     t.boolean "is_admin", default: false
+    t.datetime "deleted_at"
     t.index ["authentication_token"], name: "index_users_on_authentication_token", unique: true
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["external_identifier"], name: "index_users_on_external_identifier", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
@@ -489,6 +509,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.bigint "prerequisite_workable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_workflow_definition_dependencies_on_deleted_at"
     t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_definition_dependencies_on_prerequisite_workable"
     t.index ["workable_type", "workable_id"], name: "index_workflow_definition_dependencies_on_workable"
     t.index ["workflow_id"], name: "index_workflow_definition_dependencies_on_workflow_id"
@@ -502,6 +524,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.datetime "updated_at", null: false
     t.datetime "published_at"
     t.bigint "previous_version_id"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_workflow_definition_processes_on_deleted_at"
   end
 
   create_table "workflow_definition_selected_processes", force: :cascade do |t|
@@ -512,6 +536,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.integer "position"
     t.bigint "previous_version_id"
     t.string "state"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_workflow_definition_selected_processes_on_deleted_at"
     t.index ["process_id"], name: "index_workflow_definition_selected_processes_on_process_id"
     t.index ["workflow_id"], name: "index_workflow_definition_selected_processes_on_workflow_id"
   end
@@ -528,6 +554,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.integer "max_worktime", default: 0
     t.string "completion_type"
     t.string "decision_question"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_workflow_definition_steps_on_deleted_at"
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
 
@@ -541,6 +569,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.bigint "previous_version_id"
     t.datetime "rollout_started_at"
     t.datetime "rollout_completed_at"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_workflow_definition_workflows_on_deleted_at"
     t.index ["name", "version"], name: "index_workflow_definition_workflows_on_name_and_version", unique: true
   end
 
@@ -553,7 +583,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.bigint "prerequisite_workable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
     t.index ["definition_id"], name: "index_workflow_instance_dependencies_on_definition_id"
+    t.index ["deleted_at"], name: "index_workflow_instance_dependencies_on_deleted_at"
     t.index ["prerequisite_workable_type", "prerequisite_workable_id"], name: "index_workflow_instance_dependencies_on_prerequisite_workable"
     t.index ["workable_type", "workable_id"], name: "index_workflow_instance_dependencies_on_workable"
     t.index ["workflow_id"], name: "index_workflow_instance_dependencies_on_workflow_id"
@@ -574,7 +606,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.integer "completed_steps_count", default: 0, null: false
     t.integer "completion_status", default: 0
     t.integer "dependency_cache", default: 0
+    t.datetime "deleted_at"
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
+    t.index ["deleted_at"], name: "index_workflow_instance_processes_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
     t.index ["workflow_id"], name: "index_workflow_instance_processes_on_workflow_id"
   end
@@ -606,7 +640,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.integer "min_worktime"
     t.integer "max_worktime"
     t.string "decision_question"
+    t.datetime "deleted_at"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
+    t.index ["deleted_at"], name: "index_workflow_instance_steps_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true
     t.index ["process_id"], name: "index_workflow_instance_steps_on_process_id"
   end
@@ -618,7 +654,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_15_172640) do
     t.string "external_identifier", null: false
     t.string "current_phase", default: "visioning"
     t.string "version"
+    t.datetime "deleted_at"
     t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
+    t.index ["deleted_at"], name: "index_workflow_instance_workflows_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
   end
 

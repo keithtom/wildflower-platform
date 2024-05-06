@@ -1,6 +1,7 @@
 module Workflow
   # For a given workflow, find the prerequisite workable (process/step) for a given workable.
   class Definition::Dependency < ApplicationRecord
+    acts_as_paranoid
     audited
 
     belongs_to :workflow
