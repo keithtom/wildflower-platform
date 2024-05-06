@@ -17,7 +17,7 @@ module Workflow
 
     scope :latest_versions, -> { select('DISTINCT ON (name) *').order('name, version DESC') }
 
-    validates :name, uniqueness: { scope: :version, message: "and version combination must be unique" }
+    validate :name_version_combo, on: :create
     validate :check_published, on: :update
 
     def published?
@@ -36,7 +36,13 @@ module Workflow
 
     def check_published
       if published? && (name_changed? || version_changed? || description_changed? )
-        errors.add(:base, "Updates to name, description or version can only be made if unpublished")
+        errors.add(:base, "updates to name, description or version can only be made if unpublished")
+      end
+    end
+  
+    def name_version_combo
+      if Workflow::Definition::Workflow.where(name: name, version: version, deleted_at: nil).exists?
+        errors.add(:base, "name and version combination must be unique for non-deleted records")
       end
     end
   end
