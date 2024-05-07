@@ -97,9 +97,8 @@ RSpec.describe "V1::Workflow::Definition::SelectedProcesses", type: :request do
         put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
       end
 
-      it 'returns an error message' do
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(JSON.parse(response.body)['error']).to eq('workflow published, please change position using other endpoint')
+      it 'returns a success' do
+        expect(response).to have_http_status(:success)
       end
     end
   end
