@@ -3,15 +3,13 @@ module Workflow
     class Process
       class PropagateInstantaneousChange < BaseService
         VALID_ATTR_CHANGES = [
-          :title, :description, :position, [:category_list => []], 
-          selected_processes_attributes: [:id, :workflow_id, :position],
+          :title, :description, :position, [:category_list => []]
         ]
 
         def initialize(process_definition, param_changes)
           @process_definition = process_definition
           @param_changes = param_changes.to_hash.with_indifferent_access
           @workflow_id = nil
-          @position = nil
           @category_list = nil
         end
       
@@ -50,7 +48,6 @@ module Workflow
 
             selected_process = selected_processes_attributes.first
             @workflow_id = selected_process[:workflow_id]
-            @position = selected_process[:position]
           end
 
           @category_list = @param_changes.delete(:category_list)
@@ -61,11 +58,6 @@ module Workflow
             @process_definition.instances.update_all(@param_changes)
           end
 
-          if @workflow_id
-            workflow_instance_ids = ::Workflow::Instance::Workflow.where(definition_id: @workflow_id).pluck(:id)
-            @process_definition.instances.where(workflow_id: workflow_instance_ids).update_all(position: @position)
-          end
-        
           # TODO: push this to a background worker?
           if @category_list
             @process_definition.instances.each do |instance|
