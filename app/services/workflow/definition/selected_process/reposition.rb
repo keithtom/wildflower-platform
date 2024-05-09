@@ -10,8 +10,9 @@ module Workflow
       
         def run
           validate_position
+          validate_if_renumbering_needed
 
-          if @workflow.published?
+          if @workflow.published? # instantaneous change
             update_selected_process_position
             propagate_position_change_to_instances(@selected_process.reload)
             
@@ -32,6 +33,12 @@ module Workflow
         def validate_position
           if @position.to_i.to_s != @position.to_s
             raise RepositionError.new("new position must be an integer")
+          end
+        end
+
+        def validate_if_renumbering_needed
+          if renumbering_needed?
+            raise RepositionError.new("cannot reposition selected process because of potential collision")
           end
         end
 

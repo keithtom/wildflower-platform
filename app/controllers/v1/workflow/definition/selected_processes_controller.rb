@@ -9,7 +9,7 @@ class V1::Workflow::Definition::SelectedProcessesController < ApiController
       ::Workflow::Definition::SelectedProcess::Reposition.run(selected_process, selected_process_params[:position])
     rescue Exception => e
       log_error(e)
-      return render json: { message: e.message }, status: :unprocessable_entity
+      return render json: { error: e.message }, status: :unprocessable_entity
     end
     render json: V1::Workflow::Definition::SelectedProcessSerializer.new(selected_process.reload)
   end
