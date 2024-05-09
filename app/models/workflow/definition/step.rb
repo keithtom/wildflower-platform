@@ -1,5 +1,6 @@
 module Workflow
   class Definition::Step < ApplicationRecord
+    acts_as_paranoid
     audited
 
     belongs_to :process

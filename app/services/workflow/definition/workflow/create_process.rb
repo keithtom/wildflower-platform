@@ -32,7 +32,7 @@ module Workflow
         end
       
         def create_process
-          @process = ::Workflow::Definition::Process.create!(@process_params)
+          @process = ::Workflow::Definition::Process.create!(@process_params.merge!(version: "v1"))
           @process.selected_processes.each do |sp|
             sp.add!
           end

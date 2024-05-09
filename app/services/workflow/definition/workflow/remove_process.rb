@@ -38,6 +38,8 @@ module Workflow
             @selected_process.destroy!
           elsif @selected_process.replicated?
             @selected_process.remove!
+          elsif @selected_process.repositioned?
+            @selected_process.remove!
           elsif @selected_process.upgraded?
             @selected_process.revert!
             @selected_process.remove!

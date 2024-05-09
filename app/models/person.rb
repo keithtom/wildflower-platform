@@ -3,6 +3,7 @@
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  acts_as_paranoid
   audited
 
   ROLES = [OPS_GUIDE = "Ops Guide", RGL = "Regional Entrepreneur", ETL = "Emerging Teacher Leader", TL = "Teacher Leader"]

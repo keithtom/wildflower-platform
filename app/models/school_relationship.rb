@@ -1,6 +1,7 @@
 class SchoolRelationship < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  acts_as_paranoid
   acts_as_taggable_on :roles # the roles held during the relationship
 
   belongs_to :school, touch: true
