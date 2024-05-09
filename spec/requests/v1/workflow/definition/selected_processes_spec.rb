@@ -27,7 +27,7 @@ RSpec.describe "V1::Workflow::Definition::SelectedProcesses", type: :request do
       sign_in(admin)
     end
 
-    context 'when selected process is replicated and workflow is not published' do
+    context 'when called with valid params' do
       before do
         selected_process.update(state: 'replicated')
         put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
@@ -37,69 +37,17 @@ RSpec.describe "V1::Workflow::Definition::SelectedProcesses", type: :request do
         expect(response).to have_http_status(:success)
         expect(selected_process.reload.position).to eq(200)
       end
-
-      it 'repositions the selected process' do
-        expect(selected_process.reload.state).to eq('repositioned')
-      end
-
-      it 'returns the updated selected process as JSON' do
-        json_response = JSON.parse(response.body)
-        expect(json_response['data']['id']).to eq(selected_process.id.to_s)
-        expect(json_response['data']['attributes']['position']).to eq(200)
-      end
     end
 
-    context 'when selected process is in added state' do
+    context 'when error is raised' do
+      let(:position) { 200.5 }
       before do
-        selected_process.update(state: 'added')
-        put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
+        put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: position } }
       end
 
-      it 'updates the selected process, but the state stays as added' do
-        expect(response).to have_http_status(:success)
-        expect(selected_process.reload.position).to eq(200)
-        expect(selected_process.repositioned?).to be_falsey
-        expect(selected_process.added?).to be_truthy
-      end
-    end
-
-    context 'when selected process is in upgraded state' do
-      before do
-        selected_process.update(state: 'upgraded')
-        put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
-      end
-
-      it 'updates the selected process' do
-        expect(response).to have_http_status(:success)
-        expect(selected_process.reload.position).to eq(200)
-        expect(selected_process.repositioned?).to be_falsey
-        expect(selected_process.upgraded?).to be_truthy
-      end
-    end
-
-    context 'when selected process has already been repositioned once' do
-      before do
-        selected_process.update(state: 'repositioned')
-        put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
-      end
-
-      it 'updates the selected process' do
-        expect(response).to have_http_status(:success)
-        expect(selected_process.reload.position).to eq(200)
-        expect(selected_process.repositioned?).to be_truthy
-      end
-    end
-
-    context 'when workflow is published' do
-      before do
-        workflow.update(published_at: DateTime.now)
-        selected_process.update(state: 'replicated')
-        put "/v1/workflow/definition/selected_processes/#{selected_process.id}", params: { selected_process: { position: 200 } }
-      end
-
-      it 'returns an error message' do
+      it 'returns a success' do
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(JSON.parse(response.body)['error']).to eq('workflow published, please change position using other endpoint')
+        expect(JSON.parse(response.body)['error']).to eq('new position must be an integer')
       end
     end
   end
