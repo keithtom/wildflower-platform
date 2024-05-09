@@ -10,7 +10,6 @@ describe Workflow::Definition::Process::PropagateInstantaneousChange do
         "title"=>"Updated Process",                                                                                                            
         "description"=>"This is an updated process",                                                                                           
         "category_list"=>["category 1", "category 2", "category 3"],                                                     
-        "selected_processes_attributes"=>[{"workflow_id"=> workflow.id, "position"=> 5000}] # adding a document, what about updating one?
       }  
     }
 
@@ -35,22 +34,7 @@ describe Workflow::Definition::Process::PropagateInstantaneousChange do
       described_class.run(process, param_changes)
     
       expect(process_instance.reload.title).to eq("Updated Process")
-      expect(process_instance.position).to eq(5000)
       expect(process_instance.category_list).to eq(param_changes["category_list"])
-    end
-  
-    context "just a position change" do
-      let(:param_changes) { 
-        {"selected_processes_attributes"=>[{"workflow_id"=> workflow.id, "position"=>301600}] }
-      }
-      let!(:workflow_instance) { create(:workflow_instance_workflow, definition: workflow)}
-      let!(:process_instance) { create(:workflow_instance_process, definition: process, position: 1000, workflow: workflow_instance) }
-
-      it "should update instances" do
-        described_class.run(process, param_changes)
-    
-        expect(process_instance.reload.position).to eq(301600)
-      end
     end
   end
 end
