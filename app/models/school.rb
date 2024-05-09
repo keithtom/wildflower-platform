@@ -3,6 +3,7 @@
 class School < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
+  acts_as_paranoid
   audited
 
   acts_as_taggable_on :ages_served, :tuition_assistance_types, :previous_names

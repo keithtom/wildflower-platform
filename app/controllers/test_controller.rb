@@ -26,6 +26,16 @@ class TestController < ApplicationController
     end
   end
   
+  def reset_rollout_workflow_fixture
+    ActiveRecord::Base.transaction do
+      name = "Basic Workflow for Cypress Tests"
+      delete_workflow(name)
+      workflow_definition = Workflow::Definition::Workflow::CreateDummy.run(name)
+      wf_instance = workflow_definition.instances.create!
+      SSJ::InitializeWorkflowJob.perform_later(wf_instance.id)
+    end
+  end
+  
   def invite_email_link
     user = create_test_user_with_ssj(params[:email], nil, params[:is_onboarded])
     Users::GenerateToken.call(user)
@@ -64,7 +74,7 @@ class TestController < ApplicationController
     return user
   end
 
-def create_test_user(email, is_onboarded = false)
+  def create_test_user(email, is_onboarded = false)
     person = Person.create!(image_url: image_url, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, is_onboarded: is_onboarded, email: email)
     user = User.create!(email: email, password: 'password', person_id: person.id)
     Address.create!(addressable: person) if person.address.nil?
@@ -89,5 +99,23 @@ def create_test_user(email, is_onboarded = false)
         'https://ca.slack-edge.com/T1BCRBEKF-U0431E2ANE6-a196fd3638aa-512',
         'https://ca.slack-edge.com/T1BCRBEKF-UC1RV1LQ5-eb11f16c81c0-192',
     ].sample
+  end
+
+  def delete_workflow(name)
+    Workflow::Definition::Workflow.where(name: name).each do |workflow|
+      workflow.processes.each do |process|
+        process.steps.each do |step|
+          step.decision_options.each do |decision_option|
+            decision_option.destroy!
+          end
+          step.instances.destroy_all
+          step.destroy!
+        end
+        process.instances.destroy_all
+        process.destroy!
+      end
+      workflow.instances.destroy_all
+      workflow.destroy!
+    end
   end
 end

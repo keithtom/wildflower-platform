@@ -2,6 +2,7 @@ module Workflow
   class Instance::Process < ApplicationRecord
     include ApplicationRecord::ExternalIdentifier
 
+    acts_as_paranoid
     audited
 
     belongs_to :definition, class_name: 'Workflow::Definition::Process', optional: true # for manual steps

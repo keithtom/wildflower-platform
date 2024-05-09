@@ -26,7 +26,7 @@ module Workflow
       
         # TODO: pusb this to a background worker?
         def clone_selected_processes
-          @workflow.selected_processes.each do |sp|
+          @workflow.selected_processes.where.not(state: 'removed').each do |sp|
             new_sp = sp.dup
             new_sp.workflow_id = @new_version.id
             new_sp.previous_version_id = sp.id

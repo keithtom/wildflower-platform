@@ -73,9 +73,13 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   def add_process
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
     process = Workflow::Definition::Process.find(params[:process_id])
+    position = nil
+    if process_params[:selected_processes_attributes]
+      position = process_params[:selected_processes_attributes].last[:position]
+    end
 
     begin
-      Workflow::Definition::Workflow::AddProcess.run(workflow, process)
+      Workflow::Definition::Workflow::AddProcess.run(workflow, process, position)
     rescue Exception => e
       log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
