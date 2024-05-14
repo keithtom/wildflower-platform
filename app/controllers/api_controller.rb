@@ -39,5 +39,6 @@ class ApiController < ActionController::API
   def log_error(e)
     Rails.logger.error(e.message)
     Rails.logger.error(e.backtrace.join("\n"))
+    Highlight::H.instance.record_exception(e)
   end
 end
