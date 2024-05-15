@@ -16,7 +16,7 @@ RSpec.describe Workflow::Definition::Workflow::RemoveProcess do
     end
     
     context "process is a prerequisite of another process" do
-      let!(:workable_dependency) { Workflow::Definition::Dependency.create(workflow: workflow, prerequisite: process, workable: workable_process) }
+      let!(:workable_dependency) { Workflow::Definition::Dependency.create(workflow: workflow, prerequisite_workable: process, workable: workable_process) }
       let(:workable_process) { create(:workflow_definition_process) }
 
       it "raises an error" do
