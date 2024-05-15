@@ -59,13 +59,11 @@ module Workflow
         end
       
         def renumbering_needed?
-          last_position = nil
+          last_position = 0
           @workflow.selected_processes.where.not(position: nil).order(:position).each do |sp|
-            unless last_position.nil?
-              delta = sp.position - last_position
-              if delta < 2
-                return true
-              end
+            delta = sp.position - last_position
+            if delta < 2
+              return true
             end
             last_position = sp.position
           end
