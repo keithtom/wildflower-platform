@@ -11,6 +11,7 @@ module Workflow
       
         def run
           validate_workflow_state
+          validate_dependency_of_others
           if validate_selected_process_state
             destroy_association
           end
@@ -20,7 +21,13 @@ module Workflow
 
         def validate_workflow_state
           if @workflow.published?
-            raise RemoveProcessError.new('Cannot remove processes from a published workflow. Please create a new version to continue.')
+            raise RemoveProcessError.new('cannot remove processes from a published workflow. Please create a new version to continue.')
+          end
+        end
+      
+        def validate_dependency_of_others
+          unless ::Workflow::Definition::Dependency.where(workflow_id: @workflow.id, prerequisite_workable_id: @process.id, prerequisite_workable_type: @process.class.to_s).empty?
+            raise RemoveProcessError.new('cannot remove process that is a prerequisite of other processes')
           end
         end
       
