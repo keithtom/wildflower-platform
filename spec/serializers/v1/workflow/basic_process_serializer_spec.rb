@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe V1::Workflow::Definition::BasicProcessSerializer, type: :serializer do
   let(:process) { create(:workflow_definition_process) }
-  let(:serializer) { described_class.new(process, { include: ['selected_processes'] }) }
+  let(:serializer) { described_class.new(process, { include: ['selected_processes'], params: { workflow_id: workflow.id } }) }
   let(:serialization) { serializer.as_json }
   let(:finance_category) { "Finance" }
   let(:phase) { "Visioning" }
