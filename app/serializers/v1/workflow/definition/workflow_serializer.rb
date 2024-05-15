@@ -20,6 +20,8 @@ class V1::Workflow::Definition::WorkflowSerializer < ApplicationSerializer
   end
   
   has_many :processes, serializer: V1::Workflow::Definition::BasicProcessSerializer do |workflow, params|
-    workflow.displayed_processes.includes(:taggings, :categories).order('workflow_definition_selected_processes.position')
+    if params[:workflow_id]
+      workflow.displayed_processes.includes(:taggings, :categories).order('workflow_definition_selected_processes.position')
+    end
   end
 end
