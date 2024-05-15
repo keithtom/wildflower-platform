@@ -15,16 +15,18 @@ module Workflow
           if @workflow.published? # instantaneous change
             update_selected_process_position
             propagate_position_change_to_instances(@selected_process.reload)
+          else
+            @selected_process.reposition! unless (@selected_process.upgraded? || @selected_process.added?) # keep the state of an upgraded or added selected process, even after a position change
+            @selected_process.update!(position: @position)
+          end
             
-            if renumbering_needed?
-              renumber_all_positions
+          if renumbering_needed?
+            renumber_all_positions
+            if @workflow.published?
               @workflow.selected_processes.each do |sp|
                 propagate_position_change_to_instances(sp)
               end
             end
-          else
-            @selected_process.reposition! unless (@selected_process.upgraded? || @selected_process.added?) # keep the state of an upgraded or added selected process, even after a position change
-            @selected_process.update!(position: @position)
           end
         end
       
@@ -33,6 +35,10 @@ module Workflow
         def validate_position
           if @position.to_i.to_s != @position.to_s
             raise RepositionError.new("new position must be an integer")
+          end
+        
+          if @position.to_i == 0
+            raise RepositionError.new("new position cannot be 0")
           end
         end
 
