@@ -11,6 +11,7 @@ module Workflow
             upgraded: 0,
             repositioned: 0
           }
+          @dependency_creators = []
         end
       
         def run
@@ -23,6 +24,7 @@ module Workflow
                 rollout_removes(workflow_instance)
                 rollout_upgrades(workflow_instance)
                 rollout_repositions(workflow_instance)
+                rollout_dependencies # Create dependencies 
 
                 workflow_instance.version = @workflow.version
                 workflow_instance.definition = @workflow
@@ -32,8 +34,6 @@ module Workflow
               Rails.logger.error("Error rolling out version changes from workflow definition id #{@workflow.id} to instance id #{workflow_instance.id}: #{e.message}")
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
-
-              raise e
             end
           end
           finish_publish_stats
@@ -64,9 +64,9 @@ module Workflow
             if previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
               process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
               sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
-                ::Workflow::Instance::Dependency::Create.run(dependency_definition, workflow_instance, process_instance)
+                create_dependency_later(dependency_definition, workflow_instance, process_instance)
               end
-              if process_instance.prerequisites.empty?
+              if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
                 process_instance.prerequisites_met!
               end
               @process_stats[:added] += 1
@@ -104,9 +104,9 @@ module Workflow
 
                 new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
                 sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
-                  ::Workflow::Instance::Dependency::Create.run(dependency_definition, workflow_instance, new_process_instance)
+                  create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
                 end
-                if new_process_instance.prerequisites.empty?
+                if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
                   new_process_instance.prerequisites_met!
                 end
                 @process_stats[:upgraded] += 1
@@ -127,6 +127,16 @@ module Workflow
           end
         end
       
+        def rollout_dependencies
+          @dependency_creators.each do |creators|
+            creators.run
+          end
+        end
+
+        def create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
+          @dependency_creators << ::Workflow::Instance::Dependency::Create.new(dependency_definition, workflow_instance, new_process_instance)
+        end
+
         def finish_publish_stats
           @workflow.published_at = DateTime.now
           @workflow.rollout_completed_at = DateTime.now
