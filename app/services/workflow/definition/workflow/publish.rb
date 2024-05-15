@@ -24,7 +24,7 @@ module Workflow
                 rollout_removes(workflow_instance)
                 rollout_upgrades(workflow_instance)
                 rollout_repositions(workflow_instance)
-                rollout_dependencies # Create dependencies after all removal/additions of processes
+                rollout_dependencies # Create dependencies 
 
                 workflow_instance.version = @workflow.version
                 workflow_instance.definition = @workflow
@@ -127,7 +127,7 @@ module Workflow
           end
         end
       
-        def rollout_dependencies(workflow_instance)
+        def rollout_dependencies
           @dependency_creators.each do |creators|
             creators.run
           end
