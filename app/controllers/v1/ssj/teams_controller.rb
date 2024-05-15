@@ -3,18 +3,18 @@ class V1::SSJ::TeamsController < ApiController
 
   def index
     if current_user.is_admin
-      teams = SSJ::Team.all.includes([:workflow, partner_members: [person: [:address, :taggings]]]).order(created_at: :desc)
+      teams = SSJ::Team.all.includes([:workflow]).order(created_at: :desc)
     elsif current_user&.person&.is_og?
-      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow, partner_members: [person: [:address, :taggings]]]).order(created_at: :desc)
+      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow]).order(created_at: :desc)
     else
       return render json: { message: "Unauthorized" }, status: :unauthorized
     end
-    render json: V1::SSJ::TeamSerializer.new(teams, team_options)
+    render json: V1::SSJ::TeamSerializer.new(teams)
   end
 
   def show
     if team = SSJ::Team.includes([partner_members: [person: [:hub, :profile_image_attachment, :schools, :school_relationships, taggings: [:tag]]]]).find_by!(external_identifier: params[:id])
-      render json: V1::SSJ::TeamSerializer.new(team, team_options)
+      render json: V1::SSJ::TeamSerializer.new(team, team_options.merge!({params: {team_id: team.id}}))
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class V1::SSJ::TeamsController < ApiController
   def update
     if team = SSJ::Team.find_by!(external_identifier: params[:id])
       team.update!(team_params)
-      render json: V1::SSJ::TeamSerializer.new(team, team_options)
+      render json: V1::SSJ::TeamSerializer.new(team, team_options.merge!({params: {team_id: team.id}}))
     else
       render json: { message: "unable to update team"}, status: :unprocessable_entity
     end
@@ -44,7 +44,7 @@ class V1::SSJ::TeamsController < ApiController
   def invite_partner
     if team = SSJ::Team.find_by!(external_identifier: params[:team_id])
       SSJ::InvitePartner.run(person_params, team, current_user)
-      render json: V1::SSJ::TeamSerializer.new(team)
+      render json: V1::SSJ::TeamSerializer.new(team, team_options.merge!({params: {team_id: team.id}}))
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
     end
