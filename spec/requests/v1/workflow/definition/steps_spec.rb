@@ -75,6 +75,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
 
         it 'updates the step' do
           step.reload
+          puts response.inspect
           expect(response).to have_http_status(:success)
           expect(step.process_id).to eq(process2.id)
           expect(step.title).to eq('Updated Step')
@@ -88,6 +89,14 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
         it 'returns the updated step as JSON' do
           expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options).to_json
           expect(response.body).to eq(expected_json)
+        end
+
+        context "updating position to an invalid one" do
+          let(:valid_params) { { step: { position: 0 } } } 
+
+          it "returns a 422 status" do
+            expect(response).to have_http_status(422)
+          end
         end
       end
     
