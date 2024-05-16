@@ -33,6 +33,7 @@ class Network::UpdateAirtableRecords < BaseCommand
       query.where(platform_airtable_id: nil).each do |instance|
         airtable_record = airtable_table.create(field_func.call(instance))
         instance.platform_airtable_id = airtable_record.id
+        instance.save!
         instance.update_column(:airtable_sync_at, DateTime.now)
         creates += 1
         Rails.logger.info("Created #{name} airtable record #{instance.platform_airtable_id} (#{instance.id})")
