@@ -17,6 +17,7 @@ class SSJ::InviteTeam < BaseService
     create_users_and_people
     create_workflow_instance
     create_team
+    create_school
     send_emails
     @team
   end
@@ -53,6 +54,15 @@ class SSJ::InviteTeam < BaseService
     @user_params.each do |param|
       person= Person.find_by email: param[:email].downcase
       SSJ::TeamMember.create!(person: person, ssj_team: @team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
+    end
+    @team.temp_name = @team.build_temp_name
+    @team.save!
+  end
+
+  def create_school
+    school = School.create!(name: @team.temp_name, affiliated: false)
+    @team.partner_members.each do |member|
+      SchoolRelationship.create!(school_id: school.id, person_id: member.person_id)
     end
   end
 
