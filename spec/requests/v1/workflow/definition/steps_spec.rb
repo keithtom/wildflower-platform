@@ -91,6 +91,14 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
         end
       end
     
+      context "updating position to an invalid one" do
+        let(:valid_params) { { step: { position: 0 } } } 
+
+        it "returns a 422 status" do
+          expect(response).to have_http_status(422)
+        end
+      end
+    
       context 'parent process is published' do
         let(:valid_params) { { step: { 
           title: 'Updated Step', description: 'This is an updated step', position: 2, 
