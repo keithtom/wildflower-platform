@@ -19,6 +19,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
         process_instance = process_definition.instances.last
         expect(process_instance.prerequisites_met?).to be_truthy
         expect(process_definition.reload.published_at).to_not be_nil
+        expect(process_instance.prerequisites_met?).to be_truthy
       end
 
       context 'when the new process has a prerequisite' do

@@ -39,7 +39,7 @@ module SSJ
     end
   
     # Returns a temporary name for the team based on its partner members' first names, location, and level.
-    def temp_name
+    def build_temp_name
       temp_name = ""
       location = nil
       level = []

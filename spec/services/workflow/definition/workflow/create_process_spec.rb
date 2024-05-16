@@ -31,6 +31,11 @@ RSpec.describe Workflow::Definition::Workflow::CreateProcess do
         selected_process = Workflow::Definition::SelectedProcess.find_by(workflow_id: workflow.id, process_id: process.id)
         expect(selected_process.added?).to be true
       end
+    
+      it "creates a new process, setting the version to 1" do
+        process = subject.run
+        expect(process.version).to eq("v1")
+      end
     end
   end
 end

@@ -21,11 +21,21 @@ class V1::Workflow::Definition::BasicProcessSerializer < ApplicationSerializer
     get_categories(process)
   end
 
+  attribute :is_prerequisite do |process, params|
+    if params[:workflow_id]
+      !Workflow::Definition::Dependency.where(workflow_id: params[:workflow_id], prerequisite_workable_id: process.id, prerequisite_workable_type: process.class.to_s).empty?
+    end
+  end
+
+  attribute :prerequisite_titles do |process, params|
+    if params[:workflow_id]
+      process.prerequisites.merge(Workflow::Definition::Dependency.where(workflow_id: params[:workflow_id])).pluck(:title)
+    end
+  end
+
   has_many :selected_processes, serializer: V1::Workflow::Definition::SelectedProcessSerializer do |process, params|
     if params[:workflow_id]
       process.selected_processes.where(workflow_id: params[:workflow_id]).order(:position)
-    else
-      process.selected_processes.order(:position)
     end
   end
 end

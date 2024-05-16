@@ -15,6 +15,15 @@ RSpec.describe Workflow::Definition::Workflow::RemoveProcess do
       end
     end
     
+    context "process is a prerequisite of another process" do
+      let!(:workable_dependency) { Workflow::Definition::Dependency.create(workflow: workflow, prerequisite_workable: process, workable: workable_process) }
+      let(:workable_process) { create(:workflow_definition_process) }
+
+      it "raises an error" do
+        expect { subject.run }.to raise_error(Workflow::Definition::Workflow::RemoveProcessError)
+      end
+    end
+    
     context "selected process associating process is in state: replicated" do
       let!(:selected_process) { create(:selected_process, workflow: workflow, process: process, state: "replicated") }
 
