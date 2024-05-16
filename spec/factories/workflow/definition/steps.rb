@@ -4,7 +4,6 @@ FactoryBot.define do
     title { Faker::Company.bs }
     description { Faker::Lorem.paragraph }
     kind { Workflow::Definition::Step::DEFAULT }
-    position { Workflow::Definition::Step::DEFAULT_INCREMENT }
     completion_type { Workflow::Definition::Step::EACH_PERSON }
     min_worktime { rand(100) * 60 * 60}
     max_worktime { (100+rand(100)) * 60 * 60}
