@@ -8,12 +8,12 @@ RSpec.describe SSJ::Team, type: :model do
     its(:people) { is_expected.to include(ops_guide) }
   end
 
-    describe '#temp_name' do
+    describe '#build_temp_name' do
     let(:team) { create(:ssj_team) }
 
         context 'when the team has no partner members' do
       it 'returns a default name' do
-        expect(team.temp_name).to eq('school')
+        expect(team.build_temp_name).to eq('school')
       end
     end
 
@@ -27,7 +27,7 @@ RSpec.describe SSJ::Team, type: :model do
       end
 
       it 'returns a name based on the partner members' do
-        expect(team.temp_name).to eq('John-Jane-school')
+        expect(team.build_temp_name).to eq('John-Jane-school')
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe SSJ::Team, type: :model do
       end
 
       it 'returns a name based on the partner members' do
-        expect(team.temp_name).to eq('John-Jane-CA-K-1-school')
+        expect(team.build_temp_name).to eq('John-Jane-CA-K-1-school')
       end
     end
 
@@ -53,7 +53,7 @@ RSpec.describe SSJ::Team, type: :model do
       end
 
       it 'returns a name based on the partner members' do
-        expect(team.temp_name).to eq('school')
+        expect(team.build_temp_name).to eq('school')
       end
     end
   end

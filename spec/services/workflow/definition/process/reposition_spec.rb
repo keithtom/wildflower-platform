@@ -25,6 +25,14 @@ RSpec.describe Workflow::Definition::SelectedProcess::Reposition, type: :service
       end
     end
 
+    context "position is 0" do
+      let(:position) { 0 }
+      
+      it "raises an error" do
+        expect{subject.run}.to raise_error(Workflow::Definition::SelectedProcess::RepositionError)
+      end
+    end
+
     context "renumbering is needed" do
       let!(:sp_first) { create(:selected_process, workflow: workflow, position: first_position) }
       let!(:sp_second) { create(:selected_process, workflow: workflow, position: first_position) }
@@ -67,6 +75,24 @@ RSpec.describe Workflow::Definition::SelectedProcess::Reposition, type: :service
     context "when the workflow is not published" do
       before do
         allow(workflow).to receive(:published?).and_return(false)
+      end
+
+      context "renumbering is needed after update of position" do
+        let(:first_position) { 100 }
+        let(:second_position) { 102 }
+        let(:third_position) { 104 }
+        let(:position) { 103 }
+
+        before do
+          sp_first.update(state: 'replicated')
+        end
+
+        it "renumbers the selected processes' positions" do
+          subject.run
+          expect(sp_first.reload.position).to eq(2000)
+          expect(sp_second.reload.position).to eq(1000)
+          expect(sp_third.reload.position).to eq(3000)
+        end
       end
 
       context 'when selected process is replicated' do
