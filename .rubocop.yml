@@ -2,22 +2,24 @@ require:
   - rubocop-rails
   - rubocop-rspec
 
-
 Bundler/OrderedGems:
-    Enabled: false
+  Enabled: false
 
 Style/Documentation:
-    Enabled: false
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
 
 AllCops:
   NewCops: enable
   Exclude:
-    - 'bin/*'
-    - 'config/**/*'
-    - 'db/**/*'
-    - 'node_modules/**/*'
-    - 'log/**'
-    - 'public/**'
-    - 'storage/**/*'
-    - 'tmp/**/*'
-    - 'vendor/**/*'
+    - "bin/*"
+    - "config/**/*"
+    - "db/**/*"
+    - "node_modules/**/*"
+    - "log/**"
+    - "public/**"
+    - "storage/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"

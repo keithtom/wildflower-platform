@@ -13,7 +13,7 @@ module Workflow
           }
           @dependency_creators = []
         end
-      
+
         def run
           validate
           set_tracking_stats
@@ -40,7 +40,7 @@ module Workflow
 
           return @process_stats
         end
-      
+
         def validate
           if @workflow.published?
             raise PublishError.new("workflow id #{@workflow.id} is already published")
@@ -54,10 +54,10 @@ module Workflow
         def set_tracking_stats
           @workflow.rollout_started_at = DateTime.now
           @workflow.save!
-          
+
           # todo: probably need more stats
         end
-      
+
         def rollout_adds(workflow_instance)
           @workflow.selected_processes.where(state: "added").each do |sp|
             previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
@@ -92,7 +92,7 @@ module Workflow
             end
           end
         end
-        
+
         def rollout_upgrades(workflow_instance)
           @workflow.selected_processes.where(state: "upgraded").each do |sp|
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
@@ -116,7 +116,7 @@ module Workflow
             end
           end
         end
-      
+
         def rollout_repositions(workflow_instance)
           @workflow.selected_processes.where(state: "repositioned").each do |sp|
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
@@ -126,7 +126,7 @@ module Workflow
             end
           end
         end
-      
+
         def rollout_dependencies
           @dependency_creators.each do |creators|
             creators.run
@@ -141,11 +141,11 @@ module Workflow
           @workflow.published_at = DateTime.now
           @workflow.rollout_completed_at = DateTime.now
           @workflow.save!
-          
+
           Rails.logger.info("Finished rollout of workflow definition id #{@workflow.id}: #{@process_stats.inspect}")
         end
       end
-    
+
       class PublishError < StandardError
       end
     end

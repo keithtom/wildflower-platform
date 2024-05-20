@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
@@ -99,7 +101,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
           end
         end
       end
-    
+
       context 'parent process is published' do
         let(:valid_params) { { step: { 
           title: 'Updated Step', description: 'This is an updated step', position: 2, 
@@ -136,10 +138,10 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
           end
 
           it 'does not update the definition or instances' do
-            expect(response).to have_http_status(400)
-            expect(JSON.parse(response.body)["message"]).to eq("Attribute(s) cannot be an instantaneously changed: kind")
-            expect(step.reload.title).to_not eq('Updated Step')
-            expect(instance_step.reload.title).to_not eq('Updated Step')
+            expect(response).to have_http_status(:unprocessable_entity)
+            expect(JSON.parse(response.body)['message']).to eq('Attribute(s) cannot be an instantaneously changed: kind')
+            expect(step.reload.title).not_to eq('Updated Step')
+            expect(instance_step.reload.title).not_to eq('Updated Step')
           end
         end
       end

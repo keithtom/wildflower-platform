@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class V1::Workflow::Definition::WorkflowSerializer < ApplicationSerializer
   set_id :id
 
@@ -11,14 +13,12 @@ class V1::Workflow::Definition::WorkflowSerializer < ApplicationSerializer
     workflow.instances.count
   end
 
-  attribute :published do |workflow|
-    workflow.published?
-  end
-  
+  attribute :published, &:published?
+
   attribute :rollout_in_progress do |workflow|
     !workflow.rollout_started_at.nil? && workflow.rollout_completed_at.nil?
   end
-  
+
   has_many :processes, serializer: V1::Workflow::Definition::BasicProcessSerializer do |workflow, params|
     if params[:workflow_id]
       workflow.displayed_processes.includes(:taggings, :categories).order('workflow_definition_selected_processes.position')

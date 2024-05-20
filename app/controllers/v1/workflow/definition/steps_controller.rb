@@ -15,18 +15,15 @@ class V1::Workflow::Definition::StepsController < ApiController
   def update
     step = Workflow::Definition::Step.find_by!(id: params[:id], process_id: params[:process_id])
 
-    if step&.process&.published? # if process is published, its an instantaneous change
-      begin
+    begin
+      if step&.process&.published? # if process is published, its an instantaneous change
         Workflow::Definition::Step::PropagateInstantaneousChange.run(step, step_params)
-      rescue Exception => e
-        log_error(e)
-        return render json: { message: e.message }, status: :bad_request
+      else
+        Workflow::Definition::Step::Update.run(step, step_params)
       end
-    else
-      if (step_params[:position].to_i.to_s != step_params[:position].to_s) || (step_params[:position].to_i < 1)
-        return render json: { message: "position must be an integer greater than 0"}, status: :unprocessable_entity
-      end
-      step.update!(step_params)
+    rescue Exception => e
+      log_error(e)
+      return render json: { message: e.message }, status: :unprocessable_entity
     end
 
     render json: V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options)
