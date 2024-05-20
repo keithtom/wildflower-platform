@@ -6,14 +6,14 @@ module Workflow
           @workflow = workflow
           @new_version = nil
         end
-      
+
         def run
           create_new_version
           clone_selected_processes
           clone_dependencies
           return @new_version
         end
-      
+
         private
 
         def create_new_version
@@ -23,7 +23,7 @@ module Workflow
           @new_version.published_at = nil
           @new_version.save!
         end
-      
+
         # TODO: pusb this to a background worker?
         def clone_selected_processes
           @workflow.selected_processes.where.not(state: 'removed').each do |sp|
@@ -34,7 +34,7 @@ module Workflow
             new_sp.save!
           end
         end
-      
+
         def clone_dependencies
           @workflow.dependencies.each do |dependency|
             new_dependency = dependency.dup
