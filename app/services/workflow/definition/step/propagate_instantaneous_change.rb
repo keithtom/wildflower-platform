@@ -11,15 +11,16 @@ module Workflow
           @step_definition = step_definition
           @param_changes = param_changes.to_hash.with_indifferent_access
         end
-      
+
         def run
           validate_param_changes
           update_definition
           scrub_param_changes
           update_instances
         end
-      
-        private 
+
+        private
+
         def validate_param_changes
           action_on_unpermitted_parameters = ActionController::Parameters.action_on_unpermitted_parameters
           ActionController::Parameters.action_on_unpermitted_parameters = :raise
@@ -44,7 +45,6 @@ module Workflow
           @param_changes.delete(:decision_options_attributes)
         end
 
-      
         def update_instances
           unless @param_changes.empty?
             @step_definition.instances.update_all(@param_changes)
