@@ -18,6 +18,15 @@ RSpec.describe Workflow::Definition::Process::NewVersion, type: :service do
       prerequisite_workable_type: Workflow::Definition::Process
     )
   end
+  let!(:dependency_prerequisite) do
+    Workflow::Definition::Dependency.create!(
+      workflow_id: workflow.id,
+      workable_id: create(:workflow_definition_process).id,
+      workable_type: Workflow::Definition::Process,
+      prerequisite_workable_id: process.id,
+      prerequisite_workable_type: Workflow::Definition::Process
+    )
+  end
 
   describe '#run' do
     it 'creates a new process version that points to the old one, all other attributes are the same' do
@@ -41,6 +50,11 @@ RSpec.describe Workflow::Definition::Process::NewVersion, type: :service do
     it 'updates the dependency to the new process version' do
       new_version = new_version_service.run
       expect(dependency.reload.workable).to eq(new_version)
+    end
+
+    it 'updates the prerequisite to the new process version' do
+      new_version = new_version_service.run
+      expect(dependency_prerequisite.reload.prerequisite_workable).to eq(new_version)
     end
 
     it 'updates the selected process to the new process version' do

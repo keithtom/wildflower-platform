@@ -61,12 +61,12 @@ module Workflow
 
         # dependencies were already cloned when workflow definition was cloned. Update the process id here.
         def update_dependencies
-          @process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency|
-            if dependency.workable_id == @process.id
-              dependency.workable_id = @new_version.id
-            elsif dependency.prerequisite_workable_id == @process.id
-              dependency.prerequisite_workable_id = @new_version.id
-            end
+          ::Workflow::Definition::Dependency.where(workflow_id: @workflow.id, workable_id: @process.id).each do |dependency|
+            dependency.workable_id = @new_version.id
+            dependency.save!
+          end
+          ::Workflow::Definition::Dependency.where(workflow_id: @workflow.id, prerequisite_workable_id: @process.id).each do |dependency|
+            dependency.prerequisite_workable_id = @new_version.id
             dependency.save!
           end
         end
