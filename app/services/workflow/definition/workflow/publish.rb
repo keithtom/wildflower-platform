@@ -128,8 +128,8 @@ module Workflow
         end
 
         def rollout_dependencies
-          @dependency_creators.each do |creators|
-            creators.run
+          @dependency_creators.each do |creator|
+            creator.run
           end
         end
 
