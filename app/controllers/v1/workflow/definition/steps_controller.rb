@@ -23,9 +23,10 @@ class V1::Workflow::Definition::StepsController < ApiController
         return render json: { message: e.message }, status: :bad_request
       end
     else
-      if (step_params[:position].to_i.to_s != step_params[:position].to_s) || (step_params[:position].to_i < 1)
-        return render json: { message: "position must be an integer greater than 0"}, status: :unprocessable_entity
+      if step_params[:position] && ((step_params[:position].to_i.to_s != step_params[:position].to_s) || (step_params[:position].to_i < 1))
+        return render json: { message: 'position must be an integer greater than 0' }, status: :unprocessable_entity
       end
+
       step.update!(step_params)
     end
 
