@@ -54,7 +54,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     end
 
     PublishWorkflowJob.perform_later(params[:workflow_id])
-    render json: { message: "Rollout in progress" }
+    render json: { message: 'Rollout in progress' }
   end
 
   def create_process

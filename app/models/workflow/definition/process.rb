@@ -18,6 +18,9 @@ module Workflow
     has_many :prerequisites, through: :workable_dependencies, source: :prerequisite_workable, source_type: 'Workflow::Definition::Process'
     accepts_nested_attributes_for :workable_dependencies
 
+    has_many :prerequisite_dependencies, class_name: 'Workflow::Definition::Dependency', as: :prerequisite_workable
+    has_many :postrequisites, through: :prerequisite_dependencies, source: :workable, source_type: 'Workflow::Definition::Process'
+
     acts_as_taggable_on :categories, :phase
 
     belongs_to :previous_version, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_version_id', optional: true
