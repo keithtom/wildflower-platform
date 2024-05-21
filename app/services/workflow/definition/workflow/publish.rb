@@ -94,17 +94,21 @@ module Workflow
         end
 
         def rollout_upgrades(workflow_instance)
-          @workflow.selected_processes.where(state: "upgraded").each do |sp|
+          @workflow.selected_processes.where(state: 'upgraded').each do |sp|
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
               if process_instance.unstarted?
                 workflow_instance = process_instance.workflow
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
+                process_instance.prerequisite_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.steps.destroy_all
                 process_instance.destroy!
 
                 new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
                 sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
                   create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
+                end
+                sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
+                  create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
                 end
                 if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
                   new_process_instance.prerequisites_met!
@@ -134,7 +138,20 @@ module Workflow
         end
 
         def create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-          @dependency_creators << ::Workflow::Instance::Dependency::Create.new(dependency_definition, workflow_instance, new_process_instance)
+          @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
+            dependency_definition,
+            workflow_instance,
+            new_process_instance
+          )
+        end
+
+        def create_prereq_dependency_later(dependency_definition, workflow_instance, new_process_instance)
+          @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
+            dependency_definition,
+            workflow_instance,
+            nil,
+            new_process_instance
+          )
         end
 
         def finish_publish_stats
