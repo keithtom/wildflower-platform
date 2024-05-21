@@ -9,7 +9,8 @@ module Workflow
             added: 0,
             removed: 0,
             upgraded: 0,
-            repositioned: 0
+            repositioned: 0,
+            error_raised: false
           }
           @dependency_creators = []
         end
@@ -34,6 +35,7 @@ module Workflow
               Rails.logger.error("Error rolling out version changes from workflow definition id #{@workflow.id} to instance id #{workflow_instance.id}: #{e.message}")
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
+              @process_stats[:error_raised] = true
             end
           end
           finish_publish_stats
@@ -156,7 +158,8 @@ module Workflow
 
         def finish_publish_stats
           @workflow.published_at = DateTime.now
-          @workflow.rollout_completed_at = DateTime.now
+          @workflow.rollout_completed_at = DateTime.now unless @process_stats[:error_raised]
+          @workflow.needs_support = true if @process_stats[:error_raised]
           @workflow.save!
 
           Rails.logger.info("Finished rollout of workflow definition id #{@workflow.id}: #{@process_stats.inspect}")
