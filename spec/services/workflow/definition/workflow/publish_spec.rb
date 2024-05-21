@@ -156,6 +156,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
         allow(subject).to receive(:rollout_adds).and_raise(RuntimeError, 'Error occurred during rollout_adds')
         subject.run
         expect(workflow.reload.needs_support).to be_truthy
+        expect(workflow.published?).to be_falsey
       end
     end
   end

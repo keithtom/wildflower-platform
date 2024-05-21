@@ -157,9 +157,12 @@ module Workflow
         end
 
         def finish_publish_stats
-          @workflow.published_at = DateTime.now
-          @workflow.rollout_completed_at = DateTime.now unless @process_stats[:error_raised]
-          @workflow.needs_support = true if @process_stats[:error_raised]
+          if @process_stats[:error_raised]
+            @workflow.needs_support = true
+          else
+            @workflow.published_at = DateTime.now
+            @workflow.rollout_completed_at = DateTime.now
+          end
           @workflow.save!
 
           Rails.logger.info("Finished rollout of workflow definition id #{@workflow.id}: #{@process_stats.inspect}")
