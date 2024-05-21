@@ -3,7 +3,8 @@
 class V1::Workflow::Definition::WorkflowSerializer < ApplicationSerializer
   set_id :id
 
-  attributes :name, :description, :version, :created_at, :rollout_started_at, :rollout_completed_at, :previous_version_id
+  attributes :name, :description, :version, :created_at, :rollout_started_at, :rollout_completed_at,
+             :previous_version_id, :needs_support
 
   attribute :num_of_versions do |workflow|
     Workflow::Definition::Workflow.where(name: workflow.name).count

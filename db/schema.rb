@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_16_144827) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_21_163640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -571,6 +571,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_16_144827) do
     t.datetime "rollout_started_at"
     t.datetime "rollout_completed_at"
     t.datetime "deleted_at"
+    t.boolean "needs_support", default: false
     t.index ["deleted_at"], name: "index_workflow_definition_workflows_on_deleted_at"
   end
 
