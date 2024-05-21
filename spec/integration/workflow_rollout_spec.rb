@@ -46,14 +46,3 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
     end
   end
 end
-
-# create a new workflow using CreateDummy service
-# instantiate that workflow
-# create a person, with an ssj team, using the new workflow instance
-
-# hit the new_version of workflow endpoint, grab the workflow id
-# get the workflow process with name "Milestone E"
-# hit new version endpoint for Milestone E
-# hit publish endpoint
-
-# observe that the process instance for Milestone D-E-F does not have the prerequisite Milestone E

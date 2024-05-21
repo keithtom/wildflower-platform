@@ -11,6 +11,9 @@ Style/Documentation:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 AllCops:
   NewCops: enable
   Exclude:
