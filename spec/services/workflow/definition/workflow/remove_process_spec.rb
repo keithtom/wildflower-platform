@@ -65,5 +65,16 @@ RSpec.describe Workflow::Definition::Workflow::RemoveProcess do
         subject.run
       end
     end
+    
+    context 'when selected process\'s associated process is in state: upgraded' do
+      let(:previous_version) { create(:selected_process, workflow: workflow, process: create(:workflow_definition_process), state: 'initialized') }
+      let!(:selected_process) { create(:selected_process, workflow: workflow, process: process, state: 'upgraded', previous_version: previous_version) }
+
+      it 'reverts selected process before moving it to removed state' do
+        expect(Workflow::Definition::SelectedProcess::Revert).to receive(:run).and_call_original
+        subject.run
+        expect(selected_process.reload.removed?).to be_truthy
+      end
+    end
   end
 end
