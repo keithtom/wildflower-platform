@@ -48,7 +48,7 @@ module Workflow
           elsif @selected_process.repositioned?
             @selected_process.remove!
           elsif @selected_process.upgraded?
-            @selected_process.revert!
+            ::Workflow::Definition::SelectedProcess::Revert.run(@selected_process)
             @selected_process.remove!
           else
             raise RemoveProcessError.new("selected process is in an invalid state to be removed")
