@@ -14,7 +14,7 @@ class SSJ::Initialize < BaseService
       create_dependency_instances
       update_process_dependencies
     end
-  @wf_instance
+    @wf_instance
   end
 
   private
