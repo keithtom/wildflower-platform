@@ -32,7 +32,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
         log_error(e)
         return render json: { message: e.message }, status: :bad_request
       end
-    else 
+    else
       process.update!(process_params)
     end
 

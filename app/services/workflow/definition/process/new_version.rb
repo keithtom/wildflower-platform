@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Workflow
   module Definition
     class Process
@@ -38,7 +40,7 @@ module Workflow
 
         # TODO: push this to a background worker?
         def clone_steps
-          @process.steps.each do |step|
+          @process.steps.includes([:documents, :decision_options]).each do |step|
             new_step = step.dup
             new_step.process_id = @new_version.id
             new_step.save!
@@ -65,7 +67,7 @@ module Workflow
             dependency.workable = @new_version
             dependency.save!
           end
-          @process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_dependency|
+          @process.prerequisite_dependencies.includes([:workflow, :workable]).where(workflow_id: @workflow.id).each do |prereq_dependency|
             prereq_dependency.prerequisite_workable = @new_version
             prereq_dependency.save!
           end
