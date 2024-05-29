@@ -18,14 +18,11 @@ class V1::Workflow::ProcessesController < ApiController
     processes = nil
     if params[:phase]
       if SSJ::Phase::PHASES.include?(params[:phase])
-        # find definitions tagged with phase, then load those instances.
-        process_ids = workflow.definition.processes.tagged_with(params[:phase], on: :phase).pluck(:id)
-        
         # don't serialize prerequisites, not needed
         # https://github.com/jsonapi-serializer/jsonapi-serializer#conditional-relationships
         # https://github.com/jsonapi-serializer/jsonapi-serializer#sparse-fieldsets
 
-        processes = workflow.processes.where(definition_id: process_ids).eager_load(*eager_load_associations).by_position
+        processes = workflow.processes.tagged_with(params[:phase], on: :phase).eager_load(*eager_load_associations).by_position
       else
         render :not_found
         return

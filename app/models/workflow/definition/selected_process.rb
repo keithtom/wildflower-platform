@@ -32,9 +32,6 @@ module Workflow
       end
     
       event :revert do
-        before do
-          revert_to_previous_version
-        end
         transitions from: [:removed, :upgraded, :repositioned], to: :replicated
       end
     
@@ -59,15 +56,6 @@ module Workflow
       unless initialized? || added?
         raise StandardError.new("Cannot delete in current state: #{state}")
       end
-    end
-  
-    def revert_to_previous_version
-      if upgraded?
-        process.destroy!
-      end
-
-      self.process = previous_version&.process
-      self.position = previous_version&.position
     end
   end
 end
