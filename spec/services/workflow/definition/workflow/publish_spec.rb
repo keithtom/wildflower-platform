@@ -89,7 +89,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
     end
   end
 
-  describe "#rollout_upgrades" do
+  describe '#rollout_upgrades' do
     let(:process_definition) { create(:workflow_definition_process)}
     let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: process_instance.definition.id, position: 100) }
     let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 100, state: "upgraded", previous_version_id: previous_sp.id)}
@@ -114,7 +114,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       end
     end
 
-    context "if the process instance is started" do
+    context 'when the process instance is started' do
       let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'started')}
 
       it "does nothing" do
@@ -123,7 +123,7 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       end
     end
 
-    context "if the process instance is finished" do
+    context 'when the process instance is finished' do
       let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'finished')}
 
       it "does nothing" do
@@ -141,6 +141,23 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
     it 'updates the position of the process instance' do
       subject.run
       expect(process_instance.reload.position).to eq(200)
+    end
+  end
+
+  describe 'run' do
+    context 'when an error is raised' do
+      let(:process_definition) { create(:workflow_definition_process)}
+
+      before do
+        create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 1, state: 'added')
+      end
+
+      it 'marks the workflow as needs support' do
+        allow(subject).to receive(:rollout_adds).and_raise(RuntimeError, 'Error occurred during rollout_adds')
+        subject.run
+        expect(workflow.reload.needs_support).to be_truthy
+        expect(workflow.published?).to be_falsey
+      end
     end
   end
 end

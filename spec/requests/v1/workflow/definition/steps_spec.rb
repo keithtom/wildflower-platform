@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
@@ -75,6 +77,7 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
 
         it 'updates the step' do
           step.reload
+          puts response.inspect
           expect(response).to have_http_status(:success)
           expect(step.process_id).to eq(process2.id)
           expect(step.title).to eq('Updated Step')
@@ -89,8 +92,16 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
           expected_json = V1::Workflow::Definition::StepSerializer.new(step.reload, serializer_options).to_json
           expect(response.body).to eq(expected_json)
         end
+
+        context "updating position to an invalid one" do
+          let(:valid_params) { { step: { position: 0 } } } 
+
+          it "returns a 422 status" do
+            expect(response).to have_http_status(422)
+          end
+        end
       end
-    
+
       context 'parent process is published' do
         let(:valid_params) { { step: { 
           title: 'Updated Step', description: 'This is an updated step', position: 2, 
@@ -127,10 +138,10 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
           end
 
           it 'does not update the definition or instances' do
-            expect(response).to have_http_status(400)
-            expect(JSON.parse(response.body)["message"]).to eq("Attribute(s) cannot be an instantaneously changed: kind")
-            expect(step.reload.title).to_not eq('Updated Step')
-            expect(instance_step.reload.title).to_not eq('Updated Step')
+            expect(response).to have_http_status(:unprocessable_entity)
+            expect(JSON.parse(response.body)['message']).to eq('Attribute(s) cannot be an instantaneously changed: kind')
+            expect(step.reload.title).not_to eq('Updated Step')
+            expect(instance_step.reload.title).not_to eq('Updated Step')
           end
         end
       end

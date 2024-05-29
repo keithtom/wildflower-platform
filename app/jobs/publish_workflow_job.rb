@@ -5,4 +5,3 @@ class PublishWorkflowJob < ApplicationJob
     Workflow::Definition::Workflow::Publish.run(workflow_definition_id)
   end
 end
-# 

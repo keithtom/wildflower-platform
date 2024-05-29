@@ -16,7 +16,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     process.definition.phase_list.first
   end
 
-    # update this.
+  # update this.
   attribute :steps_assigned_count do |process|
     process.steps.assigned.count
   end
@@ -26,7 +26,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   end
 
   has_many :steps, serializer: V1::Workflow::StepSerializer, id_method_name: :external_identifier do |process, params|
-      process.steps.by_position
+    process.steps.by_position
   end
 
   has_many :prerequisite_processes, if: Proc.new { |process, params| params && params[:prerequisites] }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
