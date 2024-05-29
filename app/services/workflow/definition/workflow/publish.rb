@@ -102,6 +102,7 @@ module Workflow
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
               if process_instance.unstarted?
                 workflow_instance = process_instance.workflow
+                # destroy any existing dependencies, will create new ones
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.prerequisite_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.steps.destroy_all
