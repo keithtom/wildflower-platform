@@ -40,7 +40,7 @@ module Workflow
           @selected_process.process = @original_process
           @selected_process.save!
         end
-        
+
         def revert_position
           @selected_process.position = @selected_process.previous_version&.position
           @selected_process.save!
