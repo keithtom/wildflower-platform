@@ -43,8 +43,8 @@ module Workflow
             @selected_process.destroy!
           elsif @selected_process.replicated?
             # remove dependencies
-            @selected_process.process.workable_dependencies.destroy_all
-            @selected_process.process.prerequisite_dependencies.destroy_all
+            @selected_process.process.workable_dependencies.where(workflow_id: @selected_process.workflow_id).destroy_all
+            @selected_process.process.prerequisite_dependencies.where(workflow_id: @selected_process.workflow_id).destroy_all
 
             @selected_process.remove!
           elsif @selected_process.repositioned?

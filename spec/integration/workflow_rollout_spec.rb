@@ -89,4 +89,38 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
       Bullet.enable = true
     end
   end
+
+  context 'when removing the prerequisites of a process, and then reverting the changes' do
+    it 'the process should have the original prerequisites again' do
+      # create new version of workflow
+      post "/v1/workflow/definition/workflows/#{wf_definition.id}/new_version"
+      new_version_id = JSON.parse(response.body)['data']['id']
+      new_wf_definition = Workflow::Definition::Workflow.find(new_version_id)
+
+      # clones process that has a prerequisite
+      sign_in(admin)
+      dep_process = new_wf_definition.processes.find_by(title: 'Milestone C-X')
+      post "/v1/workflow/definition/workflows/#{new_wf_definition.id}/new_version/#{dep_process.id}"
+      expect(response).to have_http_status(:success)
+      dependency_id = JSON.parse(response.body)['data']['relationships']['workableDependencies']['data'].first['id']
+      selected_process_id = JSON.parse(response.body)['data']['relationships']['selectedProcesses']['data'].first['id']
+
+      # remove prerequisite from newly cloned process
+      sign_in(admin)
+      delete "/v1/workflow/definition/dependencies/#{dependency_id}"
+      expect(response).to have_http_status(:success)
+      dep_process_cloned = new_wf_definition.reload.processes.find_by(title: 'Milestone C-X')
+      expect(dep_process_cloned.workable_dependencies.where(workflow_id: new_wf_definition.id).count).to eq(0)
+
+      # revert changes made to newly cloned process
+      sign_in(admin)
+      put "/v1/workflow/definition/selected_processes/#{selected_process_id}/revert"
+      expect(response).to have_http_status(:success)
+
+      dep_process_reverted = new_wf_definition.reload.processes.find_by(title: 'Milestone C-X')
+      expect(dep_process_reverted.workable_dependencies.where(workflow_id: new_wf_definition.id).count).to eq(1)
+
+      Bullet.enable = true
+    end
+  end
 end
