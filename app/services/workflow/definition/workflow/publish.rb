@@ -32,7 +32,8 @@ module Workflow
                 workflow_instance.save!
               end
             rescue Exception => e
-              Rails.logger.error("Error rolling out version changes from workflow definition id #{@workflow.id} to instance id #{workflow_instance.id}: #{e.message}")
+              Rails.logger.error("Rolling out version changes from workflow definition id #{@workflow.id} to instance id #{workflow_instance.id}: ")
+              Rails.logger.error("#{e.message}, for #{e.record.inspect}")
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
               @process_stats[:error_raised] = true
