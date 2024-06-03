@@ -5,16 +5,25 @@ RSpec.describe Workflow::Definition::Workflow::AddProcess do
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:process) { create(:workflow_definition_process) }
     let!(:selected_process) { create(:selected_process, workflow: workflow, process: process) }
-    let(:subject) { Workflow::Definition::Workflow::AddProcess.new(workflow, process, 50) }
+    let(:position) { 50 }
+    let(:subject) { Workflow::Definition::Workflow::AddProcess.new(workflow, process, position) }
 
     context "workflow is published" do
       let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
-        
+
       it "raises an error" do
         expect { subject.run }.to raise_error(Workflow::Definition::Workflow::AddProcessError)
       end
     end
-  
+
+    context 'position is not set' do
+      let(:position) { nil }
+
+      it "raises an error" do
+        expect { subject.run }.to raise_error(Workflow::Definition::Workflow::AddProcessError)
+      end
+    end
+ 
     context "happy path" do
       it "only creates one new selected process" do
         expect { subject.run }.to change {Workflow::Definition::SelectedProcess.count}.by(1)
