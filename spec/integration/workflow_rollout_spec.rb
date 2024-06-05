@@ -123,4 +123,40 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
       Bullet.enable = true
     end
   end
+
+  context 'when upgrading two processes that are dependent on eachother' do
+    it 'keeps the dependencies intact' do
+      Bullet.enable = false
+      # create new version of workflow
+      post "/v1/workflow/definition/workflows/#{wf_definition.id}/new_version"
+      new_version_id = JSON.parse(response.body)['data']['id']
+      new_wf_definition = Workflow::Definition::Workflow.find(new_version_id)
+
+      # start the instance of this process
+      prereq_process = new_wf_definition.processes.find_by(title: 'Milestone C')
+      prereq_process_instance = prereq_process.instances.first
+      prereq_process_instance.started!
+
+      # clones process that is a prerequisite
+      sign_in(admin)
+      post "/v1/workflow/definition/workflows/#{new_wf_definition.id}/new_version/#{prereq_process.id}"
+      expect(response).to have_http_status(:success)
+
+      # clones process that has a prerequisite
+      sign_in(admin)
+      dep_process = new_wf_definition.processes.find_by(title: 'Milestone C-X')
+      post "/v1/workflow/definition/workflows/#{new_wf_definition.id}/new_version/#{dep_process.id}"
+      expect(response).to have_http_status(:success)
+
+      # publish workflow
+      perform_enqueued_jobs do
+        sign_in(admin)
+        put "/v1/workflow/definition/workflows/#{new_wf_definition.id}/publish"
+        expect(response).to have_http_status(:success)
+      end
+
+      expect(new_wf_definition.reload.needs_support).to be_falsey
+      Bullet.enable = true
+    end
+  end
 end
