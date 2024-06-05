@@ -15,12 +15,28 @@ RSpec.describe Workflow::Definition::Workflow::CreateProcess do
 
     context "workflow is published" do
       let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
-        
+
       it "raises an error" do
         expect { subject.run }.to raise_error(Workflow::Definition::Workflow::CreateProcessError)
       end
     end
-  
+
+    context 'position was not included' do
+      let(:process_params) { 
+          {
+            title: 'Updated Process',
+            description: 'This is an updated process',
+            category_list: 'Finance',
+            phase_list: 'Visioning',
+            selected_processes_attributes: [{ workflow_id: workflow.id }]
+          }
+        }
+
+      it 'raises an error' do
+        expect { subject.run }.to raise_error(Workflow::Definition::Workflow::CreateProcessError)
+      end
+    end
+
     context "happy path" do
       it "only creates one new selected process" do
         expect { subject.run }.to change {Workflow::Definition::SelectedProcess.count}.by(1)
