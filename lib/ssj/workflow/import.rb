@@ -37,7 +37,6 @@ module SSJ
       def import_process_library
         # build processes library, having the admin UI will help but using importer for now.
         process_obj = nil
-        process_position = default_process_position
         step_position = 0
 
         @csv.each do |row|
@@ -48,11 +47,10 @@ module SSJ
             puts "creating #{process_title}"
             process_description = row[15]&.strip
             process_category = row[7]&.strip
-            process_position += ::Workflow::Definition::Process::DEFAULT_INCREMENT
 
             puts "WARNING: process_category not in list: #{process_category}" unless ::SSJ::Category::CATEGORIES.include?(process_category)
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description, position: process_position
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description
             process_obj.category_list.add(process_category) # need to add category separately, so that it doens't parse on commas
             process_obj.save!
             step_position = 0
@@ -205,12 +203,12 @@ end
 # require 'ssj/workflow/import'
 def create_default_workflow_and_processes
   require 'open-uri'
-  Workflow::Definition::Step.destroy_all
-  Workflow::Definition::SelectedProcess.destroy_all
-  Workflow::Definition::Process.destroy_all
-  Workflow::Definition::Dependency.destroy_all
-  Workflow::Definition::Workflow.destroy_all
-  workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default", version: Date.today.strftime("%Y-%m-%d-00"), description: "Imported from spreadsheet.  Authored by Maggie Paulin."
+  # Workflow::Definition::Step.destroy_all
+  # Workflow::Definition::SelectedProcess.destroy_all
+  # Workflow::Definition::Process.destroy_all
+  # Workflow::Definition::Dependency.destroy_all
+  # Workflow::Definition::Workflow.destroy_all
+  workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default - testing for Li, with multiple instances", version: "v1", description: "Imported from spreadsheet.  Authored by Maggie Paulin."
 
   visioning_process = workflow_definition.processes.create! title: "End of Visioning", description: "Placeholder process to be a post-prerequisite for all the visioning processes and be a prerequisite for planning processes."
 
