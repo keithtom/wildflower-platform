@@ -12,13 +12,15 @@ module Workflow
             repositioned: 0,
             error_raised: false
           }
-          @dependency_creators = []
         end
 
         def run
           validate
           set_tracking_stats
           @workflow&.previous_version&.instances&.each do |workflow_instance|
+            @dependency_creators = []
+            @dependency_creates = {}
+
             begin
               ActiveRecord::Base.transaction do
                 rollout_adds(workflow_instance)
@@ -143,20 +145,26 @@ module Workflow
         end
 
         def create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-          @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
-            dependency_definition,
-            workflow_instance,
-            new_process_instance
-          )
+          if @dependency_creates[dependency_definition.id].nil?
+            @dependency_creates[dependency_definition.id] = true
+            @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
+              dependency_definition,
+              workflow_instance,
+              new_process_instance
+            )
+          end
         end
 
         def create_prereq_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-          @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
-            dependency_definition,
-            workflow_instance,
-            nil,
-            new_process_instance
-          )
+          if @dependency_creates[dependency_definition.id].nil?
+            @dependency_creates[dependency_definition.id] = true
+            @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
+              dependency_definition,
+              workflow_instance,
+              nil,
+              new_process_instance
+            )
+          end
         end
 
         def finish_publish_stats
