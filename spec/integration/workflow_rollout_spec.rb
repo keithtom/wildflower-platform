@@ -124,7 +124,7 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
     end
   end
 
-  context 'when upgrading two processes that are dependent on eachother' do
+  context 'when upgrading two processes that are dependent on eachother, and the prerequisite has been started' do
     it 'keeps the dependencies intact' do
       Bullet.enable = false
       # create new version of workflow
@@ -156,6 +156,52 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
       end
 
       expect(new_wf_definition.reload.needs_support).to be_falsey
+      Bullet.enable = true
+    end
+  end
+
+  context 'when upgrading two processes that are dependent on eachother, and neither has been started' do
+    before do
+      10.times do
+        new_instance = wf_definition.instances.create!
+        SSJ::Initialize.run(new_instance.id)
+      end
+    end
+
+    it 'does not duplicate the dependency' do
+      Bullet.enable = false
+      # create new version of workflow
+      post "/v1/workflow/definition/workflows/#{wf_definition.id}/new_version"
+      new_version_id = JSON.parse(response.body)['data']['id']
+      new_wf_definition = Workflow::Definition::Workflow.find(new_version_id)
+
+      # clones process that is a prerequisite
+      sign_in(admin)
+      prereq_process = new_wf_definition.processes.find_by(title: 'Milestone C')
+      post "/v1/workflow/definition/workflows/#{new_wf_definition.id}/new_version/#{prereq_process.id}"
+      expect(response).to have_http_status(:success)
+
+      # clones process that has a prerequisite
+      sign_in(admin)
+      dep_process = new_wf_definition.processes.find_by(title: 'Milestone C-X')
+      post "/v1/workflow/definition/workflows/#{new_wf_definition.id}/new_version/#{dep_process.id}"
+      expect(response).to have_http_status(:success)
+      new_dep_process_id = JSON.parse(response.body)['data']['id']
+
+      # publish workflow
+      perform_enqueued_jobs do
+        sign_in(admin)
+        put "/v1/workflow/definition/workflows/#{new_wf_definition.id}/publish"
+        expect(response).to have_http_status(:success)
+      end
+
+      expect(new_wf_definition.reload.needs_support).to be_falsey
+      # ensure that dependency between the two processes isn't duplicated
+      new_dep_process = Workflow::Definition::Process.find(new_dep_process_id)
+      # ensure the number of dependencies on the instance is the same as on the definition
+      expect(new_wf_definition.instances.first.dependencies.count).to eq(new_wf_definition.dependencies.count)
+      expect(new_dep_process.instances.last.prerequisites.count).to eq(1)
+
       Bullet.enable = true
     end
   end
