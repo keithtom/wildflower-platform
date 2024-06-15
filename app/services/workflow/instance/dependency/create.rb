@@ -33,6 +33,7 @@ module Workflow
           end
 
           if @prerequisite_workable.nil?
+            Rails.logger.info("prerequisite_workable_definition: #{prerequisite_workable_definition.id}")
             raise CreateError.new("prerequisite workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
           end
         end
