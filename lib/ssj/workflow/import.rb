@@ -208,7 +208,7 @@ def create_default_workflow_and_processes
   # Workflow::Definition::Process.destroy_all
   # Workflow::Definition::Dependency.destroy_all
   # Workflow::Definition::Workflow.destroy_all
-  workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default - testing for Li, with multiple instances", version: "v1", description: "Imported from spreadsheet.  Authored by Maggie Paulin."
+  workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default - testing for Li, 2024-06-14, try again", version: "v1", description: "Imported from spreadsheet.  Authored by Maggie Paulin."
 
   visioning_process = workflow_definition.processes.create! title: "End of Visioning", description: "Placeholder process to be a post-prerequisite for all the visioning processes and be a prerequisite for planning processes."
 

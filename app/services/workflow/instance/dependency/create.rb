@@ -22,29 +22,34 @@ module Workflow
         end
 
         def find_prerequisite_workable
-          prerequisite_process_ids = [@dependency_definition.prerequisite_workable_id]
+          prerequisite_workable_definition = @dependency_definition.prerequisite_workable
+          @prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_workable_definition.id).first
 
           # during a rollout, it's possible the prerequisite was not updated because it was started.
           # therefore, use the original, unupdated prerequisite.
-          if @dependency_definition.prerequisite_workable.previous_version
-            prerequisite_process_ids << @dependency_definition.prerequisite_workable.previous_version_id
+          while @prerequisite_workable.nil? && prerequisite_workable_definition.previous_version
+            prerequisite_workable_definition = prerequisite_workable_definition.previous_version
+            @prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_workable_definition.id).first
           end
-          @prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_process_ids).first
 
           if @prerequisite_workable.nil?
+            Rails.logger.info("wf_instance_id: #{@wf_instance.id}")
+            Rails.logger.info("dependecy definition_id: #{@dependency_definition.id}")
+            Rails.logger.info("prerequisite_process_ids: #{prerequisite_process_ids}")
             raise CreateError.new("prerequisite workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
           end
         end
 
         def find_workable_process
-          workable_process_ids = [@dependency_definition.workable_id]
+          workable_process_definition = @dependency_definition.workable
+          @workable_process = @wf_instance.processes.where(definition_id: workable_process_definition.id).first
 
           # during a rollout, it's possible the workable was not updated because it was started.
           # therefore, use the original, unupdated workable.
-          if @dependency_definition.workable.previous_version
-            workable_process_ids << @dependency_definition.workable.previous_version_id
+          while @workable_process.nil? && workable_process_definition.previous_version
+            workable_process_definition = workable_process_definition.previous_version
+            @workable_process = @wf_instance.processes.where(definition_id: workable_process_definition.id).first
           end
-          @workable_process = @wf_instance.processes.where(definition_id: workable_process_ids).first
 
           if @workable_process.nil?
             raise CreateError.new("workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
