@@ -28,7 +28,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
 
   def destroy
     workflow = Workflow::Definition::Workflow.find(params[:id])
-    if workflow.published?
+    if workflow.published? || !workflow.instances.count.zero?
       render json: { message: 'Cannot delete a published workflow'}, status: :unprocessable_entity
     else
       workflow.destroy!

@@ -23,7 +23,7 @@ module Workflow
     def published?
       !published_at.nil?
     end
-  
+
     def displayed_processes
       if published?
         processes.where.not("workflow_definition_selected_processes.state = ?", 'removed')
