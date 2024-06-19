@@ -95,7 +95,13 @@ Rails.application.configure do
 
   # Enable cron in production
   config.good_job.enable_cron = true
-  config.good_job.on_thread_error = -> (exception) { Rails.error.report(exception) }
+  config.good_job.on_thread_error = -> (exception) do
+    Rails.error.report(exception)
+    Rails.logger.error("Error executing background job")
+    Highlight::H.instance.record_exception(exception)
+    SlackClient.chat_postMessage(channel: '#circle-platform', text: exception.message, as_user: true)
+  end
+
   # schedule cron job like jobs via good_job gem
   config.good_job.cron = {
     # Every day, enqueue `UpdateAirtableJob.set(priority: -10).perform_later()`
