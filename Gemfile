@@ -56,6 +56,9 @@ gem 'good_job'
 # soft deletion
 gem 'acts_as_paranoid'
 
+# slack client
+gem 'slack-ruby-client'
+
 group :development, :test do
   gem 'dotenv-rails'
 

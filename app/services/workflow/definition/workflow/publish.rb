@@ -34,12 +34,15 @@ module Workflow
                 workflow_instance.save!
               end
             rescue Exception => e
+              @process_stats[:error_raised] = true
               Rails.logger.error("Rolling out version changes from workflow definition id #{@workflow.id} to instance id #{workflow_instance.id}: ")
               Rails.logger.error("#{e.message},")
               Rails.logger.error(" for #{e.record.inspect}") if e.respond_to?(:record)
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
-              @process_stats[:error_raised] = true
+              if Rails.env.production?
+                SlackClient.chat_postMessage(channel: '#circle-platform', text: e.message, as_user: true)
+              end
             end
           end
           finish_publish_stats
