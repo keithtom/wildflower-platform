@@ -42,6 +42,7 @@ class Network::UpdateAirtableRecords < BaseCommand
     rescue => e
       Rails.logger.error("Error syncing #{name} creates/updates to Airtable; #{updates} updates, #{creates} creates completed. Error: #{e.message}.")
       Highlight::H.instance.record_exception(e)
+      SlackClient.chat_postMessage(channel: '#circle-platform', text: e.message, as_user: true) if Rails.env.production?
       raise e
     end
   end
