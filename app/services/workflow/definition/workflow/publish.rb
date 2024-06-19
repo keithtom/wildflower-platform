@@ -40,7 +40,9 @@ module Workflow
               Rails.logger.error(" for #{e.record.inspect}") if e.respond_to?(:record)
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
-              SlackClient.chat_postMessage(channel: '#circle-platform', text: e.message, as_user: true)
+              if Rails.env.production?
+                SlackClient.chat_postMessage(channel: '#circle-platform', text: e.message, as_user: true)
+              end
             end
           end
           finish_publish_stats
