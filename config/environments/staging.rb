@@ -97,8 +97,10 @@ Rails.application.configure do
   config.good_job.on_thread_error = -> (exception) do 
     Rails.logger.info("################## TESTING HERE THAT THIS IS BEING RUN")
     Rails.error.report(exception)
+    Rails.logger.info("################## Before HIGHLIGHT")
     Highlight::H.instance.record_exception(exception)
     SlackClient.chat_postMessage(channel: '#circle-platform', text: exception.message, as_user: true)
+    Rails.logger.info("################## AFTER HIGHLIGHT and SLACK")
   end
   # schedule cron job like jobs via good_job gem
   config.good_job.cron = {
