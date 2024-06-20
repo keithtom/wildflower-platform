@@ -96,10 +96,10 @@ Rails.application.configure do
   # Enable cron in production
   config.good_job.enable_cron = true
   config.good_job.on_thread_error = -> (exception) do
-    Rails.error.report(exception)
     Rails.logger.error("Error executing background job")
-    Highlight::H.instance.record_exception(exception)
     SlackClient.chat_postMessage(channel: '#circle-platform', text: exception.message, as_user: true)
+    Highlight::H.instance.record_exception(exception)
+    Rails.error.report(exception)
   end
 
   # schedule cron job like jobs via good_job gem
