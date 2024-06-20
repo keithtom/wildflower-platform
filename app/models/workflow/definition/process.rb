@@ -4,7 +4,9 @@ module Workflow
     
     acts_as_paranoid
     audited
-    
+
+    enum recurring_type: { monthly: 12, quarterly: 4, annual: 1 }
+
     has_many :instances, class_name: 'Workflow::Instance::Process', foreign_key: 'definition_id'
 
     has_many :steps
@@ -24,16 +26,32 @@ module Workflow
     acts_as_taggable_on :categories, :phase
 
     belongs_to :previous_version, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_version_id', optional: true
-    has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
+    has_one :next_version, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_version_id'
+
+    # TODO: can we query for this in another way?
+    belongs_to :previous_recurring, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_recurring_id', optional: true
+    has_one :next_recurring, class_name: 'Workflow::Definition::Process', foreign_key: 'previous_version_id'
 
     before_destroy :validate_destroyable
-  
+
     def published?
       !published_at.nil?
     end
-    
+
+    def occurrences_in_a_year
+      return 1 unless recurring?
+
+      Workflow::Definition::Process.recurring_types[recurring_type]
+    end
+
+    def next_due_date
+      return nil unless recurring?
+
+      
+    end
+
     private
-  
+
     def validate_destroyable
       if instances.count > 0
         errors.add(:base, "Cannot destroy process with existing instances")
