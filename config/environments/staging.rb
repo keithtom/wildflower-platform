@@ -95,11 +95,6 @@ Rails.application.configure do
   # Enable cron in staging 
   config.good_job.enable_cron = true
   config.good_job.on_thread_error = -> (exception) do 
-    Rails.logger.info("################## TESTING HERE THAT THIS IS BEING RUN")
-    Rails.logger.info("################## Before HIGHLIGHT")
-    Highlight::H.instance.record_exception(exception)
-    SlackClient.chat_postMessage(channel: '#circle-platform', text: exception.message, as_user: true)
-    Rails.logger.info("################## AFTER HIGHLIGHT and SLACK")
     Rails.error.report(exception)
   end
   # schedule cron job like jobs via good_job gem
