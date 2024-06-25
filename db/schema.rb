@@ -528,7 +528,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_20_181029) do
     t.datetime "deleted_at"
     t.boolean "recurring", default: false
     t.integer "recurring_type"
-    t.datetime "due_date"
+    t.integer "due_months", array: true
     t.index ["deleted_at"], name: "index_workflow_definition_processes_on_deleted_at"
   end
 
