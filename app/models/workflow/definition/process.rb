@@ -47,7 +47,7 @@ module Workflow
     def next_due_date
       return nil unless recurring?
 
-      
+
     end
 
     private

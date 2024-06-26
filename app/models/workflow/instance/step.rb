@@ -10,9 +10,9 @@ module Workflow
 
     has_many :assignments, class_name: 'Workflow::Instance::StepAssignment', foreign_key: 'step_id'
     has_many :assignees, through: :step_assignments, source: :assignee
-    
+
     has_many :documents, as: :documentable
-    
+
     before_create :set_position
 
     scope :by_position, -> { order("workflow_instance_steps.position ASC") }
@@ -24,7 +24,7 @@ module Workflow
     # currently it can be empty while it defers to definition
     # validates :kind, presence: true, inclusion: { in: Workflow::Definition::Step::ACTION_KINDS }
     # validates :completion_type, presence: true, inclusion: { in: Workflow::Definition::Step::COMPLETION_TYPES }
-    
+
     def title
       super || self.definition.try(:title)
     end

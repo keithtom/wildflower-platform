@@ -12,15 +12,15 @@ module Workflow
           @workflow_id = nil
           @category_list = nil
         end
-      
+
         def run
           validate_param_changes
           update_definition
           scrub_param_changes
           update_instances
         end
-      
-        private 
+
+        private
 
         def validate_param_changes
           action_on_unpermitted_parameters = ActionController::Parameters.action_on_unpermitted_parameters
@@ -52,7 +52,7 @@ module Workflow
 
           @category_list = @param_changes.delete(:category_list)
         end
-      
+
         def update_instances
           unless @param_changes.empty?
             @process_definition.instances.update_all(@param_changes)
