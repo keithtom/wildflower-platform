@@ -27,6 +27,10 @@ class V1::Workflow::ProcessesController < ApiController
         render :not_found
         return
       end
+    elsif params[:timeframe]
+      # TODO error handling is date is not parsed correctly
+      date = Date.strptime(params[:timeframe], '%Y-%m-%d')
+      processes = workflow.processes.eager_load(*eager_load_associations).within_timeframe(date)
     else
       processes = workflow.processes.eager_load(*eager_load_associations).by_position
     end
