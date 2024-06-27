@@ -30,7 +30,8 @@ class V1::Workflow::ProcessesController < ApiController
     elsif params[:timeframe]
       # TODO error handling is date is not parsed correctly
       date = Date.strptime(params[:timeframe], '%Y-%m-%d')
-      processes = workflow.processes.eager_load(*eager_load_associations).within_timeframe(date)
+      all_processes = workflow.processes.eager_load(*eager_load_associations)
+      processes = all_processes.within_timeframe.or(all_processes.past_due)
     else
       processes = workflow.processes.eager_load(*eager_load_associations).by_position
     end

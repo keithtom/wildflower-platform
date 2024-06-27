@@ -27,8 +27,10 @@ module Workflow
             @process_instance = @process_definition.instances.create!(attributes)
             @process_instance.category_list = @process_definition.category_list
             @process_instance.phase_list = @process_definition.phase_list
-            @process.due_date = calc_due_date(month) unless month.nil?
-            @process.suggested_start_date = calc_suggested_start_date(@process.due_date, @process_definition.duration)
+            unless month.nil?
+              @process.due_date = calc_due_date(month)
+              @process.suggested_start_date = calc_suggested_start_date(@process.due_date, @process_definition.duration)
+            end
             @process_instance.save!
           end
           # puts "instance", process_instance.as_json
