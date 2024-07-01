@@ -57,7 +57,6 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   config.active_job.queue_name_prefix = "platform_staging"
-  config.active_job.queue_adapter = :inline
 
   config.action_mailer.perform_caching = false
   config.action_mailer.default_url_options = { host: ENV['HOST'] }
@@ -95,7 +94,9 @@ Rails.application.configure do
 
   # Enable cron in staging 
   config.good_job.enable_cron = true
-  config.good_job.on_thread_error = -> (exception) { Rails.error.report(exception) }
+  config.good_job.on_thread_error = -> (exception) do 
+    Rails.error.report(exception)
+  end
   # schedule cron job like jobs via good_job gem
   config.good_job.cron = {
     # Every 15 minutes, enqueue `CleanupTestFixturesJob.set(priority: -10).perform_later()`

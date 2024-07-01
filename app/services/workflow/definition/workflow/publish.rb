@@ -41,7 +41,7 @@ module Workflow
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
               if Rails.env.production?
-                SlackClient.chat_postMessage(channel: '#circle-platform', text: e.message, as_user: true)
+                SlackClient.chat_postMessage(channel: '#circle-platform', text: "Error publishing workflow #{@workflow.id}: #{e.message}", as_user: true)
               end
             end
           end
