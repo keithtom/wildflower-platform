@@ -126,7 +126,8 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   end
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :phase_list, :category_list, :recurring,
+    params.require(:process).permit(:version, :title, :description, :phase_list, :category_list, :recurring, :duration,
+    [due_months: []],
     steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
     decision_options_attributes: [:description],
     documents_attributes: [:id, :title, :link]],
