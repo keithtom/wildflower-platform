@@ -45,7 +45,7 @@ module Workflow
 
       case duration
       when 1
-        if recurring_months.length == 1
+        if due_months.length == 1
           ANNUALLY_MONTH_SPECIFIC
         else
           MONTHLY
