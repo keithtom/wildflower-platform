@@ -16,7 +16,7 @@ module Workflow
 
     has_many :steps
 
-    acts_as_taggable_on :categories, :phase, :recurring_type
+    acts_as_taggable_on :categories, :phase
 
     enum completion_status: { unstarted: 0, started: 2, finished: 3 }
     enum dependency_cache: { prerequisites_unmet: 0, prerequisites_met: 1}
