@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_21_163640) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_27_134044) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -526,6 +526,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_21_163640) do
     t.datetime "published_at"
     t.bigint "previous_version_id"
     t.datetime "deleted_at"
+    t.integer "recurring_type"
+    t.boolean "recurring", default: false
+    t.integer "due_months", array: true
+    t.integer "duration"
     t.index ["deleted_at"], name: "index_workflow_definition_processes_on_deleted_at"
   end
 
@@ -572,6 +576,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_21_163640) do
     t.datetime "rollout_completed_at"
     t.datetime "deleted_at"
     t.boolean "needs_support", default: false
+    t.boolean "recurring", default: false
     t.index ["deleted_at"], name: "index_workflow_definition_workflows_on_deleted_at"
   end
 
@@ -608,6 +613,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_21_163640) do
     t.integer "completion_status", default: 0
     t.integer "dependency_cache", default: 0
     t.datetime "deleted_at"
+    t.date "suggested_start_date"
+    t.date "due_date"
+    t.string "recurring_type"
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["deleted_at"], name: "index_workflow_instance_processes_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true

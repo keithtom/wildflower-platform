@@ -3,7 +3,7 @@ class V1::Workflow::Definition::ProcessSerializer < ApplicationSerializer
 
   set_id :id
 
-  attributes :title, :description, :version
+  attributes :title, :description, :version, :duration, :due_months, :recurring, :recurring_type
 
   attribute :phase do |process|
     process.phase_list.first

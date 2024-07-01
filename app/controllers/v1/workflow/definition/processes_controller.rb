@@ -1,6 +1,6 @@
 class V1::Workflow::Definition::ProcessesController < ApiController
   before_action :authenticate_admin!
- 
+
   def index
     processes = Workflow::Definition::Process.includes([:taggings, :categories, steps: [:decision_options, :documents]]).all
     render json: V1::Workflow::Definition::ProcessSerializer.new(processes)
@@ -8,7 +8,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
 
   def show
     process = Workflow::Definition::Process.find(params[:id])
-    
+
     process_serialization_options = serialization_options
     if params[:workflow_id]
       process_serialization_options.merge!({params: {workflow_id: params[:workflow_id]}})
@@ -52,12 +52,13 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   private
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :phase_list, [:category_list => []],
-    steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
-      decision_options_attributes: [:description],
-      documents_attributes: [:id, :title, :link]],
-    selected_processes_attributes: [:id, :workflow_id, :position],
-    workable_dependencies_attributes: [:id, :workflow_id, :prerequisite_workable_type, :prerequisite_workable_id])
+    params.require(:process).permit(:version, :title, :description, :recurring, :duration, :phase_list, [category_list: []], [due_months: []],
+      steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
+        decision_options_attributes: [:description],
+        documents_attributes: [:id, :title, :link]],
+      selected_processes_attributes: [:id, :workflow_id, :position],
+      workable_dependencies_attributes: [:id, :workflow_id, :prerequisite_workable_type, :prerequisite_workable_id]
+    )
   end
 
   def serialization_options
