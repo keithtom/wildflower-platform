@@ -6,5 +6,6 @@ class AddProcessDefinitionRecurring < ActiveRecord::Migration[7.0]
     add_column :workflow_definition_processes, :duration, :integer
     add_column :workflow_instance_processes, :suggested_start_date, :date
     add_column :workflow_instance_processes, :due_date, :date
+    add_column :workflow_instance_processes, :recurring_type, :string
   end
 end

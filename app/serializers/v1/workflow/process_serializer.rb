@@ -2,7 +2,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
-  attributes :title, :position, :steps_count, :completed_steps_count, :description, :suggested_start_date, :due_date
+  attributes :title, :position, :steps_count, :completed_steps_count, :description, :suggested_start_date, :due_date, :recurring_type
 
   attribute :status do |process|
     process_status(process)

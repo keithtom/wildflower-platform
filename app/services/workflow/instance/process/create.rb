@@ -30,6 +30,7 @@ module Workflow
             unless month.nil?
               @process.due_date = calc_due_date(month)
               @process.suggested_start_date = calc_suggested_start_date(@process.due_date, @process_definition.duration)
+              @process.recurring_type = @process_definition.recurring_type
             end
             @process_instance.save!
           end

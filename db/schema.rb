@@ -615,6 +615,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_27_134044) do
     t.datetime "deleted_at"
     t.date "suggested_start_date"
     t.date "due_date"
+    t.string "recurring_type"
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["deleted_at"], name: "index_workflow_instance_processes_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
