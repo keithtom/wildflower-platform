@@ -28,9 +28,9 @@ module Workflow
             @process_instance.category_list = @process_definition.category_list
             @process_instance.phase_list = @process_definition.phase_list
             unless month.nil?
-              @process.due_date = calc_due_date(month)
-              @process.suggested_start_date = calc_suggested_start_date(@process.due_date, @process_definition.duration)
-              @process.recurring_type = @process_definition.recurring_type
+              @process_instance.due_date = calc_due_date(month)
+              @process_instance.suggested_start_date = calc_suggested_start_date(@process_instance.due_date, @process_definition.duration)
+              @process_instance.recurring_type = @process_definition.recurring_type
             end
             @process_instance.save!
           end
