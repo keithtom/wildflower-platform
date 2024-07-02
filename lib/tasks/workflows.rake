@@ -195,6 +195,28 @@ namespace :workflows do
     end
     puts "Set positions on #{workflows} workflows and a total of #{updated} selected_processes"
   end
+
+  desc 'create workflow for open schools'
+  task create_osc_workflow: :environment do
+    schools = 0
+    w = Workflow::Definition::Workflow.find_by(name: "Open School Checklist")
+
+    if w.nil?
+      puts "No OSC workflow found. No schools updated."
+    else
+      School.all.each do |school|
+        wf_instance = w.instances.create!
+        school.workflow_id = wf_instance.id
+        school.save!
+        Workflow::InitializeWorkflowJob.perform_later(wf_instance.id)
+
+        schools += 1
+      end
+
+    puts "Updated #{schools} schools with new Open School Checklist workflow"
+
+    end
+  end
 end
 
 # Team of 4

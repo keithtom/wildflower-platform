@@ -528,7 +528,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_02_150417) do
     t.datetime "published_at"
     t.bigint "previous_version_id"
     t.datetime "deleted_at"
-    t.integer "recurring_type"
     t.boolean "recurring", default: false
     t.integer "due_months", array: true
     t.integer "duration"
@@ -673,7 +672,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_02_150417) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "schools", "workflow_definition_workflows", column: "workflow_id"
+  add_foreign_key "schools", "workflow_instance_workflows", column: "workflow_id"
   add_foreign_key "ssj_team_members", "ssj_teams"
   add_foreign_key "ssj_teams", "people", column: "ops_guide_id"
   add_foreign_key "ssj_teams", "people", column: "regional_growth_lead_id"
