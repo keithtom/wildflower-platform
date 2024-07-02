@@ -50,8 +50,8 @@ module Workflow
           # hardcoding school year for now.
           school_year_start = 2024
           school_year_end = 2025
-          year = month < 9 ? school_year_start : school_year_end
-          DateTime.new(year, month, 1).end_of_month
+          year = month < 9 ? school_year_end : school_year_start
+          Date.new(year, month, 1).end_of_month
         end
 
         def calc_suggested_start_date(due_date, duration_in_months)
