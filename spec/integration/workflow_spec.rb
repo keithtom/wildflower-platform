@@ -28,7 +28,7 @@ RSpec.describe "Workflow Feature" do
       let(:instance_process2) { definition_process2.instances.first }
 
       before do
-        SSJ::Initialize.run(instance_workflow.id)
+        Workflow::Initialize.run(instance_workflow.id)
       end
 
       it "should have basic associations" do
@@ -68,7 +68,7 @@ RSpec.describe "Workflow Feature" do
     let(:person2) { create(:person) }
 
     before do
-      SSJ::Initialize.run(workflow.id)
+      Workflow::Initialize.run(workflow.id)
     end
 
     it "complete in order successfully" do

@@ -13,6 +13,8 @@ class School < ApplicationRecord
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
   belongs_to :charter, optional: true
+  belongs_to :workflow, class_name: 'Workflow::Instance::Workflow', optional: true
+
   has_many :sister_schools, through: :charter, source: :schools
   has_one :address, as: :addressable, required: false, inverse_of: :addressable
   # Allows update of address via school without passing in an id. We currently don't create a school w/ an address, so this is fine.
