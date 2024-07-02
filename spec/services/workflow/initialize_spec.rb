@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe SSJ::Initialize do
+describe Workflow::Initialize do
   let(:workflow_definition) { create(:workflow_definition_workflow) }
   let(:process_definition) { create(:workflow_definition_process, category_list: "coffee") }
   let(:prerequisite_definition) { create(:workflow_definition_process, phase_list: "tea") }
@@ -14,7 +14,7 @@ describe SSJ::Initialize do
     workflow_definition.processes << prerequisite_definition
   end
 
-  subject { SSJ::Initialize.run(workflow_instance.id) }
+  subject { Workflow::Initialize.run(workflow_instance.id) }
 
   describe "#run" do
     it "should create a workflow instance and copy the processes/steps" do

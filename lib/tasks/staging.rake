@@ -46,7 +46,7 @@ namespace :staging do
       end
 
       workflow_instance = workflow_definition.instances.create!
-      SSJ::Initialize.run(workflow_instance.id)
+      Workflow::Initialize.run(workflow_instance.id)
       team = user.person.ssj_team || user.person.ssj_team = SSJ::Team.create!(workflow: workflow_instance)
       team.ops_guide = sunny.person
       team.regional_growth_lead = daniela.person
