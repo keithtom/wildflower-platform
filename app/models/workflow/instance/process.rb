@@ -25,18 +25,6 @@ module Workflow
     scope :within_timeframe, ->(date) { where('? BETWEEN suggested_start_date AND due_date', date) }
     scope :past_due, -> { where('due_date < ? AND completion_status != ?', Time.zone.today, completion_statuses[:finished]) }
 
-    def title
-      super || self.definition.title
-    end
-
-    def description
-      super || self.definition.description
-    end
-
-    def phase
-      self.definition.phase
-    end
-
     def completed?
       !!self.completed_at
     end

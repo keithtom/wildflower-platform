@@ -29,10 +29,8 @@ class V1::Workflow::ProcessesController < ApiController
       end
     elsif params[:timeframe]
       # TODO error handling is date is not parsed correctly
-      # TODO makes ure omit_include can work over here as well as a parsams
       date = Date.strptime(params[:timeframe], '%Y-%m-%d')
-      all_processes = workflow.processes.eager_load(*eager_load_associations)
-      processes = all_processes.within_timeframe.or(all_processes.past_due)
+      processes = workflow.processes.within_timeframe(date).or(workflow.processes.past_due).includes([:categories, :taggings])
     else
       processes = workflow.processes.eager_load(*eager_load_associations).by_position
     end
