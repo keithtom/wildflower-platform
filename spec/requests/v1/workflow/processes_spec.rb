@@ -78,5 +78,13 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
         expect(process_ids).not_to include(future_process.external_identifier)
       end
     end
+
+    context 'when date is not valid' do
+      let(:date) { "00 - 234- 0" }
+      it 'fails' do
+        get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?timeframe=#{date}&omit_include=true", headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
   end
 end

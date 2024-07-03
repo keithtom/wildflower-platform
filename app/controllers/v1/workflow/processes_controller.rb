@@ -28,9 +28,13 @@ class V1::Workflow::ProcessesController < ApiController
         return
       end
     elsif params[:timeframe]
-      # TODO error handling is date is not parsed correctly
-      date = Date.strptime(params[:timeframe], '%Y-%m-%d')
-      processes = workflow.processes.within_timeframe(date).or(workflow.processes.past_due).includes([:categories, :taggings])
+      begin
+        date = Date.strptime(params[:timeframe], '%Y-%m-%d')
+        processes = workflow.processes.within_timeframe(date).or(workflow.processes.past_due).includes([:categories, :taggings])
+      rescue ArgumentError
+        render json: { error: "Invalid date format: #{params[:timeframe]}" }, status: :unprocessable_entity
+        return
+      end
     else
       processes = workflow.processes.eager_load(*eager_load_associations).by_position
     end

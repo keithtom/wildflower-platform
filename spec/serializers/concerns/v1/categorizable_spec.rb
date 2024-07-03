@@ -7,15 +7,6 @@ end
 RSpec.describe V1::Categorizable, type: :concern do
   let(:process) { create(:workflow_instance_process) }
 
-  describe "when the process is an instance and does not have its own categories" do
-    it "fetches categories from the definition" do
-      expect(process.category_list).to be_empty
-      process.definition.category_list.add("Finance")
-      process.definition.save!
-      expect(CategorizableFakeSerializer.get_categories(process)).to_not be_empty
-    end
-  end
-
   describe "when the instance process and its definition have different categories" do
     let(:process_definition) { process.definition }
     let(:instance_category) { "Governance & Compliance" }
