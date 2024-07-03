@@ -7,7 +7,7 @@ module Workflow
         end
 
         def run
-          workflow_definition = FactoryBot.create(:workflow_definition_workflow, name: @name, version: "v1", published_at: DateTime.now)
+          workflow_definition = FactoryBot.create(:workflow_definition_workflow, name: @name, version: "v1", published_at: DateTime.now, recurring: true)
 
           process1 = FactoryBot.create(:workflow_definition_process,
                                        title: "Milestone A - Recurs Monthly",
@@ -40,15 +40,19 @@ module Workflow
                                        duration: 12)
           2.times { |i| FactoryBot.create(:workflow_definition_step, process: process3, title: "Step #{i+1}", description: "Step #{i+1} of 2") }
 
-          process4 = FactoryBot.create(:workflow_definition_process,
-                                       title: "Milestone D - Recurs Annually, on a specific month",
-                                       description: 'A single milestone with 3 steps',
-                                       version: 'v1',
-                                       published_at: DateTime.now,
-                                       recurring: true,
-                                       due_months: [10],
-                                       duration: 1)
-          2.times { |i| FactoryBot.create(:workflow_definition_step, process: process4, title: "Step #{i+1}", description: "Step #{i+1} of 2") }
+          annual_process_on_specific_month = []
+          12.times do |i|
+            process = FactoryBot.create(:workflow_definition_process,
+                                        title: "Milestone #{i} - Recurs Annually, on a specific month",
+                                        description: 'A single milestone with 3 steps',
+                                        version: 'v1',
+                                        published_at: DateTime.now,
+                                        recurring: true,
+                                        due_months: [(i + 1)],
+                                        duration: 1)
+            annual_process_on_specific_month << process
+            2.times { |i| FactoryBot.create(:workflow_definition_step, process: process, title: "Step #{i+1}", description: "Step #{i+1} of 2") }
+          end
 
           process5 = FactoryBot.create(:workflow_definition_process,
                                        title: "Milestone E - Recurs Annually, Summertime",
@@ -60,7 +64,7 @@ module Workflow
                                        duration: 2)
           2.times { |i| FactoryBot.create(:workflow_definition_step, process: process5, title: "Step #{i+1}", description: "Step #{i+1} of 2") }
 
-          [process1, process2, process3, process4, process5].each_with_index do |process, i|
+          ([process1, process2, process3, process5] + annual_process_on_specific_month).each_with_index do |process, i|
             workflow_definition.processes << process
 
             process.category_list = ::SSJ::Category::CATEGORIES[i]

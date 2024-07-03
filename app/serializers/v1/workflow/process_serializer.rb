@@ -14,7 +14,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   end
 
   attribute :phase do |process|
-    process.definition.phase_list.first
+    process.phase_list.first
   end
 
   # update this.
