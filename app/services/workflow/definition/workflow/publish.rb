@@ -69,8 +69,7 @@ module Workflow
 
         def rollout_adds(workflow_instance)
           @workflow.selected_processes.where(state: "added").each do |sp|
-            previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
-            if previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
+            if can_add?(workflow_instance, sp)
               process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
               sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
                 create_dependency_later(dependency_definition, workflow_instance, process_instance)
@@ -90,7 +89,7 @@ module Workflow
         def rollout_removes(workflow_instance)
           @workflow.selected_processes.where(state: "removed").each do |sp|
             workflow_instance.processes.where(definition_id: sp.process_id, position: sp.previous_version&.position).each do |process_instance|
-              if process_instance.unstarted?
+              if can_remove?(process_instance)
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
                 process_instance.steps.destroy_all
                 process_instance.destroy!
@@ -105,7 +104,7 @@ module Workflow
         def rollout_upgrades(workflow_instance)
           @workflow.selected_processes.where(state: 'upgraded').each do |sp|
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
-              if process_instance.unstarted?
+              if can_upgrade?(process_instance)
                 workflow_instance = process_instance.workflow
                 # destroy any existing dependencies, will create new ones
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
@@ -180,6 +179,31 @@ module Workflow
           @workflow.save!
 
           Rails.logger.info("Finished rollout of workflow definition id #{@workflow.id}: #{@process_stats.inspect}")
+        end
+      end
+
+      def can_add?(workflow_instance, sp)
+        if workflow_instance.definition.recurring?
+          false
+        else
+          previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
+          previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
+        end
+      end
+
+      def can_remove?(process_instance)
+        if process_instance.definition.recurring?
+          false
+        else
+          process_instance.unstarted?
+        end
+      end
+
+      def can_upgrade?(process_instance)
+        if process_instance.definition.recurring?
+          false
+        else
+          process_instance.unstarted?
         end
       end
 
