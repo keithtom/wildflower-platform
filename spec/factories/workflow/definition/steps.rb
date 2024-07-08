@@ -7,7 +7,6 @@ FactoryBot.define do
     completion_type { Workflow::Definition::Step::EACH_PERSON }
     min_worktime { rand(100) * 60 * 60}
     max_worktime { (100+rand(100)) * 60 * 60}
-    decision_question { Faker::Lorem.sentence }
     
     after(:create) { |step| create(:document, documentable: step) }
   end
