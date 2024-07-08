@@ -7,6 +7,9 @@ module Workflow
           @workflow_definition = workflow_definition
           @wf_instance = wf_instance
           @process_instance = nil
+          if @workflow_definition.recurring?
+            @date_calculator = OpenSchools::DateCalculator.new
+          end
         end
 
         def run
@@ -28,8 +31,8 @@ module Workflow
             @process_instance.category_list = @process_definition.category_list
             @process_instance.phase_list = @process_definition.phase_list
             unless month.nil?
-              @process_instance.due_date = calc_due_date(month)
-              @process_instance.suggested_start_date = calc_suggested_start_date(@process_instance.due_date, @process_definition.duration)
+              @process_instance.due_date = @date_calculator.due_date(month)
+              @process_instance.suggested_start_date = @date_calculator.suggested_start_date(@process_instance.due_date, @process_definition.duration)
               @process_instance.recurring_type = @process_definition.recurring_type
             end
             @process_instance.save!
@@ -44,18 +47,6 @@ module Workflow
             attributes.merge!(process_id: @process_instance.id)
             step_definition.instances.create!(attributes)
           end
-        end
-
-        def calc_due_date(month)
-          # hardcoding school year for now.
-          school_year_start = 2024
-          school_year_end = 2025
-          year = month < 9 ? school_year_end : school_year_start
-          Date.new(year, month, 1).end_of_month
-        end
-
-        def calc_suggested_start_date(due_date, duration_in_months)
-          (due_date - (duration_in_months - 1).months).beginning_of_month
         end
       end
     end

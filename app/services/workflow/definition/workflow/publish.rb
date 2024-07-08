@@ -104,7 +104,7 @@ module Workflow
         def rollout_upgrades(workflow_instance)
           @workflow.selected_processes.where(state: 'upgraded').each do |sp|
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
-              if can_upgrade?(process_instance)
+              if can_upgrade?(process_instance, sp)
                 workflow_instance = process_instance.workflow
                 # destroy any existing dependencies, will create new ones
                 process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
@@ -183,8 +183,7 @@ module Workflow
 
         def can_add?(workflow_instance, sp)
           if workflow_instance.definition.recurring?
-            # is the due date in the future? if so, rollout the add. Otherwise, no.
-            false
+            any_future_due_date?(sp.process)
           else
             previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
             previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
@@ -196,13 +195,25 @@ module Workflow
           process_instance.unstarted?
         end
 
-        def can_upgrade?(process_instance)
+        def can_upgrade?(process_instance, sp)
           if process_instance.definition.recurring?
-            # is the due date in the future AND is it unstarted? check for due date first
-            false
+            any_future_due_date?(sp.process) && process_instance.unstarted?
           else
             process_instance.unstarted?
           end
+        end
+      
+        def any_future_due_date?(process_definition)
+          return false unless process_definition.recurring?
+
+          process_definition.due_months.each do |month|
+            due_date = OpenSchools::DateCalculator.due_date(sp.process.due_)
+            if due_date > Date.today
+              return true
+            end
+          end
+
+          false
         end
       end
 
