@@ -180,30 +180,29 @@ module Workflow
 
           Rails.logger.info("Finished rollout of workflow definition id #{@workflow.id}: #{@process_stats.inspect}")
         end
-      end
 
-      def can_add?(workflow_instance, sp)
-        if workflow_instance.definition.recurring?
-          false
-        else
-          previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
-          previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
+        def can_add?(workflow_instance, sp)
+          if workflow_instance.definition.recurring?
+            # is the due date in the future? if so, rollout the add. Otherwise, no.
+            false
+          else
+            previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
+            previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
+          end
         end
-      end
 
-      def can_remove?(process_instance)
-        if process_instance.definition.recurring?
-          false
-        else
+        def can_remove?(process_instance)
+          # logic same for recurring and non recurring processes
           process_instance.unstarted?
         end
-      end
 
-      def can_upgrade?(process_instance)
-        if process_instance.definition.recurring?
-          false
-        else
-          process_instance.unstarted?
+        def can_upgrade?(process_instance)
+          if process_instance.definition.recurring?
+            # is the due date in the future AND is it unstarted? check for due date first
+            false
+          else
+            process_instance.unstarted?
+          end
         end
       end
 
