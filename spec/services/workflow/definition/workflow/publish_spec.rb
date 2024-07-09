@@ -9,54 +9,98 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
   let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: process_instance.definition.id, position: 100) }
 
   describe '#rollout_adds' do
-    let(:process_definition) { create(:workflow_definition_process)}
+    context 'non recurring workflow/process' do
+      let(:process_definition) { create(:workflow_definition_process)}
 
-    context 'when it is being added to the front of the list' do
-      let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 1, state: "added")}
+      context 'when it is being added to the front of the list' do
+        let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 1, state: "added")}
 
-      it 'adds a new process to the workflow instance' do
-        expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
-        process_instance = process_definition.instances.last
-        expect(process_instance.prerequisites_met?).to be_truthy
-        expect(process_definition.reload.published_at).to_not be_nil
-        expect(process_instance.prerequisites_met?).to be_truthy
+        it 'adds a new process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
+          process_instance = process_definition.instances.last
+          expect(process_instance.prerequisites_met?).to be_truthy
+          expect(process_definition.reload.published_at).to_not be_nil
+          expect(process_instance.prerequisites_met?).to be_truthy
+        end
+
+        context 'when the new process has a prerequisite' do
+          let!(:workable_dependency) { create(:workflow_definition_dependency, workflow: workflow, workable: process_definition, prerequisite_workable: process_instance.definition)}
+
+          it 'adds a new process and workable dependency to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.dependencies.count}.by(1)
+            process_instance = process_definition.instances.last
+            expect(process_instance.prerequisites_met?).to be_falsey
+          end
+        end
       end
 
-      context 'when the new process has a prerequisite' do
-        let!(:workable_dependency) { create(:workflow_definition_dependency, workflow: workflow, workable: process_definition, prerequisite_workable: process_instance.definition)}
+      context 'when the previous process by position has been started' do
+        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 2)}
+        let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 200, state: "added")}
 
-        it 'adds a new process and workable dependency to the workflow instance' do
-          expect{ subject.run }.to change{ workflow_instance.reload.dependencies.count}.by(1)
-          process_instance = process_definition.instances.last
-          expect(process_instance.prerequisites_met?).to be_falsey
+        it 'does not add a process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
+        end
+      end
+
+      context 'when the previous process by position has not been started' do
+        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 0)}
+        let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 200, state: "added")}
+
+        it 'adds a new process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
+        end
+      end
+
+      context 'when the previous process by position has been finished' do
+        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 3)}
+        let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 200, state: "added")}
+
+        it 'does not add a process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
         end
       end
     end
+  
+    context 'recurring workflow/process' do
+      let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
+      let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, state: "added")}
 
-    context 'when the previous process by position has been started' do
-      let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 2)}
-      let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 200, state: "added")}
-
-      it 'does not add a process to the workflow instance' do
-        expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
+      before do
+        previous_version_workflow.recurring = true
+        previous_version_workflow.save
+        workflow.recurring = true
+        workflow.save
       end
-    end
+    
+      context 'due date is today' do
+        before do
+          allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today)
+        end
 
-    context 'when the previous process by position has not been started' do
-      let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 0)}
-      let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 200, state: "added")}
-
-      it 'adds a new process to the workflow instance' do
-        expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
+        it 'does not add a process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+        end
       end
-    end
+    
+      context 'due date is yesterday' do
+        before do
+          allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today - 1.day)
+        end
 
-    context 'when the previous process by position has been finished' do
-      let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 3)}
-      let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 200, state: "added")}
+        it 'does not add a process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+        end
+      end
 
-      it 'does not add a process to the workflow instance' do
-        expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+      context 'due date is tomorrow' do
+        before do
+          allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today + 1.day)
+        end
+
+        it 'does add a process to the workflow instance' do
+          expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
+        end
       end
     end
   end

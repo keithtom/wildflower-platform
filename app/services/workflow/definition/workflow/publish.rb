@@ -79,7 +79,7 @@ module Workflow
               end
               @process_stats[:added] += 1
             else
-              Rails.logger.info("Previous process #{previous_process_by_position.id} has been finished. Therefore, the new process definition #{sp.process_id} will not be added to this rollout")
+              Rails.logger.info("New process definition #{sp.process_id} cannot be added to this rollout")
             end
             sp.process.published_at = DateTime.now
             sp.process.save!
@@ -206,8 +206,9 @@ module Workflow
         def any_future_due_date?(process_definition)
           return false unless process_definition.recurring?
 
+          calculator = OpenSchools::DateCalculator.new
           process_definition.due_months.each do |month|
-            due_date = OpenSchools::DateCalculator.due_date(sp.process.due_)
+            due_date = calculator.due_date(month)
             if due_date > Date.today
               return true
             end
