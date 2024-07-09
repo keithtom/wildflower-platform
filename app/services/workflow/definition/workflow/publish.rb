@@ -70,13 +70,7 @@ module Workflow
         def rollout_adds(workflow_instance)
           @workflow.selected_processes.where(state: "added").each do |sp|
             if can_add?(workflow_instance, sp)
-              process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
-              sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
-                create_dependency_later(dependency_definition, workflow_instance, process_instance)
-              end
-              if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
-                process_instance.prerequisites_met!
-              end
+              add_process_and_dependencies(sp, workflow_instance)
               @process_stats[:added] += 1
             else
               Rails.logger.info("New process definition #{sp.process_id} cannot be added to this rollout")
@@ -90,9 +84,7 @@ module Workflow
           @workflow.selected_processes.where(state: "removed").each do |sp|
             workflow_instance.processes.where(definition_id: sp.process_id, position: sp.previous_version&.position).each do |process_instance|
               if can_remove?(process_instance)
-                process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
-                process_instance.steps.destroy_all
-                process_instance.destroy!
+                remove_process_and_dependencies(process_instance, workflow_instance)
                 @process_stats[:removed] += 1
               else
                 Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be removed in this rollout")
@@ -103,29 +95,21 @@ module Workflow
 
         def rollout_upgrades(workflow_instance)
           @workflow.selected_processes.where(state: 'upgraded').each do |sp|
+            add_upgraded_process = false
             workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
               if can_upgrade?(process_instance, sp)
-                workflow_instance = process_instance.workflow
-                # destroy any existing dependencies, will create new ones
-                process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
-                process_instance.prerequisite_dependencies.where(workflow_id: workflow_instance.id).destroy_all
-                process_instance.steps.destroy_all
-                process_instance.destroy!
-
-                new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
-                sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
-                  create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-                end
-                sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
-                  create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
-                end
-                if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
-                  new_process_instance.prerequisites_met!
-                end
-                @process_stats[:upgraded] += 1
-              else
-                Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be replaced/upgraded in this rollout")
+                add_upgraded_process = true
+                remove_process_and_dependencies(process_instance, workflow_instance)
               end
+            end
+
+            if add_upgraded_process
+              add_process_and_dependencies(sp, workflow_instance)
+              @process_stats[:upgraded] += 1
+              sp.process.published_at = DateTime.now
+              sp.process.save!
+            else
+              Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be replaced/upgraded in this rollout")
             end
           end
         end
@@ -190,19 +174,40 @@ module Workflow
           end
         end
 
+        def add_process_and_dependencies(sp, workflow_instance)
+          new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
+          sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
+            create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
+          end
+          sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
+            create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
+          end
+          if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
+            new_process_instance.prerequisites_met!
+          end
+        end
+
         def can_remove?(process_instance)
           # logic same for recurring and non recurring processes
           process_instance.unstarted?
         end
 
+        def remove_process_and_dependencies(process_instance, workflow_instance)
+          process_instance.workable_dependencies.where(workflow_id: workflow_instance.id).destroy_all
+          process_instance.prerequisite_dependencies.where(workflow_id: workflow_instance.id).destroy_all
+          process_instance.steps.destroy_all
+          process_instance.destroy!
+        end
+
         def can_upgrade?(process_instance, sp)
           if process_instance.definition.recurring?
+            # what if there are multiple months?
             any_future_due_date?(sp.process) && process_instance.unstarted?
           else
             process_instance.unstarted?
           end
         end
-      
+
         def any_future_due_date?(process_definition)
           return false unless process_definition.recurring?
 
