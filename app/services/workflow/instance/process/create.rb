@@ -2,14 +2,13 @@ module Workflow
   module Instance
     class Process
       class Create < BaseService
-        def initialize(process_definition, workflow_definition, wf_instance)
+        def initialize(process_definition, workflow_definition, wf_instance, for_publishing = false)
           @process_definition = process_definition
           @workflow_definition = workflow_definition
           @wf_instance = wf_instance
           @process_instance = nil
-          if @workflow_definition.recurring?
-            @date_calculator = OpenSchools::DateCalculator.new
-          end
+          @for_publishing = for_publishing
+          @calculator = OpenSchools::DateCalculator.new if @process_definition.recurring?
         end
 
         def run
@@ -27,14 +26,21 @@ module Workflow
 
           months = @process_definition.recurring? ? @process_definition.due_months : [nil]
           months.each do |month|
+            unless month.nil?
+              due_date = @calculator.due_date(month)
+              next if @for_publishing && (due_date <= Time.zone.today) # only create processes in the future for publishing
+            end
+
             @process_instance = @process_definition.instances.create!(attributes)
             @process_instance.category_list = @process_definition.category_list
             @process_instance.phase_list = @process_definition.phase_list
-            unless month.nil?
-              @process_instance.due_date = @date_calculator.due_date(month)
-              @process_instance.suggested_start_date = @date_calculator.suggested_start_date(@process_instance.due_date, @process_definition.duration)
+
+            if due_date
+              @process_instance.due_date = due_date
+              @process_instance.suggested_start_date = @calculator.suggested_start_date(@process_instance.due_date, @process_definition.duration)
               @process_instance.recurring_type = @process_definition.recurring_type
             end
+
             @process_instance.save!
           end
           # puts "instance", process_instance.as_json

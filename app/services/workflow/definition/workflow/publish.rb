@@ -109,7 +109,7 @@ module Workflow
               sp.process.published_at = DateTime.now
               sp.process.save!
             else
-              Rails.logger.info("Process instance #{process_instance.id} has been started. Therefore, it cannot be replaced/upgraded in this rollout")
+              Rails.logger.info("Cannot upgrade this process id: #{sp.process_id} for workflow instance: #{workflow_instance.id} in this rollout")
             end
           end
         end
@@ -175,7 +175,7 @@ module Workflow
         end
 
         def add_process_and_dependencies(sp, workflow_instance)
-          new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance)
+          new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance, true)
           sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
             create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
           end
@@ -214,7 +214,7 @@ module Workflow
           calculator = OpenSchools::DateCalculator.new
           process_definition.due_months.each do |month|
             due_date = calculator.due_date(month)
-            if due_date > Date.today
+            if due_date > Time.zone.today
               return true
             end
           end
