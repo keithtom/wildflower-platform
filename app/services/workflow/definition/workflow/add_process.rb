@@ -12,6 +12,7 @@ module Workflow
         def run
           validate_workflow_state
           validate_position
+          validate_recurring_attributes
           create_association
         end
 
@@ -30,8 +31,8 @@ module Workflow
 
         def validate_recurring_attributes
           if @process.recurring?
-            raise AddProcessError.new('Cannot recurring process to workflow if duration is nil') if @process.duration.nil?
-            raise AddProcessError.new('Cannot recurring process to workflow if due_months is nil') if @process.due_months.nil?
+            raise AddProcessError.new('Cannot add recurring process to workflow if duration is nil') if @process.duration.nil?
+            raise AddProcessError.new('Cannot add recurring process to workflow if due_months is nil') if @process.due_months.nil?
           end
         end
 
