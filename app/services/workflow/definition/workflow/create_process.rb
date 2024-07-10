@@ -18,26 +18,21 @@ module Workflow
         end
 
         def validate_workflow_and_params
-          if @workflow.published?
-            raise CreateProcessError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
-          end
+          raise CreateProcessError.new('Cannot add processes to a published workflow. Please create a new version to continue.') if @workflow.published?
 
           if @process_params[:recurring]
-            return
+            raise CreateProcessError.new('Must create recurring process with duration') unless @process_params[:duration]
+            raise CreateProcessError.new('Must create recurring process with due_months') unless @process_params[:due_months]
+            @process_params[:selected_processes_attributes] = [{}]
           end
-          
+
           if @process_params[:selected_processes_attributes].nil?
-            raise CreateProcessError.new('Must create process with a position')
+            raise CreateProcessError.new('Must create process with selected_processes_attributes')
           end
 
           @process_params[:selected_processes_attributes].each do |sp_attr|
-            if sp_attr[:workflow_id].nil?
-              raise CreateProcessError.new('Missing workflow_id in selected_processes_attributes')
-            end
-
-            if sp_attr[:position].nil?
-              raise CreateProcessError.new('Missing position in selected_processes_attributes')
-            end
+            sp_attr[:workflow_id] ||= @workflow.id
+            raise CreateProcessError.new('Missing position in selected_processes_attributes') unless (sp_attr[:position] || @process_params[:recurring])
           end
         end
 

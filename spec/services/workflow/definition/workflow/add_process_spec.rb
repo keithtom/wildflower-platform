@@ -19,8 +19,23 @@ RSpec.describe Workflow::Definition::Workflow::AddProcess do
     context 'position is not set' do
       let(:position) { nil }
 
-      it "raises an error" do
-        expect { subject.run }.to raise_error(Workflow::Definition::Workflow::AddProcessError)
+      context 'with non recurring process' do
+        it "raises an error" do
+          expect { subject.run }.to raise_error(Workflow::Definition::Workflow::AddProcessError)
+        end
+      end
+
+      context 'with recurring process' do
+        before do
+          process.recurring = true
+          process.save
+          workflow.recurring = true
+          workflow.save
+        end
+
+        it "does not raise an error" do
+          expect { subject.run }.not_to raise_error(Workflow::Definition::Workflow::AddProcessError)
+        end
       end
     end
  
