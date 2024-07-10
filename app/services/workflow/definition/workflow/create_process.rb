@@ -22,7 +22,11 @@ module Workflow
             raise CreateProcessError.new('Cannot add processes to a published workflow. Please create a new version to continue.')
           end
 
-          if @process_params[:selected_processes_attributes].nil? && !@process_params[:recurring]
+          if @process_params[:recurring]
+            return
+          end
+          
+          if @process_params[:selected_processes_attributes].nil?
             raise CreateProcessError.new('Must create process with a position')
           end
 
