@@ -178,72 +178,97 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       end
     end
 
-    # context 'with recurring workflow/process' do
-    #   let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
-    #   let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 100, state: "upgraded", previous_version_id: previous_sp.id)}
-    #   let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: process_instance.definition.id, position: 100) }
+    context 'with recurring workflow/process' do
+      let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
+      let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 100, state: "upgraded", previous_version_id: previous_sp.id)}
+      let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: process_instance.definition.id, position: 100) }
 
-    #   before do
-    #     previous_version_workflow.recurring = true
-    #     previous_version_workflow.save
-    #     workflow.recurring = true
-    #     workflow.save
-    #   end
+      before do
+        previous_version_workflow.recurring = true
+        previous_version_workflow.save
+        workflow.recurring = true
+        workflow.save
+      end
 
-    #   context 'when process is started/finished' do
-    #     let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'started')}
+      context 'when process is started/finished' do
+        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'started')}
 
-    #     context 'when due date is today' do
-    #       before do
-    #         allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today)
-    #       end
+        context 'when due date is today' do
+          before do
+            allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today)
+          end
 
-    #       it 'does not add a process to the workflow instance' do
-    #         expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
-    #       end
-    #     end
+          it 'does not add a process to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+            expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(0)
+          end
+        end
 
-    #     context 'when due date is yesterday' do
-    #       before do
-    #         allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today - 1.day)
-    #       end
+        context 'when due date is yesterday' do
+          before do
+            allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today - 1.day)
+          end
 
-    #       it 'does not add a process to the workflow instance' do
-    #         expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
-    #       end
-    #     end
+          it 'does not add a process to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+            expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(0)
+          end
+        end
 
-    #     context 'when due date is tomorrow' do
-    #       before do
-    #         allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today + 1.day)
-    #       end
+        context 'when due date is tomorrow' do
+          before do
+            allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today + 1.day)
+          end
 
-    #       it 'does add a process to the workflow instance' do
-    #         expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(1)
-    #       end
-    #     end
+          it 'does add a process to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+            expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(0)
+          end
+        end
+      end
 
-    #     context 'when due date is today' do
-    #     end
+      context 'when process is unstarted' do
+        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'unstarted')}
 
-    #     context 'when due date is yesterday' do
-    #     end
+        context 'when due date is today' do
+          before do
+            allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today)
+          end
 
-    #     context 'when due date is tomorrow' do
-    #     end
-    #   end
+          it 'does not add a process to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+            expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(0)
+          end
+        end
 
-    #   context 'when process is unstarted' do
-    #     context 'when due date is today' do
-    #     end
+        context 'when due date is yesterday' do
+          before do
+            allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today - 1.day)
+          end
 
-    #     context 'when due date is yesterday' do
-    #     end
+          it 'does not add a process to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+            expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(0)
+          end
+        end
 
-    #     context 'when due date is tomorrow' do
-    #     end
-    #   end
-    # end
+        context 'when due date is tomorrow' do
+          before do
+            allow_any_instance_of(OpenSchools::DateCalculator).to receive(:due_date).and_return(Date.today + 1.day)
+          end
+
+          it 'does add a process to the workflow instance' do
+            expect{ subject.run }.to change{ workflow_instance.reload.processes.count}.by(0)
+            expect(workflow_instance.processes.where(definition_id: process_definition.id).count).to be(1)
+          end
+        end
+      end
+
+      context 'when some of the process instances are unstarted, started and finished' do
+        context 'when due date is a mix of in the past and in the future' do
+        end
+      end
+    end
   end
 
   describe "#rollout_repositions" do
