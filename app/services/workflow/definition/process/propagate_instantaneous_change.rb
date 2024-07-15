@@ -12,14 +12,14 @@ module Workflow
           @workflow_id = nil
           @category_list = nil
         end
-      
+
         def run
           validate_param_changes
           update_definition
           scrub_param_changes
           update_instances
         end
-      
+
         private 
 
         def validate_param_changes

@@ -22,6 +22,29 @@ describe Workflow::Definition::Process::PropagateInstantaneousChange do
       expect { described_class.run(process, param_changes) }.to raise_error(StandardError, "Attribute(s) cannot be an instantaneously changed: phase_list")
     end
 
+    context 'when attribute is specifically for recurring process' do
+      context 'for due months' do
+        it "should raise an error for unpermitted attribute changes" do
+          param_changes[:due_months] = [1, 2, 3]
+          expect { described_class.run(process, param_changes) }.to raise_error(StandardError, "Attribute(s) cannot be an instantaneously changed: due_months")
+        end
+      end
+
+      context 'for duration' do
+        it "should raise an error for unpermitted attribute changes" do
+          param_changes[:duration] = 12
+          expect { described_class.run(process, param_changes) }.to raise_error(StandardError, "Attribute(s) cannot be an instantaneously changed: duration")
+        end
+      end
+
+      context 'for recurring' do
+        it "should raise an error for unpermitted attribute changes" do
+          param_changes[:recurring] = true
+          expect { described_class.run(process, param_changes) }.to raise_error(StandardError, "Attribute(s) cannot be an instantaneously changed: recurring")
+        end
+      end
+    end
+
     it "should update definition" do
       described_class.run(process, param_changes)
       expect(process.category_list).to eq(param_changes["category_list"])

@@ -20,20 +20,10 @@ module Workflow
 
     enum completion_status: { unstarted: 0, started: 2, finished: 3 }
     enum dependency_cache: { prerequisites_unmet: 0, prerequisites_met: 1}
-    
-    scope :by_position, -> { order("workflow_instance_processes.position ASC") }
 
-    def title
-      super || self.definition.title
-    end
-
-    def description
-      super || self.definition.description
-    end
-
-    def phase
-      self.definition.phase
-    end
+    scope :by_position, -> { order('workflow_instance_processes.position ASC') }
+    scope :within_timeframe, ->(date) { where('? BETWEEN suggested_start_date AND due_date', date) }
+    scope :past_due, -> { where('due_date < ? AND completion_status != ?', Time.zone.today, completion_statuses[:finished]) }
 
     def completed?
       !!self.completed_at

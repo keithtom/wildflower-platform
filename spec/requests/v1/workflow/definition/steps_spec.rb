@@ -77,7 +77,6 @@ RSpec.describe V1::Workflow::Definition::StepsController, type: :request do
 
         it 'updates the step' do
           step.reload
-          puts response.inspect
           expect(response).to have_http_status(:success)
           expect(step.process_id).to eq(process2.id)
           expect(step.title).to eq('Updated Step')

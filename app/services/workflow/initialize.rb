@@ -1,5 +1,5 @@
 # This is really a workflow service
-class SSJ::Initialize < BaseService
+class Workflow::Initialize < BaseService
   def initialize(wf_instance_id)
     @wf_instance = Workflow::Instance::Workflow.find(wf_instance_id)
     unless @wf_instance.processes.empty?

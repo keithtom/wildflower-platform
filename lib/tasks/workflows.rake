@@ -36,7 +36,7 @@ namespace :workflows do
       user2 = FactoryBot.create(:user, :person => person2, email: "test#{(i+1)*2}@test.com", password: "password")
 
       workflow_instance = workflow_definition.instances.create!
-      SSJ::Initialize.run(workflow_instance.id)
+      Workflow::Initialize.run(workflow_instance.id)
       ssj_team = SSJ::Team.create!(workflow: workflow_instance, ops_guide_id: ops_guide.id)
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
@@ -140,7 +140,7 @@ namespace :workflows do
       user2 = FactoryBot.create(:user, :person => person2, email: "fake#{(i+1)*2}@test.com", password: "password")
     
       workflow_instance = workflow_definition.instances.create!
-      SSJ::Initialize.run(workflow_instance.id)
+      Workflow::Initialize.run(workflow_instance.id)
       ssj_team = SSJ::Team.create! workflow: workflow_instance, ops_guide_id: ops_guide.id
       SSJ::TeamMember.create(person: person1, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
       SSJ::TeamMember.create(person: person2, ssj_team: ssj_team, role: SSJ::TeamMember::PARTNER, status: SSJ::TeamMember::ACTIVE)
@@ -194,6 +194,28 @@ namespace :workflows do
       end
     end
     puts "Set positions on #{workflows} workflows and a total of #{updated} selected_processes"
+  end
+
+  desc 'create workflow for open schools'
+  task create_osc_workflow: :environment do
+    schools = 0
+    w = Workflow::Definition::Workflow.find_by(name: "Open School Checklist")
+
+    if w.nil?
+      puts "No OSC workflow found. No schools updated."
+    else
+      School.all.each do |school|
+        wf_instance = w.instances.create!
+        school.workflow_id = wf_instance.id
+        school.save!
+        Workflow::InitializeWorkflowJob.perform_later(wf_instance.id)
+
+        schools += 1
+      end
+
+    puts "Updated #{schools} schools with new Open School Checklist workflow"
+
+    end
   end
 end
 

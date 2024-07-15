@@ -11,7 +11,7 @@ module Workflow
     has_many :dependencies # this loads the dependency edges
 
     has_many :instances, class_name: 'Workflow::Instance::Workflow', foreign_key: 'definition_id'
-    
+
     belongs_to :previous_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id', optional: true
     has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
 
@@ -31,7 +31,7 @@ module Workflow
         processes
       end
     end
-  
+
     private
 
     def check_published
