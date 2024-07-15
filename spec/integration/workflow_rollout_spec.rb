@@ -8,7 +8,7 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
   let(:admin) { create(:user, :admin) }
 
   before do
-    SSJ::Initialize.run(wf_instance.id)
+    Workflow::Initialize.run(wf_instance.id)
     sign_in(admin)
   end
 
@@ -164,7 +164,7 @@ RSpec.describe 'Workflow Rollout Feature', type: :request do
     before do
       10.times do
         new_instance = wf_definition.instances.create!
-        SSJ::Initialize.run(new_instance.id)
+        Workflow::Initialize.run(new_instance.id)
       end
     end
 

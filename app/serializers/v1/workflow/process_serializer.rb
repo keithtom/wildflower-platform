@@ -2,7 +2,8 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
-  attributes :title, :position, :steps_count, :completed_steps_count, :description
+  attributes :title, :position, :steps_count, :completed_steps_count, :description, :suggested_start_date, :due_date,
+             :recurring_type
 
   attribute :status do |process|
     process_status(process)
@@ -13,7 +14,7 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   end
 
   attribute :phase do |process|
-    process.definition.phase_list.first
+    process.phase_list.first
   end
 
   # update this.
@@ -32,5 +33,4 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   has_many :prerequisite_processes, if: Proc.new { |process, params| params && params[:prerequisites] }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
     process.prerequisites.by_position
   end
-  
 end

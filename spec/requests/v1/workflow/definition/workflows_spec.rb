@@ -221,6 +221,27 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
         } 
       } 
     }
+    let(:recurring_process_params) {
+      {
+        process: {
+          version: '1.0',
+          title: 'Test Workflow',
+          description: 'This is a test process',
+          duration: 1,
+          recurring: true,
+          due_months: [1, 2, 3],
+          selected_processes_attributes: [{ workflow_id: workflow.id, position: 200 }],
+          steps_attributes: [
+            {
+              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
+              decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
+              documents_attributes: [{title: "document title", link: "www.example.com"}]
+            },
+            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
+          ]
+        }
+      }
+    }
 
     before do
       sign_in(admin)
@@ -239,26 +260,51 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     end
 
     context 'when the workflow is not published' do
-      before do
-        post "/v1/workflow/definition/workflows/#{workflow.id}/add_process", params: process_params
+      context 'when process is not recurring' do
+        before do
+          post "/v1/workflow/definition/workflows/#{workflow.id}/add_process", params: process_params
+        end
+
+        it 'creates a new process and associates it with the workflow' do
+          expect(response).to have_http_status(:success)
+          expect(Workflow::Definition::Process.count).to eq(2) # 2 because we also created a prerequisite in the test setup
+          expect(Workflow::Definition::SelectedProcess.count).to eq(1)
+          expect(Workflow::Definition::Step.count).to eq(2)
+          expect(Workflow::DecisionOption.count).to eq(2)
+          expect(Document.count).to eq(1)
+          expect(Workflow::Definition::Dependency.count).to eq(1)
+
+          process = Workflow::Definition::Process.last
+          expect(workflow.processes.last).to eq(process)
+
+          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
+          # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+          # puts pretty_json
+          expect(response.body).to eq(expected_json)
+        end
       end
 
-      it 'creates a new process and associates it with the workflow' do
-        expect(response).to have_http_status(:success)
-        expect(Workflow::Definition::Process.count).to eq(2) # 2 because we also created a prerequisite in the test setup
-        expect(Workflow::Definition::SelectedProcess.count).to eq(1)
-        expect(Workflow::Definition::Step.count).to eq(2)
-        expect(Workflow::DecisionOption.count).to eq(2)
-        expect(Document.count).to eq(1)
-        expect(Workflow::Definition::Dependency.count).to eq(1)
+      context 'when process is recurring' do
+        before do
+          post "/v1/workflow/definition/workflows/#{workflow.id}/add_process", params: recurring_process_params
+        end
 
-        process = Workflow::Definition::Process.last
-        expect(workflow.processes.last).to eq(process)
+        it 'creates a new process and associates it with the workflow' do
+          expect(response).to have_http_status(:success)
+          expect(Workflow::Definition::Process.count).to eq(1)
+          expect(Workflow::Definition::SelectedProcess.count).to eq(1)
+          expect(Workflow::Definition::Step.count).to eq(2)
+          expect(Workflow::DecisionOption.count).to eq(2)
+          expect(Document.count).to eq(1)
 
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
-        # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
-        # puts pretty_json
-        expect(response.body).to eq(expected_json)
+          process = Workflow::Definition::Process.last
+          expect(workflow.processes.last).to eq(process)
+
+          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
+          # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+          # puts pretty_json
+          expect(response.body).to eq(expected_json)
+        end
       end
     end
   end
