@@ -96,7 +96,10 @@ module Workflow
         def rollout_upgrades(workflow_instance)
           @workflow.selected_processes.where(state: 'upgraded').each do |sp|
             add_upgraded_process = false
-            workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
+            process_instances = workflow_instance.processes.where(definition_id: sp.previous_version&.process_id)
+            process_instances = process_instances.where(position: sp.previous_version&.position) unless sp.previous_version.process.recurring?
+
+            process_instances.each do |process_instance|
               if can_upgrade?(process_instance, sp)
                 add_upgraded_process = true
                 remove_process_and_dependencies(process_instance, workflow_instance)
@@ -176,14 +179,17 @@ module Workflow
 
         def add_process_and_dependencies(sp, workflow_instance)
           new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance, true)
-          sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
-            create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-          end
-          sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
-            create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
-          end
-          if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
-            new_process_instance.prerequisites_met!
+
+          unless sp.process.recurring?
+            sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
+              create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
+            end
+            sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
+              create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
+            end
+            if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
+              new_process_instance.prerequisites_met!
+            end
           end
         end
 

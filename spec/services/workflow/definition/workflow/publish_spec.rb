@@ -191,7 +191,8 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       end
 
       context 'when process is started/finished' do
-        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'started')}
+        let(:prev_process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
+        let!(:process_instance) { create(:workflow_instance_process, definition_id: prev_process_definition.id, workflow_id: workflow_instance.id, position: 100, completion_status: 'started')}
 
         context 'when due date is today' do
           before do
@@ -228,7 +229,8 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       end
 
       context 'when process is unstarted' do
-        let!(:process_instance) { create(:workflow_instance_process, workflow_id: workflow_instance.id, position: 100, completion_status: 'unstarted')}
+        let(:prev_process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
+        let!(:process_instance) { create(:workflow_instance_process, definition_id: prev_process_definition.id, workflow_id: workflow_instance.id, position: 100, completion_status: 'unstarted')}
 
         context 'when due date is today' do
           before do
@@ -265,7 +267,42 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       end
 
       context 'when some of the process instances are unstarted, started and finished' do
-        context 'when due date is a mix of in the past and in the future' do
+        let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], duration: 1)}
+        let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 100, state: "upgraded", previous_version_id: previous_sp.id)}
+        let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: prev_process_def.id, position: 100) }
+        let(:prev_process_def) { create(:workflow_definition_process, recurring: true, due_months: [9, 1, 4, 7], duration: 1)}
+        let!(:process_instance_1) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 100, completion_status: 'finished', due_date: Date.new(2024, 9, 30))}
+        let!(:process_instance_2) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 200, completion_status: 'finished', due_date: Date.new(2025, 1, 31))}
+        let!(:process_instance_3) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 300, completion_status: 'unstarted', due_date: Date.new(2025, 4, 30))}
+        let!(:process_instance_4) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 400, completion_status: 'unstarted', due_date: Date.new(2025, 7, 31))}
+
+        before do
+          allow_any_instance_of(ActiveSupport::TimeZone).to receive(:today).and_return(Date.new(2025, 3, 15))
+        end
+
+        it 'does not remove the started or completed ones, creates the new ones in the future' do
+          # 2 are removed, because they are unstated, and 6 are created
+          expect { subject.run }. to change { workflow_instance.reload.processes.count}.by(4)
+        end
+      end
+
+      context 'when all of the process instances are unstarted, some are past due' do
+        let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], duration: 1)}
+        let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 100, state: "upgraded", previous_version_id: previous_sp.id)}
+        let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: prev_process_def.id, position: 100) }
+        let(:prev_process_def) { create(:workflow_definition_process, recurring: true, due_months: [9, 1, 4, 7], duration: 1)}
+        let!(:process_instance_1) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 100, completion_status: 'unstarted', due_date: Date.new(2024, 9, 30))}
+        let!(:process_instance_2) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 200, completion_status: 'unstarted', due_date: Date.new(2025, 1, 31))}
+        let!(:process_instance_3) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 300, completion_status: 'unstarted', due_date: Date.new(2025, 4, 30))}
+        let!(:process_instance_4) { create(:workflow_instance_process, definition_id: prev_process_def.id, workflow_id: workflow_instance.id, position: 400, completion_status: 'unstarted', due_date: Date.new(2025, 7, 31))}
+
+        before do
+          allow_any_instance_of(ActiveSupport::TimeZone).to receive(:today).and_return(Date.new(2025, 3, 15))
+        end
+
+        it 'does not remove the started or completed ones, creates the new ones in the future' do
+          # 4 are removed, because they are unstated, and 6 are created
+          expect { subject.run }. to change { workflow_instance.reload.processes.count}.by(2)
         end
       end
     end
