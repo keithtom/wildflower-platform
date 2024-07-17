@@ -65,13 +65,8 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
     context 'with recurring workflow/process' do
       let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
       let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, state: "added")}
-
-      before do
-        previous_version_workflow.recurring = true
-        previous_version_workflow.save
-        workflow.recurring = true
-        workflow.save
-      end
+      let(:previous_version_workflow) { create(:workflow_definition_workflow, published_at: DateTime.now, recurring: true)}
+      let(:workflow) { create(:workflow_definition_workflow, previous_version_id: previous_version_workflow.id, recurring: true)}
 
       context 'when due date is today' do
         before do
@@ -182,13 +177,8 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
       let(:process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
       let!(:selected_process) { create(:selected_process, workflow_id: workflow.id, process_id: process_definition.id, position: 100, state: "upgraded", previous_version_id: previous_sp.id)}
       let(:previous_sp) { create(:selected_process, workflow_id: previous_version_workflow.id, process_id: process_instance.definition.id, position: 100) }
-
-      before do
-        previous_version_workflow.recurring = true
-        previous_version_workflow.save
-        workflow.recurring = true
-        workflow.save
-      end
+      let(:previous_version_workflow) { create(:workflow_definition_workflow, published_at: DateTime.now, recurring: true)}
+      let(:workflow) { create(:workflow_definition_workflow, previous_version_id: previous_version_workflow.id, recurring: true)}
 
       context 'when process is started/finished' do
         let(:prev_process_definition) { create(:workflow_definition_process, recurring: true, due_months: [1], duration: 1)}
