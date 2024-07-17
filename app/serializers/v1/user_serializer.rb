@@ -49,5 +49,13 @@ module V1
           }
       end
     end
+  
+    attribute :schools do |user|
+      person = user.person
+      schools = person&.schools
+      if person && schools.length > 0
+        schools.map{|school| {name: school.name, workflowId: school.workflow&.external_identifier}}
+      end
+    end
   end
 end
