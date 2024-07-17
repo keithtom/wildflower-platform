@@ -35,6 +35,7 @@ module Workflow
     has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
 
     before_destroy :validate_destroyable
+    before_save :validate_recurring
 
     def published?
       !published_at.nil?
@@ -57,8 +58,9 @@ module Workflow
       when 12
         ANNUALLY
       else
-        SlackClient.chat_postMessage(channel: '#circle-platform', text: 'OSC Warning: unknown duration to calculate recurring_type', as_user: true)
-        nil
+        if Rails.env.production?
+          SlackClient.chat_postMessage(channel: '#circle-platform', text: 'OSC Warning: unknown duration to calculate recurring_type', as_user: true)
+        end
       end
     end
 
@@ -67,6 +69,20 @@ module Workflow
     def validate_destroyable
       if instances.count > 0
         errors.add(:base, "Cannot destroy process with existing instances")
+        throw(:abort)
+      end
+    end
+  
+    def validate_recurring
+      return true if previous_version.nil?
+
+      if recurring? && !previous_version.recurring?
+        errors.add(:base, "Cannot be recurring if previous version is not")
+        throw(:abort)
+      end
+
+      if !recurring? && previous_version.recurring?
+        errors.add(:base, "Must be recurring if previous version is")
         throw(:abort)
       end
     end
