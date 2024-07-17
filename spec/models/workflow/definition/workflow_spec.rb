@@ -36,4 +36,41 @@ RSpec.describe Workflow::Definition::Workflow, type: :model do
       expect(workflow.published?).to be_falsey
     end
   end
+
+  describe ".validate_recurring" do
+    context 'workflow is recurring' do
+      context 'prev version is recurring' do
+        let!(:prev_version_workflow) { create(:workflow_definition_workflow, recurring: true) }
+
+        it 'does not raise an error' do
+          expect{ create(:workflow_definition_workflow, previous_version: prev_version_workflow, recurring: true) }.not_to raise_error
+        end
+      end
+
+      context 'prev version is NOT recurring' do
+        let!(:prev_version_workflow) { create(:workflow_definition_workflow, recurring: false) }
+
+        it 'does not raise an error' do
+          expect{ create(:workflow_definition_workflow, previous_version: prev_version_workflow, recurring: true) }.to raise_error
+        end
+      end
+    end
+    context 'workflow is not recurring' do
+      context 'prev version is recurring' do
+        let!(:prev_version_workflow) { create(:workflow_definition_workflow, recurring: true) }
+
+        it 'does not raise an error' do
+          expect{ create(:workflow_definition_workflow, previous_version: prev_version_workflow, recurring: false) }.to raise_error
+        end
+      end
+
+      context 'prev version is NOT recurring' do
+        let!(:prev_version_workflow) { create(:workflow_definition_workflow, recurring: false) }
+
+        it 'does not raise an error' do
+          expect{ create(:workflow_definition_workflow, previous_version: prev_version_workflow, recurring: false) }.not_to raise_error
+        end
+      end
+    end
+  end
 end

@@ -19,6 +19,7 @@ module Workflow
 
     validate :name_version_combo, on: :create
     validate :check_published, on: :update
+    before_save :validate_recurring
 
     def published?
       !published_at.nil?
@@ -43,6 +44,20 @@ module Workflow
     def name_version_combo
       if Workflow::Definition::Workflow.where(name: name, version: version, deleted_at: nil).exists?
         errors.add(:base, "name and version combination must be unique for non-deleted records")
+      end
+    end
+
+    def validate_recurring
+      return true if previous_version.nil?
+
+      if recurring? && !previous_version.recurring?
+        errors.add(:base, "Cannot be recurring if previous version is not")
+        throw(:abort)
+      end
+
+      if !recurring? && previous_version.recurring?
+        errors.add(:base, "Must be recurring if previous version is")
+        throw(:abort)
       end
     end
   end
