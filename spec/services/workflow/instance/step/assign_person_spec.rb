@@ -8,7 +8,7 @@ describe Workflow::Instance::Step::AssignPerson do
   context 'when valid' do
     let(:ssj_team) { create(:ssj_team, workflow_id: step.process.workflow_id) }
     let!(:ssj_team_member) { create(:ssj_team_member, ssj_team: ssj_team, person: person)}
-    let!(:ssj_team_member!) { create(:ssj_team_member, ssj_team: ssj_team, person: person2)}
+    let!(:ssj_team_member1) { create(:ssj_team_member, ssj_team: ssj_team, person: person2)}
 
     it "assigns multiple people to a step" do
       expect(step.assignments.count).to eq(0)
