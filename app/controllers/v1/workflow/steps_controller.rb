@@ -1,5 +1,5 @@
 class V1::Workflow::StepsController < ApiController
-  before_action :find_step, except: [:create, :unassign, :reorder]
+  before_action :assign_step, except: [:create, :unassign, :reorder]
 
   def create
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
@@ -25,7 +25,7 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def reorder
-    @step = find_team.workflow.steps.find_by!(external_identifier: params[:id])
+    @step = find_step(get_workflow, nil)
     Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
     render_step
 
@@ -42,13 +42,14 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def assign
-    @person = current_user.person
+    people = Person.includes([:schools, :ssj_team_member])
+    @person = params[:person_id] ? people.find_by!(external_identifier: params[:person_id]) : people.find(current_user.person_id)
     Workflow::Instance::Step::AssignPerson.run(@step, @person)
     render_step
   end
 
   def unassign
-    @step = find_team.workflow.steps.includes(:process, :documents, :assignments).find_by!(external_identifier: params[:id])
+    @step = find_step(get_workflow, :process, :documents, :assignments)
     @person = current_user.person
     Workflow::Instance::Step::UnassignPerson.run(@step, @person)
     render_step
@@ -67,8 +68,17 @@ class V1::Workflow::StepsController < ApiController
     options
   end
 
-  def find_step
-    @step = find_team.workflow.steps.includes(:process, :documents, assignments: [:assignee]).find_by!(external_identifier: params[:id])
+  def assign_step
+    @step = find_step(get_workflow, :process, :documents, assignments: [:assignee])
+  end
+
+  def get_workflow
+    workflow_id = params[:workflow_id]
+    workflow_id ? Workflow::Instance::Workflow.find_by!(external_identifier: workflow_id) : find_team.workflow
+  end
+
+  def find_step(workflow, *includes)
+    workflow.steps.includes(*includes).find_by!(external_identifier: params[:id])
   end
 
   # TODO: have a different set of params for a manual step

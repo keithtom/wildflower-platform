@@ -66,6 +66,9 @@ RSpec.describe "Workflow Feature" do
     let(:workflow) { workflow_definition.instances.create! }
     let(:person1) { create(:person) }
     let(:person2) { create(:person) }
+    let(:ssj_team) { create(:ssj_team, workflow_id: workflow.id) }
+    let!(:ssj_team_member) { create(:ssj_team_member, ssj_team: ssj_team, person: person1)}
+    let!(:ssj_team_member1) { create(:ssj_team_member, ssj_team: ssj_team, person: person2)}
 
     before do
       Workflow::Initialize.run(workflow.id)
