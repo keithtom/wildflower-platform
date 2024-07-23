@@ -1,5 +1,5 @@
 class V1::Workflow::StepsController < ApiController
-  before_action :assign_step, except: [:create, :unassign, :reorder]
+  before_action :assign_step, except: [:create, :show, :unassign, :reorder]
 
   def create
     @process = Workflow::Instance::Process.find_by!(external_identifier: params[:process_id])
@@ -8,6 +8,7 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def show
+    @step = Workflow::Instance::Step.includes(:process, :documents, assignments: [:assignee]).find_by!(external_identifier: params[:id])
     render_step
   end
 
@@ -25,7 +26,7 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def reorder
-    @step = find_step(get_workflow, nil)
+    @step = find_step(nil)
     Workflow::Instance::Process::ReorderSteps.run(@step, step_params[:after_position])
     render_step
 
@@ -49,7 +50,7 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def unassign
-    @step = find_step(get_workflow, :process, :documents, :assignments)
+    @step = find_step(:process, :documents, :assignments)
     @person = current_user.person
     Workflow::Instance::Step::UnassignPerson.run(@step, @person)
     render_step
@@ -69,16 +70,11 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def assign_step
-    @step = find_step(get_workflow, :process, :documents, assignments: [:assignee])
+    @step = find_step(:process, :documents, assignments: [:assignee])
   end
 
-  def get_workflow
-    workflow_id = params[:workflow_id]
-    workflow_id ? Workflow::Instance::Workflow.find_by!(external_identifier: workflow_id) : find_team.workflow
-  end
-
-  def find_step(workflow, *includes)
-    workflow.steps.includes(*includes).find_by!(external_identifier: params[:id])
+  def find_step(*includes)
+    Workflow::Instance::Step.includes(*includes).find_by!(external_identifier: params[:id])
   end
 
   # TODO: have a different set of params for a manual step
