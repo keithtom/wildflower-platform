@@ -26,15 +26,15 @@ module Workflow
       private
 
       def complete_step
+        assignment = @step.assignments.find_or_create_by!(assignee: @person)
+        assignment.completed_at ||= DateTime.now
+        assignment.save!
+
         # simplifying assumption: completed is true if at least 1 person completed it regardless of worktype = individual or collaborative
         # this is because milestone progress is based on any single person completing the steps.
         # The new requirements to have "learning" or individual steps be completed by each partner was done so that the system doesn't give the impression that only 1 partner has to complete learning tasks.
         @step.completed = true 
         @step.save!
-        
-        assignment = @step.assignments.find_or_create_by!(assignee: @person)
-        assignment.completed_at ||= DateTime.now
-        assignment.save!
       end
 
       def check_unlocked_step_postrequisites
