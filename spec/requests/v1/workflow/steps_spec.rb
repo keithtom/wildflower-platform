@@ -189,11 +189,27 @@ RSpec.describe "V1::Workflow::Steps", type: :request do
       sign_in(user)
     end
 
-    describe "PUT /v1/workflow/steps/bd8f-c3b2/assign" do
-      it "succeeds" do
-        put "/v1/workflow/steps/#{step.external_identifier}/assign", headers: headers, params: valid_params
-        expect(response).to have_http_status(:success)
-        expect(step.assignments.first.assignee).to eq(person)
+    context 'assigning step to current user' do
+      describe "PUT /v1/workflow/steps/bd8f-c3b2/assign" do
+        it "succeeds" do
+          put "/v1/workflow/steps/#{step.external_identifier}/assign", headers: headers, params: valid_params
+          expect(response).to have_http_status(:success)
+          expect(step.assignments.first.assignee).to eq(person)
+        end
+      end
+    end
+
+    context 'assigning step to a different user' do
+      let(:new_person) { create(:person) }
+      let!(:school_relationship) { create(:school_relationship, person: new_person, school: school) }
+      let(:valid_params) {{ workflow_id: workflow.external_identifier, person_id: new_person.external_identifier }}
+
+      describe "PUT /v1/workflow/steps/bd8f-c3b2/assign" do
+        it "succeeds" do
+          put "/v1/workflow/steps/#{step.external_identifier}/assign", headers: headers, params: valid_params
+          expect(response).to have_http_status(:success)
+          expect(step.assignments.first.assignee).to eq(new_person)
+        end
       end
     end
 

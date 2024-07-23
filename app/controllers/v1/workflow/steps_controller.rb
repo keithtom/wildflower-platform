@@ -42,7 +42,8 @@ class V1::Workflow::StepsController < ApiController
   end
 
   def assign
-    @person = Person.includes([:schools, :ssj_team_member]).find(current_user.person_id)
+    people = Person.includes([:schools, :ssj_team_member])
+    @person = params[:person_id] ? people.find_by!(external_identifier: params[:person_id]) : people.find(current_user.person_id)
     Workflow::Instance::Step::AssignPerson.run(@step, @person)
     render_step
   end
