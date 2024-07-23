@@ -6,6 +6,10 @@ describe Workflow::Instance::Step::UnassignPerson do
   let(:step) { create(:workflow_instance_step) }
 
   context "when there are assigned people" do
+    let(:ssj_team) { create(:ssj_team, workflow_id: step.process.workflow_id) }
+    let!(:ssj_team_member) { create(:ssj_team_member, ssj_team: ssj_team, person: person)}
+    let!(:ssj_team_member!) { create(:ssj_team_member, ssj_team: ssj_team, person: person2)}
+
     before do
       Workflow::Instance::Step::AssignPerson.run(step, person)
       Workflow::Instance::Step::AssignPerson.run(step, person2)
