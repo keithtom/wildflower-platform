@@ -205,6 +205,8 @@ namespace :workflows do
       puts "No OSC workflow found. No schools updated."
     else
       School.all.each do |school|
+        next if school.workflow_id
+
         wf_instance = w.instances.create!
         school.workflow_id = wf_instance.id
         school.save!
