@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_07_02_150417) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_24_151734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -310,6 +310,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_02_150417) do
     t.string "platform_airtable_id"
     t.datetime "airtable_sync_at"
     t.datetime "deleted_at"
+    t.string "montessori_certified_year"
     t.index ["airtable_id"], name: "index_people_on_airtable_id", unique: true
     t.index ["deleted_at"], name: "index_people_on_deleted_at"
     t.index ["email"], name: "index_people_on_email", unique: true
