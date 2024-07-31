@@ -81,8 +81,15 @@ module Workflow
 
         def rollout_removes(workflow_instance)
           @workflow.selected_processes.where(state: 'removed').each do |sp|
-            workflow_instance.processes.where(definition_id: sp.process_id,
-                                              position: sp.previous_version&.position).each do |process_instance|
+            process_instances = workflow_instance.processes.where(definition_id: sp.process_id,
+                                                                  position: sp.previous_version&.position)
+            if process_instances.empty?
+              Rails.logger.warning("No process instance found to rollout upgrade. May be an error.
+              workflow_instance_id: #{workflow_instance.id}, process_definition_id: #{sp.previous_version&.process_id},
+              position: #{sp.previous_version&.position}")
+            end
+
+            process_instances.each do |process_instance|
               if can_remove?(process_instance)
                 remove_process_and_dependencies(process_instance, workflow_instance)
                 @process_stats[:removed] += 1
