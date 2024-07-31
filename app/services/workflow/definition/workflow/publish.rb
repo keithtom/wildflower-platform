@@ -27,7 +27,7 @@ module Workflow
                 rollout_removes(workflow_instance)
                 rollout_upgrades(workflow_instance)
                 rollout_repositions(workflow_instance)
-                rollout_dependencies # Create dependencies 
+                rollout_dependencies # Create dependencies
 
                 workflow_instance.version = @workflow.version
                 workflow_instance.definition = @workflow
@@ -41,22 +41,21 @@ module Workflow
               Rails.logger.error(e.backtrace.join("\n"))
               Highlight::H.instance.record_exception(e)
               if Rails.env.production?
-                SlackClient.chat_postMessage(channel: '#circle-platform', text: "Error publishing workflow #{@workflow.id}: #{e.message}", as_user: true)
+                SlackClient.chat_postMessage(channel: '#circle-platform',
+                                             text: "Error publishing workflow #{@workflow.id}: #{e.message}", as_user: true)
               end
             end
           end
           finish_publish_stats
 
-          return @process_stats
+          @process_stats
         end
 
         def validate
-          if @workflow.published?
-            raise PublishError.new("workflow id #{@workflow.id} is already published")
-          end
+          raise PublishError, "workflow id #{@workflow.id} is already published" if @workflow.published?
 
-          if @workflow.selected_processes.where.not(state: "replicated").count == 0
-            raise PublishError.new("no changes made to the previous version of this workflow id: #{@workflow.id}")
+          if @workflow.selected_processes.where.not(state: 'replicated').count == 0
+            raise PublishError, "no changes made to the previous version of this workflow id: #{@workflow.id}"
           end
         end
 
@@ -64,11 +63,11 @@ module Workflow
           @workflow.rollout_started_at = DateTime.now
           @workflow.save!
 
-          # todo: probably need more stats
+          # TODO: probably need more stats
         end
 
         def rollout_adds(workflow_instance)
-          @workflow.selected_processes.where(state: "added").each do |sp|
+          @workflow.selected_processes.where(state: 'added').each do |sp|
             if can_add?(workflow_instance, sp)
               add_process_and_dependencies(sp, workflow_instance)
               @process_stats[:added] += 1
@@ -81,8 +80,9 @@ module Workflow
         end
 
         def rollout_removes(workflow_instance)
-          @workflow.selected_processes.where(state: "removed").each do |sp|
-            workflow_instance.processes.where(definition_id: sp.process_id, position: sp.previous_version&.position).each do |process_instance|
+          @workflow.selected_processes.where(state: 'removed').each do |sp|
+            workflow_instance.processes.where(definition_id: sp.process_id,
+                                              position: sp.previous_version&.position).each do |process_instance|
               if can_remove?(process_instance)
                 remove_process_and_dependencies(process_instance, workflow_instance)
                 @process_stats[:removed] += 1
@@ -97,7 +97,15 @@ module Workflow
           @workflow.selected_processes.where(state: 'upgraded').each do |sp|
             add_upgraded_process = false
             process_instances = workflow_instance.processes.where(definition_id: sp.previous_version&.process_id)
-            process_instances = process_instances.where(position: sp.previous_version&.position) unless sp.previous_version.process.recurring?
+            unless sp.previous_version.process.recurring?
+              process_instances = process_instances.where(position: sp.previous_version&.position)
+            end
+
+            if process_instances.empty?
+              Rails.logger.warning("No process instance found to rollout upgrade. May be an error.
+              workflow_instance_id: #{workflow_instance.id}, process_definition_id: #{sp.previous_version&.process_id},
+              position: #{sp.previous_version&.position}")
+            end
 
             process_instances.each do |process_instance|
               if can_upgrade?(process_instance, sp)
@@ -118,8 +126,9 @@ module Workflow
         end
 
         def rollout_repositions(workflow_instance)
-          @workflow.selected_processes.where(state: "repositioned").each do |sp|
-            workflow_instance.processes.where(definition_id: sp.previous_version&.process_id, position: sp.previous_version&.position).each do |process_instance|
+          @workflow.selected_processes.where(state: 'repositioned').each do |sp|
+            workflow_instance.processes.where(definition_id: sp.previous_version&.process_id,
+                                              position: sp.previous_version&.position).each do |process_instance|
               process_instance.position = sp.position
               process_instance.save!
               @process_stats[:repositioned] += 1
@@ -172,13 +181,15 @@ module Workflow
           if workflow_instance.definition.recurring?
             any_future_due_date?(sp.process)
           else
-            previous_process_by_position = workflow_instance.processes.order(position: :desc).where("position < ?", sp.position).first
+            previous_process_by_position = workflow_instance.processes.order(position: :desc).where('position < ?',
+                                                                                                    sp.position).first
             previous_process_by_position.nil? || previous_process_by_position.unstarted? || previous_process_by_position.started?
           end
         end
 
         def add_process_and_dependencies(sp, workflow_instance)
-          new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance, true)
+          new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance,
+                                                                           true)
 
           unless sp.process.recurring?
             sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
@@ -220,9 +231,7 @@ module Workflow
           calculator = OpenSchools::DateCalculator.new
           process_definition.due_months.each do |month|
             due_date = calculator.due_date(month)
-            if due_date > Time.zone.today
-              return true
-            end
+            return true if due_date > Time.zone.today
           end
 
           false
