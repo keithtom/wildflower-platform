@@ -73,7 +73,7 @@ module Workflow
               add_process_and_dependencies(sp, workflow_instance)
               @process_stats[:added] += 1
             else
-              Rails.logger.info("New process definition #{sp.process_id} cannot be added to this rollout")
+              Rails.logger.info("New process definition #{sp.process_id} cannot be added to this workflow id: #{workflow_instance.id}")
             end
             sp.process.published_at = DateTime.now
             sp.process.save!
