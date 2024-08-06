@@ -128,7 +128,7 @@ RSpec.describe "Workflow Feature" do
       expect(process.started?).to be_truthy
       expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
 
-      Workflow::Instance::Step::UnassignPerson.run(step, person1)
+      Workflow::Instance::Step::UnassignPerson.run(step, person1, person1)
       expect(process.unstarted?).to be_truthy
       expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
 
@@ -158,7 +158,7 @@ RSpec.describe "Workflow Feature" do
       expect(process.prerequisites_met?).to be_falsey
       expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
 
-      Workflow::Instance::Step::UnassignPerson.run(step, person1)
+      Workflow::Instance::Step::UnassignPerson.run(step, person1, person1)
 
       expect(process.unstarted?).to be_truthy
       expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::UP_NEXT)
