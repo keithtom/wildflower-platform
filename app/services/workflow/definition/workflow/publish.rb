@@ -198,18 +198,20 @@ module Workflow
         end
 
         def add_process_and_dependencies(sp, workflow_instance)
-          new_process_instance = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance,
-                                                                           true)
+          new_process_instances = ::Workflow::Instance::Process::Create.run(sp.process, @workflow, workflow_instance,
+                                                                            true)
 
           unless sp.process.recurring?
-            sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
-              create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-            end
-            sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
-              create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
-            end
-            if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
-              new_process_instance.prerequisites_met!
+            new_process_instances.each do |new_process_instance|
+              sp.process.workable_dependencies.where(workflow_id: @workflow.id).each do |dependency_definition|
+                create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
+              end
+              sp.process.prerequisite_dependencies.where(workflow_id: @workflow.id).each do |prereq_definition|
+                create_prereq_dependency_later(prereq_definition, workflow_instance, new_process_instance)
+              end
+              if sp.process.workable_dependencies.where(workflow_id: @workflow.id).empty?
+                new_process_instance.prerequisites_met!
+              end
             end
           end
         end
