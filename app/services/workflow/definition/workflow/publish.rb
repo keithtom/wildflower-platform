@@ -153,9 +153,8 @@ module Workflow
         end
 
         def create_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-          key = "#{dependency_definition.id}-#{new_process_instance.id}"
-          if @dependency_creates[key].nil?
-            @dependency_creates[key] = true
+          if @dependency_creates[dependency_definition.id].nil?
+            @dependency_creates[dependency_definition.id] = true
             @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
               dependency_definition,
               workflow_instance,
@@ -165,9 +164,8 @@ module Workflow
         end
 
         def create_prereq_dependency_later(dependency_definition, workflow_instance, new_process_instance)
-          key = "#{dependency_definition.id}-#{new_process_instance.id}"
-          if @dependency_creates[key].nil?
-            @dependency_creates[key] = true
+          if @dependency_creates[dependency_definition.id].nil?
+            @dependency_creates[dependency_definition.id] = true
             @dependency_creators << ::Workflow::Instance::Dependency::Create.new(
               dependency_definition,
               workflow_instance,
