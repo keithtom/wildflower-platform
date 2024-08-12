@@ -358,6 +358,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_24_151734) do
     t.string "platform_airtable_id"
     t.datetime "airtable_sync_at"
     t.datetime "deleted_at"
+    t.string "title"
     t.index ["airtable_id"], name: "index_school_relationships_on_airtable_id", unique: true
     t.index ["deleted_at"], name: "index_school_relationships_on_deleted_at"
     t.index ["external_identifier"], name: "index_school_relationships_on_external_identifier", unique: true
