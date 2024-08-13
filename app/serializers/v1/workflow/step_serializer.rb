@@ -1,5 +1,5 @@
 class V1::Workflow::StepSerializer < ApplicationSerializer
-  attributes :title, :kind, :position, :description  # completed is for backend use purposes and means something different in the front-end
+  attributes :title, :kind, :position, :description, :completion_type  # completed is for backend use purposes and means something different in the front-end
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
     id_method_name: :external_identifier do |step|
