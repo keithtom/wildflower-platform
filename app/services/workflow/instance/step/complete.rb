@@ -29,11 +29,12 @@ module Workflow
         assignment = @step.assignments.find_or_create_by!(assignee: @person)
         assignment.completed_at ||= DateTime.now
         assignment.save!
+        @step.assignments.where(completed_at: nil).destroy_all if @step.collaborative? || @step.decision?
 
         # simplifying assumption: completed is true if at least 1 person completed it regardless of worktype = individual or collaborative
         # this is because milestone progress is based on any single person completing the steps.
         # The new requirements to have "learning" or individual steps be completed by each partner was done so that the system doesn't give the impression that only 1 partner has to complete learning tasks.
-        @step.completed = true 
+        @step.completed = true
         @step.save!
       end
 
@@ -59,7 +60,7 @@ module Workflow
           @process.finished!
         else
           @process.started!
-        end  
+        end
       end
 
       def start_process
@@ -71,9 +72,7 @@ module Workflow
       end
 
       def complete_process
-        if @process.completed_steps_count == @process.steps_count
-          Workflow::Instance::Process::Complete.run(@process)
-        end
+        Workflow::Instance::Process::Complete.run(@process) if @process.completed_steps_count == @process.steps_count
       end
 
       def notify_people
