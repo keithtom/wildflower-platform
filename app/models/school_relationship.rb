@@ -2,7 +2,7 @@ class SchoolRelationship < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
   acts_as_paranoid
-  acts_as_taggable_on :roles # the roles held during the relationship
+  acts_as_taggable_on :roles # the roles held during the relationship [Founder, Teacher Leader, Emerging Teacher Leader, Classroom Staff, Fellow, Other]
 
   belongs_to :school, touch: true
   belongs_to :person, touch: true

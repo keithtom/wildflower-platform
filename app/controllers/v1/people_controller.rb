@@ -51,6 +51,7 @@ class V1::PeopleController < ApiController
                                    :pronouns_other,
                                    :household_income,
                                    :montessori_certified,
+                                   :montessori_certified_year,
                                    [:montessori_certified_level_list => []],
                                    [:classroom_age_list => []],
                                    [:role_list => []],
