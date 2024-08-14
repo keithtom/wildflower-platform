@@ -25,8 +25,9 @@ Rails.application.routes.draw do
     end
 
     resources :schools, except: [:create, :destroy] do
-      # resources :school_relationships
     end
+    
+    resources :school_relationships
 
     resources :documents, only: [:create, :destroy]
 

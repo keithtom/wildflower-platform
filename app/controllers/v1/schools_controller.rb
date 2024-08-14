@@ -49,6 +49,8 @@ class V1::SchoolsController < ApiController
       [:ages_served_list => []], 
       :governance_type, 
       :max_enrollment, 
+      :num_classrooms,
+      :charter_string,
       :school_relationships_attributes => [:person_id],
       :address_attributes => [:city, :state]
     )
