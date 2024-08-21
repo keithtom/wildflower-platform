@@ -7,7 +7,11 @@ class V1::SchoolRelationshipsController < ApiController
   end
 
   def create
+    school = School.find_by!(external_identifier: school_relationship_params.delete(:school_id))
+    person = Person.find_by!(external_identifier: school_relationship_params.delete(:person_id))
     @school_relationship = SchoolRelationship.new(school_relationship_params)
+    @school_relationship.school = school
+    @school_relationship.person = person
 
     if @school_relationship.save
       render json: V1::SchoolRelationshipSerializer.new(@school_relationship, serializer_options), status: :created
@@ -39,6 +43,10 @@ class V1::SchoolRelationshipsController < ApiController
 
   private
 
+  def serializer_options
+    { include: %w[school person] }
+  end
+
   def school_relationship_params
     params.require(:school_relationship).permit(
       :name,
@@ -46,6 +54,8 @@ class V1::SchoolRelationshipsController < ApiController
       :start_date,
       :end_date,
       :title,
+      :school_id,
+      :person_id,
       [role_list: []]
     )
   end
