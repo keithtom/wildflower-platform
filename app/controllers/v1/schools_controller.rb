@@ -1,6 +1,7 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address, [:sister_schools], taggings: [:tag], school_relationships: [:person] ).all
+    @schools = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
+                               [:sister_schools], taggings: [:tag], school_relationships: [:person]).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -15,7 +16,8 @@ class V1::SchoolsController < ApiController
   end
 
   def update
-    school = School.includes(taggings: [:tag], school_relationships: [:person]).find_by!(external_identifier: params[:id])
+    school = School.includes(taggings: [:tag],
+                             school_relationships: [:person]).find_by!(external_identifier: params[:id])
     school.update!(school_params)
     render json: V1::SchoolSerializer.new(school.reload)
   end
@@ -24,19 +26,19 @@ class V1::SchoolsController < ApiController
 
   def school_options
     options = {
-      include: [:people, :school_relationships, :address, :pod, :sister_schools]
+      include: %i[people school_relationships school_relationships.person address pod sister_schools]
     }
   end
 
   def optimized_query
     [
-      :address, 
+      :address,
       :banner_image_attachment,
       :logo_image_attachment,
       [:sister_schools],
-      taggings: [:tag], 
-      school_relationships: [:person], 
-      people: [:schools, :address, :hub, :profile_image_attachment, :school_relationships, taggings: [:tag]]
+      { taggings: [:tag],
+        school_relationships: [:person],
+        people: [:schools, :address, :hub, :profile_image_attachment, :school_relationships, { taggings: [:tag] }] }
     ]
   end
 
@@ -44,15 +46,15 @@ class V1::SchoolsController < ApiController
     params.require(:school).permit(
       :banner_image,
       :logo_image,
-      :about, 
-      :opened_on, 
-      [:ages_served_list => []], 
-      :governance_type, 
-      :max_enrollment, 
+      :about,
+      :opened_on,
+      [ages_served_list: []],
+      :governance_type,
+      :max_enrollment,
       :num_classrooms,
       :charter_string,
-      :school_relationships_attributes => [:person_id],
-      :address_attributes => [:city, :state]
+      school_relationships_attributes: [:person_id],
+      address_attributes: %i[city state]
     )
   end
 end
