@@ -22,12 +22,27 @@ class V1::SchoolsController < ApiController
     render json: V1::SchoolSerializer.new(school.reload)
   end
 
+  def invite_partner
+    school = School.includes(taggings: [:tag],
+                             school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
+    School::InvitePartner.run(person_params, school_relationship_params, school, current_user)
+    render json: V1::SchoolSerializer.new(school.reload, school_options)
+  end
+
   protected
 
   def school_options
     options = {
       include: %i[people school_relationships school_relationships.person address pod sister_schools]
     }
+  end
+
+  def person_params
+    params.require(:person).permit(:email, :first_name, :last_name)
+  end
+
+  def school_relationship_params
+    params.require(:school_relationship).permit(:title, :start_date, :end_date)
   end
 
   def optimized_query
