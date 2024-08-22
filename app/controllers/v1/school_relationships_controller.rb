@@ -52,7 +52,7 @@ class V1::SchoolRelationshipsController < ApiController
   end
 
   def school_relationship_params
-    params.require(:school_relationship).permit(
+    @school_relationship_params ||= params.require(:school_relationship).permit(
       :name,
       :description,
       :start_date,
