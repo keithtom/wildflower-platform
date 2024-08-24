@@ -249,7 +249,7 @@ namespace :workflows do
     if w.nil?
       puts 'No OSC workflow found. No schools updated.'
     else
-      School.where(workflow_id: nil).each do |school|
+      School.where(workflow_id: nil, affiliated: true).each do |school|
         wf_instance = w.instances.create!
         school.workflow_id = wf_instance.id
         school.save!
