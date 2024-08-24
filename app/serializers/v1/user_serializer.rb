@@ -20,7 +20,7 @@ module V1
           Rails.application.routes.url_helpers.rails_blob_url(person.profile_image)
         elsif person.image_url.present?
           person.image_url
-        end  
+        end
       end
     end
 
@@ -39,22 +39,31 @@ module V1
       ssj_team = person&.ssj_team
       if person && ssj_team
         workflow = ssj_team.workflow
-          {
-            currentPhase: workflow.current_phase,
-            opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
-            regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
-            expectedStartDate: ssj_team.expected_start_date,
-            workflowId: workflow.external_identifier,
-            teamId: ssj_team.external_identifier
-          }
+        {
+          currentPhase: workflow.current_phase,
+          opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
+          regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
+          expectedStartDate: ssj_team.expected_start_date,
+          workflowId: workflow.external_identifier,
+          teamId: ssj_team.external_identifier
+        }
       end
     end
-  
+
     attribute :schools do |user|
       person = user.person
-      schools = person&.schools
-      if person && schools.length > 0
-        schools.map{|school| {name: school.name, workflowId: school.workflow&.external_identifier}}
+      school_relatonships = person&.school_relationships
+      if person && school_relatonships.length > 0
+        school_relatonships.map do |sr|
+          {
+            name: sr.school&.name,
+            workflowId: sr.school&.workflow&.external_identifier,
+            affiliated: sr.school&.affiliated,
+            start_date: sr.start_date,
+            end_date: sr.end_date,
+            role_list: sr.role_list
+          }
+        end
       end
     end
   end
