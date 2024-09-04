@@ -11,19 +11,22 @@ module V1
 
     # done this way to avoid n+1 queries
     attribute :tuition_assistance_type_list do |person|
-      person.taggings.select { |tagging| tagging.context == "tuition_assistance_types" }.map { |tagging| tagging.tag.name }
+      person.taggings.select do |tagging|
+        tagging.context == 'tuition_assistance_types'
+      end.map { |tagging| tagging.tag.name }
     end
 
     # done this way to avoid n+1 queries
     attribute :ages_served_list do |person|
-      person.taggings.select { |tagging| tagging.context == "ages_served" }.map { |tagging| tagging.tag.name }
+      person.taggings.select { |tagging| tagging.context == 'ages_served' }.map { |tagging| tagging.tag.name }
     end
 
     belongs_to :pod, id_method_name: :external_identifier do |school|
       school.pod
     end
 
-    has_many :school_relationships, id_method_name: :external_identifier do |school|
+    has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer,
+                                    id_method_name: :external_identifier do |school|
       school.school_relationships
     end
 
@@ -48,15 +51,11 @@ module V1
         elsif school.address.city.present?
           "#{school.address.city}"
         end
-      else
-        if school.hub.present?
-          school.hub.name
-        else
-          nil
-        end
+      elsif school.hub.present?
+        school.hub.name
       end
     end
-  
+
     attribute :hero_image_url do |school|
       if school.banner_image.attached?
         Rails.application.routes.url_helpers.rails_blob_url(school.banner_image)
@@ -64,7 +63,7 @@ module V1
         school.hero_image_url
       end
     end
-  
+
     attribute :logo_url do |school|
       if school.logo_image.attached?
         Rails.application.routes.url_helpers.rails_blob_url(school.logo_image)

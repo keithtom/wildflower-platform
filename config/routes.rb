@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     end
 
     resources :schools, except: [:create, :destroy] do
+      put 'invite_partner', to: 'schools#invite_partner'
     end
     
     resources :school_relationships
