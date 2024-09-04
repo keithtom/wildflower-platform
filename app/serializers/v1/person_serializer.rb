@@ -4,7 +4,7 @@ module V1
   class PersonSerializer < ApplicationSerializer
     attributes :email, :first_name, :middle_name, :last_name, :phone, :journey_state,
       :personal_email, :about, :primary_language, :updated_at, :race_ethnicity_other, :lgbtqia, :gender, :pronouns, :household_income, 
-      :primary_language_other, :gender_other, :pronouns_other, :montessori_certified,
+      :primary_language_other, :gender_other, :pronouns_other, :montessori_certified, :montessori_certified_year,
       :start_date, :end_date, :active, :is_onboarded, :is_og?, :is_rgl?
 
 
