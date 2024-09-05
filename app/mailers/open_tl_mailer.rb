@@ -6,7 +6,7 @@ class OpenTlMailer < ApplicationMailer
   def invite(user_id)
     @user = User.find(user_id)
     mail to: @user.email, cc: 'support@wildflowerschools.org',
-         subject: 'Pilot test group for Amin Checklists in My Wildflower '
+         subject: '*Correction* Monthly Admin Checklists now on My Wildflower'
   end
 
   def invite_partner(user_id, inviter_id)
