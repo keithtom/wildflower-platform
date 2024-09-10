@@ -34,7 +34,7 @@ class SSJ::InviteTeam < BaseService
     person = Person.create!(email: email.downcase, first_name: first_name, last_name: last_name, active: false)
     person.role_list.add(Person::ETL)
     person.save!
-    user = User.create!(email: email, person_id: person.id)
+    user = User.create!(email: email.downcase, person_id: person.id)
   end
 
   def create_workflow_instance
