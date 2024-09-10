@@ -31,7 +31,7 @@ class SSJ::InviteTeam < BaseService
   end
 
   def create_user_person(email, first_name, last_name)
-    person = Person.create!(email: email, first_name: first_name, last_name: last_name, active: false)
+    person = Person.create!(email: email.downcase, first_name: first_name, last_name: last_name, active: false)
     person.role_list.add(Person::ETL)
     person.save!
     user = User.create!(email: email, person_id: person.id)

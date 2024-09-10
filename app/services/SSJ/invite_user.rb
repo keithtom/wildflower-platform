@@ -16,7 +16,7 @@ class SSJ::InviteUser < BaseService
   end
 
   def create_person
-    @user.person = Person.create(email: @email, active: false)
+    @user.person = Person.create(email: @email.downcase, active: false)
     @user.save!
   end
 
