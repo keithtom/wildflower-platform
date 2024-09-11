@@ -14,4 +14,9 @@ class OpenTlMailer < ApplicationMailer
     @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{@user.authentication_token}"
     mail to: @user.email, cc: 'support@wildflowerschools.org', subject: 'Welcome to My Wildflower'
   end
+
+  def directory_reminder(user_id)
+    @user = User.find(user_id)
+    mail to: @user.email, cc: 'support@wildflowerschools.org', subject: 'Update Your Profile on the Network Directory'
+  end
 end
