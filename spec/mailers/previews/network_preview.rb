@@ -3,4 +3,8 @@ class NetworkPreview < ActionMailer::Preview
   def remind_login
     NetworkMailer.remind_login(User.first)
   end
+
+  def remind_login2
+    NetworkMailer.remind_login2(User.first.id)
+  end
 end
