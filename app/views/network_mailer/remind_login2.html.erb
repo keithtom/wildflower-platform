@@ -1,0 +1,67 @@
+<p>
+  <%- if @user.first_name %>
+  Dear <%= @user.first_name %>,
+  <% else %>
+  Dear Teacher Leaders, 
+<% end %> 
+</p>
+
+<p>
+  As we get started into the new school year, we kindly ask you to log in to your profile in the Network Directory to update your Teacher Leader team and any other necessary profile information. Keeping your profile current is important so that everyone in the network can see Wildflower members as a whole network. It is also important to maintain school and personal profiles as we will be using the data in the Directory for invite lists and other communications throughout the year.
+</p>
+
+<p>
+  <b>Steps to Update Your Profile:</b>
+  <ol>
+    <li><%= link_to "Click here", @profile_url %> to view your profile</li>
+    <li>Click the "Edit Profile" button</li>
+    <li>Make any updates to the sections available</li>
+    <li>Click "Save"</li>
+    <li>You should see the updates on your profile!</li>
+  </ol>
+</p>
+<p>
+  Ensuring your profile is up-to-date will help us maintain accurate communication and support you effectively throughout the year.
+</p>
+<p>
+  We invite you to explore the Interactive Monthly Administrative Checklist and share your feedback with us. Your insights are invaluable as we strive to improve and expand the resources available on the My Wildflower platform.
+</p>
+
+<p><b>Office Hours and Support</b></p>
+
+<p>
+  We will be hosting office hours and an evening session over the next few weeks focusing on learning how to use the new Admin Checklist and Directory. Please join if you can!
+</p>
+
+<p><b>Office hours:</b></p>
+  <p>
+  Wednesday 12:00pm - 2:00pm ET (<a href="https://us06web.zoom.us/j/84564607600?pwd=GbjWWmUpI4eVfz43KLJtCfHGmIXr1x.1" target="_blank">zoom link</a>)
+</p>
+<b>Evening Session: </b> <i>Come learn to set up your Directory profile and use the Admin Checklist</i>
+<p>
+  Tuesday, September 24th 6:00pm - 7:00pm ET (<a href="https://us06web.zoom.us/j/84775966399?pwd=vtOOSy0vsyA86gSQpRBD1GZy2bVOnd.1" target="_blank">zoom link</a>)
+</p>
+
+<% if @school_profile_url %>
+<br/>
+<b>Inviting Your Partner Teacher Leader</b>
+<p>
+If your partner Teacher Leader isn’t listed on the school profile, you can invite them directly to the platform by following these steps:
+  <ol>
+    <li><%= link_to "Click here", @school_profile_url %> to “View School Profile”</li>
+    <li>Click on “Edit School Profile”</li>
+    <li>Navigate to the “Teacher Leader” tab</li>
+    <li>Add a teacher leader already in the network or invite them to join</li>
+  </ol>
+</p>
+<% end %>
+
+<p>
+We look forward to hearing how this new feature supports you and ways we can improve as we continue to update and improve this feature! 
+</p>
+</br>
+</br>
+Warmly, 
+</br>
+</br>
+Katelyn and Cam
