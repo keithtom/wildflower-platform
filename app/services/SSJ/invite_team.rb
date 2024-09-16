@@ -45,7 +45,7 @@ class SSJ::InviteTeam < BaseService
   end
 
   def create_workflow_instance
-    workflow_definition = Workflow::Definition::Workflow.latest_versions.find_by!(name: 'National, Independent Sensible Default')
+    workflow_definition = Workflow::Definition::Workflow.latest_versions.where.not(published_at: nil).find_by!(name: 'National, Independent Sensible Default')
     @workflow_instance = workflow_definition.instances.create!
     Workflow::InitializeWorkflowJob.perform_later(@workflow_instance.id)
   end
