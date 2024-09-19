@@ -1,6 +1,6 @@
 class V1::PeopleController < ApiController
   def index
-    @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag])
+    @people = Person.includes(:profile_image_attachment, :schools, :address, taggings: [:tag])
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
     @people = @people.tagged_with(Person::RGL) if params[:rgl]
 
