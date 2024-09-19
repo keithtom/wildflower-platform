@@ -2,18 +2,18 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   attributes :title, :kind, :position, :description, :completion_type  # completed is for backend use purposes and means something different in the front-end
 
   belongs_to :process, serializer: V1::Workflow::ProcessSerializer,
-    id_method_name: :external_identifier do |step|
-      step.process
+                       id_method_name: :external_identifier do |step|
+    step.process
   end
 
   has_many :documents, serializer: V1::DocumentSerializer,
-    id_method_name: :external_identifier do |step|
-      step.documents
+                       id_method_name: :external_identifier do |step|
+    step.documents
   end
 
   has_many :assignments,
-    serializer: V1::Workflow::StepAssignmentSerializer do |step|
-      step.assignments
+           serializer: V1::Workflow::StepAssignmentSerializer do |step, _params|
+    step.assignments
   end
 
   attribute :min_worktime do |step|
@@ -31,22 +31,23 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   attribute :decision_question, if: proc { |step| step.decision? } do |step|
     step.definition.decision_question
   end
-  
+
   # we don't persist selection without completion.
   attribute :selected_option, if: proc { |step| step.decision? } do |step, params|
-    case
-    when step.individual?
+    if step.individual?
       params[:current_user] && step.assignments.where(assignee: params[:current_user].person).first&.selected_option&.external_identifier
-    when step.collaborative?
+    elsif step.collaborative?
       # take the first selected option
-      step.assignments.where.not(selected_option: nil).order("created_at ASC").first&.selected_option&.external_identifier
+      step.assignments.where.not(selected_option: nil).order('created_at ASC').first&.selected_option&.external_identifier
     else
       raise "Unknown completion type: #{step.completion_type}"
     end
   end
 
-  has_many :decision_options, if: proc { |step| step.decision? }, serializer: V1::Workflow::DecisionOptionSerializer, id_method_name: :external_identifier do |step|
-    step.definition.decision_options.order("created_at ASC")
+  has_many :decision_options, if: proc { |step|
+                                    step.decision?
+                                  }, serializer: V1::Workflow::DecisionOptionSerializer, id_method_name: :external_identifier do |step|
+    step.definition.decision_options.order('created_at ASC')
   end
 
   attribute :is_assigned_to_me do |step, params|
@@ -68,7 +69,7 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
   attribute :is_complete do |step, params|
     step.completed_for?(params[:current_user].person) if params[:current_user]
   end
-  
+
   attribute :can_complete do |step, params|
     !step.completed_for?(params[:current_user].person) if params[:current_user]
   end

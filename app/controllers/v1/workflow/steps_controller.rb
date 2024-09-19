@@ -68,6 +68,7 @@ class V1::Workflow::StepsController < ApiController
   def serialization_options
     options = {}
     options[:params] = { current_user: }
+    options[:params][:profile_image_width] = params[:profile_image_width] if params[:profile_image_width]
     options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee']
     options
   end

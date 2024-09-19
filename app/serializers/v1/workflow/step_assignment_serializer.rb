@@ -11,7 +11,7 @@ class V1::Workflow::StepAssignmentSerializer < ApplicationSerializer
   #   record.step
   # end
 
-  belongs_to :assignee, serializer: V1::PersonSerializer, id_method_name: :external_identifier do |record|
+  belongs_to :assignee, serializer: V1::PersonSerializer, id_method_name: :external_identifier do |record, _params|
     record.assignee
   end
 end
