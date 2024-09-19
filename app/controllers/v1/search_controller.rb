@@ -51,8 +51,6 @@ class V1::SearchController < ApplicationController
       render json: V1::SchoolSerializer.new(@results, include: school_serialization_includes)
     else
       default_search_options[:where]&.merge!(active: true)
-      puts '###########################'
-      puts person_includes.inspect
       @search = Person.search(query,
                               **default_search_options.merge!({ includes: person_includes, models: model_whitelist }))
       @results = @search.to_a
