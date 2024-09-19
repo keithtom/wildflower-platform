@@ -9,7 +9,7 @@ class V1::UsersController < ApiController
   def user_options
     options = {}
     options[:include] = ['person', 'person.address']
-    options[:params] = { profile_image_width: params[:profile_image_width] } if params[:profile_image_width]
-    options
+    return options
   end
 end
+
