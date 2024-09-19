@@ -199,7 +199,7 @@ GEM
       fugit (>= 1.1)
       railties (>= 6.0.0)
       thor (>= 0.14.1)
-    google-protobuf (3.25.2)
+    google-protobuf (3.25.5)
     googleapis-common-protos-types (1.11.0)
       google-protobuf (~> 3.18)
     grpc (1.61.0)
