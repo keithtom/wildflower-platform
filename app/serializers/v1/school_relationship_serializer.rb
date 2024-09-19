@@ -7,7 +7,7 @@ module V1
     belongs_to :school, serializer: SchoolSerializer, id_method_name: :external_identifier do |sr|
       sr.school
     end
-    belongs_to :person, serializer: PersonSerializer, id_method_name: :external_identifier do |sr|
+    belongs_to :person, serializer: PersonSerializer, id_method_name: :external_identifier do |sr, params|
       sr.person
     end
   end

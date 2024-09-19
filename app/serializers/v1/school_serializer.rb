@@ -11,7 +11,7 @@ module V1
 
     # done this way to avoid n+1 queries
     attribute :tuition_assistance_type_list do |person|
-      person.taggings.select do |tagging|
+      person.taggings.includes([:tag]).select do |tagging|
         tagging.context == 'tuition_assistance_types'
       end.map { |tagging| tagging.tag.name }
     end

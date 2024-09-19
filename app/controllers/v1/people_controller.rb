@@ -3,21 +3,22 @@ class V1::PeopleController < ApiController
     @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag])
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
     @people = @people.tagged_with(Person::RGL) if params[:rgl]
+
     if params[:etl]
       @people = @people.includes([:ssj_team]).tagged_with(Person::ETL)
-      render json: V1::PersonBasicSerializer.new(@people.all)
+      render json: V1::PersonBasicSerializer.new(@people.all, serialization_options)
     else
-      render json: V1::PersonSerializer.new(@people.all)
+      render json: V1::PersonSerializer.new(@people.all, serialization_options)
     end
   end
 
   def show
     if params[:network] # for directory usage
       @person = Person.includes(:schools, :school_relationships).find_by!(external_identifier: params[:id])
-      render json: V1::PersonSerializer.new(@person, include: [:schools, :school_relationships, :address])
+      render json: V1::PersonSerializer.new(@person, serialization_options(%i[schools school_relationships address]))
     else
       @person = Person.find_by!(external_identifier: params[:id])
-      render json: V1::PersonSerializer.new(@person)
+      render json: V1::PersonSerializer.new(@person, serialization_options)
     end
   end
 
@@ -25,16 +26,17 @@ class V1::PeopleController < ApiController
     if current_user
       @person = current_user.person
       @person.update!(person_params)
-      render json: V1::PersonSerializer.new(@person.reload)
+      render json: V1::PersonSerializer.new(@person.reload, serialization_options)
     else
       render json: {
         status: 401,
-        message: "Must be signed in"
+        message: 'Must be signed in'
       }, status: :unauthorized
     end
   end
 
   protected
+
   def person_params
     params.require(:person).permit(:profile_image,
                                    :first_name,
@@ -42,7 +44,7 @@ class V1::PeopleController < ApiController
                                    :email,
                                    :primary_language,
                                    :primary_language_other,
-                                   [:race_ethnicity_list => []],
+                                   [race_ethnicity_list: []],
                                    :race_ethnicity_other,
                                    :lgbtqia,
                                    :gender,
@@ -52,12 +54,22 @@ class V1::PeopleController < ApiController
                                    :household_income,
                                    :montessori_certified,
                                    :montessori_certified_year,
-                                   [:montessori_certified_level_list => []],
-                                   [:classroom_age_list => []],
-                                   [:role_list => []],
+                                   [montessori_certified_level_list: []],
+                                   [classroom_age_list: []],
+                                   [role_list: []],
                                    :phone,
                                    :about,
                                    :is_onboarded,
-                                   address_attributes: [:city, :state])
+                                   address_attributes: %i[city state])
+  end
+
+  def serialization_options(included_models = [])
+    options = {}
+
+    options[:params] = { profile_image_width: params[:profile_image_width] } if params[:profile_image_width]
+    options[:include] = included_models unless included_models.empty?
+
+    options[:params] = {}
+    options
   end
 end
