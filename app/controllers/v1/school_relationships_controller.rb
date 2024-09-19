@@ -44,7 +44,9 @@ class V1::SchoolRelationshipsController < ApiController
   private
 
   def serializer_options
-    { include: %w[school person] }
+    options = { include: %w[school person] }
+    options[:params] = { profile_image_width: params[:profile_image_width] } if params[:profile_image_width]
+    options
   end
 
   def school_relationship_params

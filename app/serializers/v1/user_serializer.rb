@@ -14,10 +14,15 @@ module V1
       end
     end
 
-    attribute :image_url do |user|
+    attribute :image_url do |user, params|
       if person = user.person
         if person.profile_image.attached?
-          Rails.application.routes.url_helpers.rails_blob_url(person.profile_image)
+          if params[:profile_image_width]
+            variant = person.profile_image.variant(resize_to_fill: [params[:profile_image_width].to_i, nil])
+            Rails.application.routes.url_helpers.rails_representation_url(variant)
+          else
+            Rails.application.routes.url_helpers.rails_blob_url(person.profile_image)
+          end
         elsif person.image_url.present?
           person.image_url
         end
@@ -30,7 +35,7 @@ module V1
       end
     end
 
-    belongs_to :person, serializer: V1::PersonBasicSerializer, id_method_name: :external_identifier do |user|
+    belongs_to :person, serializer: V1::PersonBasicSerializer, id_method_name: :external_identifier do |user, params|
       user.person
     end
 

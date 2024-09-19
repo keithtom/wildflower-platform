@@ -9,7 +9,7 @@ gem 'rails', '~> 7.0.8'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 5.6'
 
-#authentication
+# authentication
 gem 'devise'
 gem 'devise-jwt'
 gem 'devise-token_authenticatable'
@@ -31,9 +31,9 @@ gem 'rack-cors'
 gem 'oj' # faster serialization
 
 # Search
-gem "searchkick"
-gem "elasticsearch", '~> 7.x'
-gem "will_paginate", "~> 3.3.0"
+gem 'searchkick'
+gem 'elasticsearch', '~> 7.x'
+gem 'will_paginate', '~> 3.3.0'
 
 # models
 gem 'acts-as-taggable-on'
@@ -43,12 +43,12 @@ gem 'aasm'
 gem 'highlight_io'
 
 # parsing addresses
-gem 'Indirizzo', require: "indirizzo"
+gem 'Indirizzo', require: 'indirizzo'
 
-gem "audited"
+gem 'audited'
 
 # airtable
-gem "airrecord"
+gem 'airrecord'
 
 # Use good_job for background jobs
 gem 'good_job'
@@ -58,6 +58,8 @@ gem 'acts_as_paranoid'
 
 # slack client
 gem 'slack-ruby-client'
+
+gem 'image_processing', '~> 1.2'
 
 group :development, :test do
   gem 'dotenv-rails'
@@ -94,10 +96,8 @@ group :development do
 end
 
 group :production do
-
   # for ActiveStorage
   gem 'aws-sdk-s3', require: false
-
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
