@@ -13,7 +13,7 @@ class V1::SSJ::TeamsController < ApiController
   end
 
   def show
-    if team = SSJ::Team.includes([partner_members: [person: [:profile_image_attachment, :schools, :school_relationships, taggings: [:tag]]]]).find_by!(external_identifier: params[:id])
+    if team = SSJ::Team.includes([partner_members: [person: [:hub, :profile_image_attachment, :schools, :school_relationships, taggings: [:tag]]]]).find_by!(external_identifier: params[:id])
       render json: V1::SSJ::TeamSerializer.new(team, team_options)
     else
       render json: { message: "current user is not part of team"}, status: :unprocessable_entity
