@@ -11,7 +11,7 @@ module Workflow
             upgraded: 0,
             repositioned: 0,
             error_raised: false,
-            warning_raised: 0
+            warn_raised: 0
           }
         end
 
@@ -85,10 +85,10 @@ module Workflow
             process_instances = workflow_instance.processes.where(definition_id: sp.process_id,
                                                                   position: sp.previous_version&.position)
             if process_instances.empty?
-              Rails.logger.warning("No process instance found to rollout upgrade. May be an error.
+              Rails.logger.warn("No process instance found to rollout upgrade. May be an error.
               workflow_instance_id: #{workflow_instance.id}, process_definition_id: #{sp.previous_version&.process_id},
               position: #{sp.previous_version&.position}")
-              @process_stats[:warning_raised] += 1
+              @process_stats[:warn_raised] += 1
             end
 
             process_instances.each do |process_instance|
@@ -111,10 +111,10 @@ module Workflow
             end
 
             if process_instances.empty?
-              Rails.logger.warning("No process instance found to rollout upgrade. May be an error.
+              Rails.logger.warn("No process instance found to rollout upgrade. May be an error.
               workflow_instance_id: #{workflow_instance.id}, process_definition_id: #{sp.previous_version&.process_id},
               position: #{sp.previous_version&.position}")
-              @process_stats[:warning_raised] += 1
+              @process_stats[:warn_raised] += 1
             end
 
             process_instances.each do |process_instance|
