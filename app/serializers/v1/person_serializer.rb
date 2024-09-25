@@ -38,8 +38,6 @@ module V1
         elsif person.address.city.present?
           "#{person.address.city}"
         end
-      elsif person.hub.present?
-        person.hub.name
       end
     end
 

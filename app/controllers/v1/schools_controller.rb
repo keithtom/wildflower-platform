@@ -53,7 +53,7 @@ class V1::SchoolsController < ApiController
       [:sister_schools],
       { taggings: [:tag],
         school_relationships: [:person],
-        people: [:schools, :address, :hub, :profile_image_attachment, :school_relationships, { taggings: [:tag] }] }
+        people: [:schools, :address, :profile_image_attachment, :school_relationships, { taggings: [:tag] }] }
     ]
   end
 

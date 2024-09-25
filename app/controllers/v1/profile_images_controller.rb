@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class V1::ProfileImagesController < ApiController
+  include Rails.application.routes.url_helpers
+
   def show
     person = Person.find_by!(external_identifier: params[:person_id])
     if person.profile_image.attached?

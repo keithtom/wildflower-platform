@@ -19,8 +19,10 @@ class V1::SearchController < ApplicationController
     default_search_options = { where:, limit:, offset:, track: tracking, page:,
                                per_page: }
 
-    person_includes = %i[profile_image_attachment address taggings]
-    person_serialization_includes = %i[]
+    person_includes = [:profile_image_attachment, :schools, :address, {
+      taggings: [:tag], school_relationships: [school: [taggings: :tag]]
+    }]
+    person_serialization_includes = %i[schools school_relationships]
 
     school_includes = [:people, :address, :pod, { taggings: [:tag], school_relationships: [:person] }]
     school_serialization_includes = %i[people address pod school_relationships]
@@ -47,7 +49,7 @@ class V1::SearchController < ApplicationController
       @search = Person.search(query,
                               **default_search_options.merge!({ includes: person_includes, models: model_whitelist }))
       @results = @search.to_a
-      render json: V1::PersonBasicSerializer.new(@results, include: person_serialization_includes)
+      render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
     end
   end
 
