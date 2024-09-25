@@ -21,8 +21,10 @@ Rails.application.routes.draw do
     get "/search" => "search#index", as: :search
 
     resources :people, except: [:create, :destroy] do
+      get "/profile_image", to: 'profile_images#show', as: 'profile_image'
       # resources :school_relationships
     end
+
 
     resources :schools, except: [:create, :destroy] do
       put 'invite_partner', to: 'schools#invite_partner'
