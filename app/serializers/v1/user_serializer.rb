@@ -24,12 +24,6 @@ module V1
       end
     end
 
-    attribute :hub do |user|
-      if person = user.person
-        person&.hub&.name
-      end
-    end
-
     belongs_to :person, serializer: V1::PersonBasicSerializer, id_method_name: :external_identifier do |user|
       user.person
     end
