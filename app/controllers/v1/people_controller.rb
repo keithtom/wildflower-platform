@@ -1,6 +1,6 @@
 class V1::PeopleController < ApiController
   def index
-    @people = Person.includes(:hub, :profile_image_attachment, :schools, :address, taggings: [:tag])
+    @people = Person.includes(:profile_image_attachment, :schools, :address, taggings: [:tag])
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
     @people = @people.tagged_with(Person::RGL) if params[:rgl]
     if params[:etl]
@@ -14,7 +14,7 @@ class V1::PeopleController < ApiController
   def show
     if params[:network] # for directory usage
       @person = Person.includes(:schools, :school_relationships).find_by!(external_identifier: params[:id])
-      render json: V1::PersonSerializer.new(@person, include: [:schools, :school_relationships, :address])
+      render json: V1::PersonSerializer.new(@person, include: %i[schools school_relationships address])
     else
       @person = Person.find_by!(external_identifier: params[:id])
       render json: V1::PersonSerializer.new(@person)
@@ -29,12 +29,13 @@ class V1::PeopleController < ApiController
     else
       render json: {
         status: 401,
-        message: "Must be signed in"
+        message: 'Must be signed in'
       }, status: :unauthorized
     end
   end
 
   protected
+
   def person_params
     params.require(:person).permit(:profile_image,
                                    :first_name,
@@ -42,7 +43,7 @@ class V1::PeopleController < ApiController
                                    :email,
                                    :primary_language,
                                    :primary_language_other,
-                                   [:race_ethnicity_list => []],
+                                   [race_ethnicity_list: []],
                                    :race_ethnicity_other,
                                    :lgbtqia,
                                    :gender,
@@ -52,12 +53,12 @@ class V1::PeopleController < ApiController
                                    :household_income,
                                    :montessori_certified,
                                    :montessori_certified_year,
-                                   [:montessori_certified_level_list => []],
-                                   [:classroom_age_list => []],
-                                   [:role_list => []],
+                                   [montessori_certified_level_list: []],
+                                   [classroom_age_list: []],
+                                   [role_list: []],
                                    :phone,
                                    :about,
                                    :is_onboarded,
-                                   address_attributes: [:city, :state])
+                                   address_attributes: %i[city state])
   end
 end
