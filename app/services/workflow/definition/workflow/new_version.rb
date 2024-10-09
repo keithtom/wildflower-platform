@@ -11,7 +11,7 @@ module Workflow
           create_new_version
           clone_selected_processes
           clone_dependencies
-          return @new_version
+          @new_version
         end
 
         private
@@ -21,6 +21,9 @@ module Workflow
           @new_version.previous_version_id = @workflow.id
           @new_version.version = "v#{@workflow.version[1..-1].to_i + 1}"
           @new_version.published_at = nil
+          @new_version.rollout_started_at = nil
+          @new_version.rollout_completed_at = nil
+          @new_version.needs_support = false
           @new_version.save!
         end
 
@@ -30,7 +33,7 @@ module Workflow
             new_sp = sp.dup
             new_sp.workflow_id = @new_version.id
             new_sp.previous_version_id = sp.id
-            new_sp.state = "replicated"
+            new_sp.state = 'replicated'
             new_sp.save!
           end
         end
