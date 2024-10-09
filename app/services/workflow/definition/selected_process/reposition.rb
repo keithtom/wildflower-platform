@@ -16,9 +16,9 @@ module Workflow
             update_selected_process_position
             propagate_position_change_to_instances(@selected_process.reload)
           else
-            unless @selected_process.upgraded? || @selected_process.added?
+            unless @selected_process.upgraded? || @selected_process.added? || @selected_process.initialized?
               @selected_process.reposition!
-            end # keep the state of an upgraded or added selected process, even after a position change
+            end # keep the state of an upgraded, added or initialized selected process, even after a position change
             @selected_process.update!(position: @position)
           end
 
