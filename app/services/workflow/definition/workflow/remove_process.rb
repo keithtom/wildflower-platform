@@ -6,7 +6,8 @@ module Workflow
         def initialize(workflow, process)
           @workflow = workflow
           @process = process
-          @selected_process = ::Workflow::Definition::SelectedProcess.find_by(workflow_id: @workflow.id, process_id: @process.id)
+          @selected_process = ::Workflow::Definition::SelectedProcess.find_by(workflow_id: @workflow.id,
+                                                                              process_id: @process.id)
         end
 
         def run
@@ -19,12 +20,14 @@ module Workflow
 
         def validate_workflow_state
           if @workflow.published?
-            raise RemoveProcessError, 'cannot remove processes from a published workflow. Please create a new version to continue.'
+            raise RemoveProcessError,
+                  'cannot remove processes from a published workflow. Please create a new version to continue.'
           end
         end
 
         def validate_dependency_of_others
-          unless ::Workflow::Definition::Dependency.where(workflow_id: @workflow.id, prerequisite_workable_id: @process.id, prerequisite_workable_type: @process.class.to_s).empty?
+          unless ::Workflow::Definition::Dependency.where(workflow_id: @workflow.id,
+                                                          prerequisite_workable_id: @process.id, prerequisite_workable_type: @process.class.to_s).empty?
             raise RemoveProcessError, 'cannot remove process that is a prerequisite of other processes'
           end
         end
@@ -34,7 +37,7 @@ module Workflow
         end
 
         def destroy_association
-          if @selected_process.added?
+          if @selected_process.added? || @selected_process.initialized?
             process = @selected_process.process
             unless process.published? || process.instances.count > 0
               # this process was created for the rollout originally. Can be entirely removed now.
