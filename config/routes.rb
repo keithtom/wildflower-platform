@@ -126,6 +126,7 @@ Rails.application.routes.draw do
   put 'reset_fixtures', to: 'test#reset_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
   put 'reset_partner_fixtures', to: 'test#reset_partner_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
   put 'reset_network_fixtures', to: 'test#reset_network_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
+  put 'reset_open_school_fixtures', to: 'test#reset_open_school_fixtures' if ENV['CYPRESS_ENABLED'] == 'true'
   get 'reset_rollout_workflow_fixture', to: 'test#reset_rollout_workflow_fixture' if ENV['CYPRESS_ENABLED'] == 'true'
   get 'invite_email_link', to: 'test#invite_email_link' if ENV['CYPRESS_ENABLED'] == 'true'
   get 'network_invite_email_link', to: 'test#network_invite_email_link' if ENV['CYPRESS_ENABLED'] == 'true'

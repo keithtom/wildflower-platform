@@ -15,6 +15,18 @@ class CleanupTestFixturesJob < ActiveJob::Base
             school_relationship.destroy!
           end
           person.schools.each do |school|
+            if workflow_instance = school.workflow
+              workflow_instance.processes.each do |process|
+              process.steps.each do |step|
+                step.assignments.each do |assignment|
+                  assignment.destroy!
+                end
+                step.destroy!
+              end
+              process.destroy!
+            end
+            workflow_instance.destroy!
+            end
             school.destroy!
           end
 
