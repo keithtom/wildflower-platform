@@ -8,6 +8,7 @@ class SchoolRelationship < ApplicationRecord
   belongs_to :person, touch: true
 
   after_commit :reindex_models
+  after_create :set_name
 
   private
 
@@ -15,5 +16,10 @@ class SchoolRelationship < ApplicationRecord
   def reindex_models
     school.reindex
     person.reindex
+  end
+
+  def set_name
+    self.name = "#{person.name} - #{school.name}"
+    self.save!
   end
 end
