@@ -5,7 +5,7 @@ class Network::UpdateAirtableRecords < BaseCommand
 
   def call
     # Everyday, we want to sync the Airtable records with the latest data from the database.
-    update_airtable("Educators", Person.tagged_with(Person::TL)s PLATFORM_PEOPLE, method(:people_fields))
+    update_airtable("Educators", Person.tagged_with(Person::TL), PLATFORM_PEOPLE, method(:people_fields))
     update_airtable("Educators", Person.tagged_with(Person::ETL), PLATFORM_PEOPLE, method(:people_fields))
     update_airtable("Partners", Person.where.not(airtable_partner_id: nil), PLATFORM_PEOPLE, method(:people_fields))
     update_airtable("Schools", School.all, PLATFORM_SCHOOL, method(:school_fields))
