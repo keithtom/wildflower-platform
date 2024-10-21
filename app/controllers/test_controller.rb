@@ -15,12 +15,21 @@ class TestController < ApplicationController
     end
   end
 
+  def reset_open_school_fixtures
+    ActiveRecord::Base.transaction do
+      user = create_test_user_with_school
+      school = user.person.schools.first
+      workflow_definition = Workflow::Definition::Workflow.find_by(name: 'Open School Checklist - Cypress')
+      workflow_instance = workflow_definition.instances.create!
+      Workflow::Initialize.run(workflow_instance.id)
+      school.workflow_id = workflow_instance.id
+      school.save!
+    end
+  end
+
   def reset_network_fixtures
     ActiveRecord::Base.transaction do
-      user = create_test_user(params[:email], params[:is_onboarded])
-      user.person.role_list.add(Person::TL)
-      user.person.save
-      create_school(user.person)
+      create_test_user_with_school
     end
   end
 
@@ -90,6 +99,14 @@ class TestController < ApplicationController
     school.school_relationships.create!(person:)
     school.save!
     school
+  end
+
+  def create_test_user_with_school
+    user = create_test_user(params[:email], params[:is_onboarded])
+    user.person.role_list.add(Person::TL)
+    user.person.save
+    create_school(user.person)
+    user
   end
 
   def image_url
