@@ -5,7 +5,8 @@ class Network::UpdateAirtableRecords < BaseCommand
 
   def call
     # Everyday, we want to sync the Airtable records with the latest data from the database.
-    update_airtable("Educators", Person.tagged_with("Teacher Leader"), PLATFORM_PEOPLE, method(:people_fields))
+    update_airtable("Educators", Person.tagged_with(Person::TL), PLATFORM_PEOPLE, method(:people_fields))
+    update_airtable("Educators", Person.tagged_with(Person::ETL), PLATFORM_PEOPLE, method(:people_fields))
     update_airtable("Partners", Person.where.not(airtable_partner_id: nil), PLATFORM_PEOPLE, method(:people_fields))
     update_airtable("Schools", School.all, PLATFORM_SCHOOL, method(:school_fields))
     update_airtable("School Relationships", SchoolRelationship.all, PLATFORM_SCHOOL_RELATIONSHIP, method(:school_relationship_fields))
@@ -73,9 +74,11 @@ class Network::UpdateAirtableRecords < BaseCommand
       :original_record_id => [person.airtable_id].compact, # airtable_id to the educators table, not the platform_educators table
       :stage => person.journey_state,
       :montessori_certified => person.montessori_certified,
+      :montessori_certified_year => person.montessori_certified_year,
       :languages => person.language_list.join(", "),
       :roles => person.role_list.join(", "),
-      :race_ethnicity => person.race_ethnicity_list.join(", ")
+      :race_ethnicity => person.race_ethnicity_list.join(", "),
+      :phone => person.phone        
     }
   end
 
@@ -116,7 +119,8 @@ class Network::UpdateAirtableRecords < BaseCommand
         :platform_person_record_id => [school_relationship&.person&.platform_airtable_id].compact,
         :start_date => school_relationship.start_date,
         :end_date => school_relationship.end_date,
-        :original_record_id => [school_relationship.airtable_id].compact # airtable_id to the school x relationship table, not the platform_schools_table
+        :original_record_id => [school_relationship.airtable_id].compact, # airtable_id to the school x relationship table, not the platform_schools_table
+        :roles => school_relationship.role_list.join(", "),
     }
   end
 end
