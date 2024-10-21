@@ -15,6 +15,7 @@ class SSJ::InviteTeam < BaseService
     @workflow_definition = Workflow::Definition::Workflow.find(workflow_id)
     raise "Workflow definition not found for id: #{workflow_id}" if @workflow_definition.nil?
     raise "Workflow definition must be published" unless @workflow_definition.published?
+    raise "Workflow definition must be the latest version" unless @workflow_definition.next_version.nil?
     @workflow_instance = nil
   end
 
