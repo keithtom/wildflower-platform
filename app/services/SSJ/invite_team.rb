@@ -1,5 +1,5 @@
 class SSJ::InviteTeam < BaseService
-  def initialize(user_params, ops_guide, regional_growth_leader)
+  def initialize(user_params, workflow_id, ops_guide, regional_growth_leader)
     @ops_guide = ops_guide
     @ops_guide_user = User.find_by(person_id: @ops_guide.id)
     raise "Ops guide's user record not created for person_id: #{@ops_guide.external_identifier}" if @ops_guide_user.nil?
@@ -12,6 +12,9 @@ class SSJ::InviteTeam < BaseService
     @users = []
 
     @team = nil
+    @workflow_definition = Workflow::Definition::Workflow.find(workflow_id)
+    raise "Workflow definition not found for id: #{workflow_id}" if @workflow_definition.nil?
+    raise "Workflow definition must be published" unless @workflow_definition.published?
     @workflow_instance = nil
   end
 
@@ -45,8 +48,7 @@ class SSJ::InviteTeam < BaseService
   end
 
   def create_workflow_instance
-    workflow_definition = Workflow::Definition::Workflow.latest_versions.where.not(published_at: nil).find_by!(name: 'National, Independent Sensible Default')
-    @workflow_instance = workflow_definition.instances.create!
+    @workflow_instance = @workflow_definition.instances.create!
     Workflow::InitializeWorkflowJob.perform_later(@workflow_instance.id)
   end
 

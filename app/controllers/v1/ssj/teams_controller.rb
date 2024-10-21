@@ -25,7 +25,7 @@ class V1::SSJ::TeamsController < ApiController
       ops_guide = Person.find_by!(external_identifier: team_params[:ops_guide_id])
       rgl = Person.find_by!(external_identifier: team_params[:rgl_id])
 
-      team = SSJ::InviteTeam.run(team_params[:etl_people_params], ops_guide, rgl)
+      team = SSJ::InviteTeam.run(team_params[:etl_people_params], team_params[:workflow_id], ops_guide, rgl)
       render json: { message: "team #{team.external_identifier} invite emails sent" }
     rescue => e
       render json: { message: e.message }, status: :unprocessable_entity
@@ -55,6 +55,7 @@ class V1::SSJ::TeamsController < ApiController
   def team_params
     params.require(:team).permit(
       [:etl_people_params => [:first_name, :last_name, :email]],
+      :workflow_id,
       :ops_guide_id,
       :rgl_id,
       :expected_start_date
