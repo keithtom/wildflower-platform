@@ -62,6 +62,14 @@ class School < ApplicationRecord
     TYPES = [NINE_MONTH, TEN_MONTH, YEAR_ROUND]
   end
 
+  module Status
+    EMERGING = 'Emerging'
+    OPEN = 'Open'
+    PAUSED = 'Paused'
+    DISAFFILIATED = 'Disaffiliated'
+    PERMANENTLY_CLOSED = 'Permanently Closed'
+  end
+
   # https://github.com/ankane/searchkick#indexing
   scope :search_import, -> { includes([:school_relationships, :people, :address, {:taggings => :tag}]) }
 

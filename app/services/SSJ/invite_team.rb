@@ -70,7 +70,7 @@ class SSJ::InviteTeam < BaseService
   end
 
   def create_school
-    school = School.create!(name: @team.temp_name, affiliated: false)
+    school = School.create!(name: @team.temp_name, affiliated: false, status: School::Status::EMERGING)
     @team.partner_members.each do |member|
       SchoolRelationship.create!(school_id: school.id, person_id: member.person_id)
     end
