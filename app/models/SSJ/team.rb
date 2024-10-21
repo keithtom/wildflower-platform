@@ -31,7 +31,7 @@ module SSJ
   
     def temp_location
       location = nil
-      partner_members.each do |member|
+      partner_members.includes([person: [:address]]).each do |member|
         location = location || member.person&.address&.state
       end
 
