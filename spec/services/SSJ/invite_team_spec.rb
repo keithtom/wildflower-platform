@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe SSJ::InviteTeam, type: :service do
   let(:ops_guide) { create(:person) }
   let(:regional_growth_leader) { create(:person) }
-  let(:workflow_definition) { Workflow::Definition::Workflow.latest_versions.where.not(published_at: nil).find_by!(name: 'National, Independent Sensible Default') }
+  let(:workflow_definition) { create(:workflow_definition_workflow, published_at: DateTime.now) }
   let(:user_params) do
     [{ email: Faker::Internet.email, first_name: 'Test', last_name: 'One' },
      { email: Faker::Internet.email, first_name: 'Test', last_name: 'Two' }]
