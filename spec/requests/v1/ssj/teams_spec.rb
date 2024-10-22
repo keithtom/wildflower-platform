@@ -5,6 +5,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
   let(:rgl_user) { create(:user, :with_person) }
   let(:ops_guide) { ops_guide_user.person }
   let(:rgl) { rgl_user.person }
+  let(:workflow_definition) { create(:workflow_definition_workflow, published_at: DateTime.now) }
   let(:etl_people_params) {[
     { first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, email: Faker::Internet.email }, 
     { first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, email: Faker::Internet.email }
@@ -26,14 +27,14 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         allow(controller).to receive(:authenticate_admin!).and_return(true)
         allow(Person).to receive(:find_by!).with(external_identifier: ops_guide.external_identifier).and_return(ops_guide)
         allow(Person).to receive(:find_by!).with(external_identifier: rgl.external_identifier).and_return(rgl)
-        allow(SSJ::InviteTeam).to receive(:run).with(etl_params_controller[:etl_people_params], ops_guide, rgl).and_return(team)
+        allow(SSJ::InviteTeam).to receive(:run).with(etl_params_controller[:etl_people_params], workflow_definition.id.to_s, ops_guide, rgl).and_return(team)
       end
 
       context 'when the team is successfully invited' do
         let(:team) { create(:ssj_team, ops_guide: ops_guide, regional_growth_lead: rgl) }
 
         it 'returns a success message' do
-          post "/v1/ssj/teams", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
+          post "/v1/ssj/teams", params: { team: { workflow_id: workflow_definition.id, ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
           expect(response).to have_http_status(:ok)
           expect(JSON.parse(response.body)).to eq({ 'message' => "team #{team.external_identifier} invite emails sent" })
         end
@@ -48,7 +49,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         end
 
         it 'returns an error message' do
-          post "/v1/ssj/teams", params: { team: { ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
+          post "/v1/ssj/teams", params: { team: { workflow_id: workflow_definition.id, ops_guide_id: ops_guide.external_identifier, rgl_id: rgl.external_identifier, etl_people_params: etl_people_params }}, headers: headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(JSON.parse(response.body)).to eq({ 'message' => error_message })
         end
