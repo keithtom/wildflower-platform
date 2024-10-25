@@ -8,7 +8,8 @@ module Workflow
           @workflow = workflow
           @process = process
           @new_version = nil
-          @selected_process = ::Workflow::Definition::SelectedProcess.find_by!(workflow_id: @workflow.id, process_id: @process.id)
+          @selected_process = ::Workflow::Definition::SelectedProcess.find_by!(workflow_id: @workflow.id,
+                                                                               process_id: @process.id)
         end
 
         def run
@@ -17,7 +18,7 @@ module Workflow
           clone_steps
           update_dependencies
           update_selected_process
-          return @new_version
+          @new_version
         end
 
         private
@@ -32,7 +33,7 @@ module Workflow
           @new_version = @process.dup
           @new_version.previous_version_id = @process.id
           @new_version.version = "v#{@process.version[1..-1].to_i + 1}"
-          @new_version.published_at = nil 
+          @new_version.published_at = nil
           @new_version.phase_list = @process.phase_list
           @new_version.category_list = @process.category_list
           @new_version.save!
@@ -40,14 +41,15 @@ module Workflow
 
         # TODO: push this to a background worker?
         def clone_steps
-          @process.steps.includes([:documents, :decision_options]).each do |step|
+          @process.steps.includes(%i[documents decision_options]).each do |step|
             new_step = step.dup
             new_step.process_id = @new_version.id
             new_step.save!
 
             step.documents.each do |document|
               # documents have external identifier, cannot use dup to clone
-              attributes = document.attributes.with_indifferent_access.slice(:documentable_type, :inheritance_type, :title, :link)
+              attributes = document.attributes.with_indifferent_access.slice(:documentable_type, :inheritance_type,
+                                                                             :title, :link)
               attributes.merge!(documentable_id: new_step.id)
               Document.create!(attributes)
             end
@@ -67,7 +69,8 @@ module Workflow
             dependency.workable = @new_version
             dependency.save!
           end
-          @process.prerequisite_dependencies.includes([:workflow, :workable]).where(workflow_id: @workflow.id).each do |prereq_dependency|
+          @process.prerequisite_dependencies.includes(%i[workflow
+                                                         workable]).where(workflow_id: @workflow.id).each do |prereq_dependency|
             prereq_dependency.prerequisite_workable = @new_version
             prereq_dependency.save!
           end
