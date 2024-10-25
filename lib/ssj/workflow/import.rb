@@ -31,7 +31,7 @@ module SSJ
       private
 
       def default_version
-        Date.today.strftime("%Y-%m-%d-00")
+        Date.today.strftime('%Y-%m-%d-00')
       end
 
       def import_process_library
@@ -48,9 +48,12 @@ module SSJ
             process_description = row[15]&.strip
             process_category = row[7]&.strip
 
-            puts "WARNING: process_category not in list: #{process_category}" unless ::SSJ::Category::CATEGORIES.include?(process_category)
+            unless ::SSJ::Category::CATEGORIES.include?(process_category)
+              puts "WARNING: process_category not in list: #{process_category}"
+            end
 
-            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title, description: process_description
+            process_obj = ::Workflow::Definition::Process.create! version: default_version, title: process_title,
+                                                                  description: process_description
             process_obj.category_list.add(process_category) # need to add category separately, so that it doens't parse on commas
             process_obj.save!
             step_position = 0
@@ -59,42 +62,42 @@ module SSJ
             step_description = row[17]&.strip
             step_completion_type = row[18]&.strip
             step_type = case row[16]&.strip
-            when "Decision"
-              ::Workflow::Definition::Step::DECISION
-            when "Action"
-              ::Workflow::Definition::Step::DEFAULT
-            else
-              raise "unknown step type #{row[16]&.strip}"
-            end
+                        when 'Decision'
+                          ::Workflow::Definition::Step::DECISION
+                        when 'Action'
+                          ::Workflow::Definition::Step::DEFAULT
+                        else
+                          raise "unknown step type #{row[16]&.strip}"
+                        end
             # step_content = row[18]&.strip
             step_position += ::Workflow::Definition::Step::DEFAULT_INCREMENT
 
             case step_completion_type
-            when "Individual"
+            when 'Individual'
               completion_type = ::Workflow::Definition::Step::EACH_PERSON
-            when "Collaborative"
+            when 'Collaborative'
               completion_type = ::Workflow::Definition::Step::ONE_PER_GROUP
             else
               raise "unknown completion type #{step_completion_type}"
             end
-            
+
             step_min_worktime = convert_to_minutes(row[20]&.strip, row[22]&.strip)
             step_max_worktime = convert_to_minutes(row[21]&.strip, row[22]&.strip)
-            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type, position: step_position, min_worktime: step_min_worktime, max_worktime: step_max_worktime, completion_type: completion_type)
+            step = process_obj.steps.create!(title: step_title, description: step_description, kind: step_type,
+                                             position: step_position, min_worktime: step_min_worktime, max_worktime: step_max_worktime, completion_type:)
 
             step_document_titles = row[24]&.strip&.split("\n") || []
             step_document_links = row[25]&.strip&.split("\n") || []
             step_document_types = row[26]&.strip&.split("\n") || []
             step_document_links&.each_with_index do |link, i|
-              step.documents.create!(title: step_document_titles[i] || step_document_types[i], link: link)
+              step.documents.create!(title: step_document_titles[i] || step_document_types[i], link:)
             end
           else
             # empty line
-            puts "empty line"
+            puts 'empty line'
           end
         end
       end
-
 
       def import_national_sensible_default_workflow_definition
         process_obj = nil
@@ -111,7 +114,6 @@ module SSJ
           # associate process to workflow
           @workflow_definition.selected_processes.create!(process: process_obj)
 
-
           # add this process as prerequisite to the phase process only if it doesn't have post-requisites (keeps the dependency tree clean)
           # if process_obj.postrerequisites.blank?
           if @workflow_definition.dependencies.where(prerequisite_workable: process_obj).empty?
@@ -124,14 +126,14 @@ module SSJ
 
           # create dependencies for prerequisites
           process_prerequisites = row[3]&.split("\n")
-          if process_prerequisites.present?
-            # find each pre-requisite, create dependencies.
-            process_prerequisites.each do |prerequisite_title|
-              puts "  adding dependency #{prerequisite_title}"
-              prerequisite_title = prerequisite_title&.strip
-              prerequisite_obj = ::Workflow::Definition::Process.find_by!(title: prerequisite_title)
-              @workflow_definition.dependencies.create! workable: process_obj, prerequisite_workable: prerequisite_obj
-            end
+          next unless process_prerequisites.present?
+
+          # find each pre-requisite, create dependencies.
+          process_prerequisites.each do |prerequisite_title|
+            puts "  adding dependency #{prerequisite_title}"
+            prerequisite_title = prerequisite_title&.strip
+            prerequisite_obj = ::Workflow::Definition::Process.find_by!(title: prerequisite_title)
+            @workflow_definition.dependencies.create! workable: process_obj, prerequisite_workable: prerequisite_obj
           end
         end
       end
@@ -151,9 +153,9 @@ module SSJ
         return 0 if value.blank?
         return 0 if unit.blank?
 
-        if unit.include?("min")
+        if unit.include?('min')
           value.to_i
-        elsif unit.include?("hour")
+        elsif unit.include?('hour')
           value.to_i * 60
         else
           raise "unknown time unit #{unit}"
@@ -169,7 +171,6 @@ module SSJ
         # ignore first 2 header lines
         @csv.shift
         @definition = definition
-
       end
 
       def import
@@ -184,11 +185,11 @@ module SSJ
           raise "step not found #{step_title}" unless step.present?
 
           puts "updating step '#{step.title}'"
-          
+
           puts "  adding decision question #{step_decision_question}"
           step.decision_question = step_decision_question
           step.save!
-          
+
           step.decision_options.destroy_all
           puts "  adding decision options #{step_decision_option1} and #{step_decision_option2}"
           step.decision_options.create!(description: step_decision_option1)
@@ -199,7 +200,6 @@ module SSJ
   end
 end
 
-
 # require 'ssj/workflow/import'
 def create_default_workflow_and_processes
   require 'open-uri'
@@ -208,29 +208,33 @@ def create_default_workflow_and_processes
   # Workflow::Definition::Process.destroy_all
   # Workflow::Definition::Dependency.destroy_all
   # Workflow::Definition::Workflow.destroy_all
-  workflow_definition = ::Workflow::Definition::Workflow.create! name: "National, Independent Sensible Default - testing for Li, 2024-06-14, try again", version: "v1", description: "Imported from spreadsheet.  Authored by Maggie Paulin."
+  workflow_definition = ::Workflow::Definition::Workflow.create! name: 'National, Independent Sensible Default - testing for Li, 2024-06-14, try again',
+                                                                 version: 1, description: 'Imported from spreadsheet.  Authored by Maggie Paulin.'
 
-  visioning_process = workflow_definition.processes.create! title: "End of Visioning", description: "Placeholder process to be a post-prerequisite for all the visioning processes and be a prerequisite for planning processes."
+  visioning_process = workflow_definition.processes.create! title: 'End of Visioning',
+                                                            description: 'Placeholder process to be a post-prerequisite for all the visioning processes and be a prerequisite for planning processes.'
 
-  planning_process = workflow_definition.processes.create! title: "End of Planning", description: "Placeholder process to be a post-prerequisite for all the planning processes and be a prerequisite for startup proccesses."
+  planning_process = workflow_definition.processes.create! title: 'End of Planning',
+                                                           description: 'Placeholder process to be a post-prerequisite for all the planning processes and be a prerequisite for startup proccesses.'
   workflow_definition.dependencies.create! workable: planning_process, prerequisite_workable: visioning_process
 
-  startup_process = workflow_definition.processes.create! title: "End of Startup", description: "Placeholder process to be a post-prerequisite for all the startup processes"
+  startup_process = workflow_definition.processes.create! title: 'End of Startup',
+                                                          description: 'Placeholder process to be a post-prerequisite for all the startup processes'
   workflow_definition.dependencies.create! workable: startup_process, prerequisite_workable: planning_process
 
   # visioning = File.open('visioning.csv').read
-  visioning = URI.open("https://www.dropbox.com/s/mz217l67txci7l6/visioning.csv?dl=1").read
+  visioning = URI.open('https://www.dropbox.com/s/mz217l67txci7l6/visioning.csv?dl=1').read
   SSJ::Workflow::Import.new(visioning, workflow_definition, visioning_process, ::SSJ::Phase::VISIONING).import
 
   # planning = File.open('planning.csv').read
-  planning = URI.open("https://www.dropbox.com/s/og60xsgaqqs94qn/planning.csv?dl=1").read
+  planning = URI.open('https://www.dropbox.com/s/og60xsgaqqs94qn/planning.csv?dl=1').read
   SSJ::Workflow::Import.new(planning, workflow_definition, planning_process, ::SSJ::Phase::PLANNING).import
 
   # startup = File.open('startup.csv').read
-  startup = URI.open("https://www.dropbox.com/s/x5gelsrogmfoft7/startup.csv?dl=1").read
+  startup = URI.open('https://www.dropbox.com/s/x5gelsrogmfoft7/startup.csv?dl=1').read
   SSJ::Workflow::Import.new(startup, workflow_definition, startup_process, ::SSJ::Phase::STARTUP).import
 
   # decisions
-  decisions = URI.open("https://www.dropbox.com/s/icho1tswb3zyk93/decisions.csv?dl=1").read
+  decisions = URI.open('https://www.dropbox.com/s/icho1tswb3zyk93/decisions.csv?dl=1').read
   SSJ::Workflow::ImportDecisions.new(decisions, workflow_definition).import
 end

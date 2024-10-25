@@ -12,7 +12,8 @@ module Workflow
 
     has_many :instances, class_name: 'Workflow::Instance::Workflow', foreign_key: 'definition_id'
 
-    belongs_to :previous_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id', optional: true
+    belongs_to :previous_version, class_name: 'Workflow::Definition::Workflow',
+                                  optional: true
     has_one :next_version, class_name: 'Workflow::Definition::Workflow', foreign_key: 'previous_version_id'
 
     scope :latest_versions, -> { select('DISTINCT ON (name) *').order('name, version DESC') }
@@ -27,7 +28,7 @@ module Workflow
 
     def displayed_processes
       if published?
-        processes.where.not("workflow_definition_selected_processes.state = ?", 'removed')
+        processes.where.not('workflow_definition_selected_processes.state = ?', 'removed')
       else
         processes
       end
@@ -36,14 +37,14 @@ module Workflow
     private
 
     def check_published
-      if published? && (name_changed? || version_changed? || description_changed? )
-        errors.add(:base, "updates to name, description or version can only be made if unpublished")
+      if published? && (name_changed? || version_changed? || description_changed?)
+        errors.add(:base, 'updates to name, description or version can only be made if unpublished')
       end
     end
-  
+
     def name_version_combo
-      if Workflow::Definition::Workflow.where(name: name, version: version, deleted_at: nil).exists?
-        errors.add(:base, "name and version combination must be unique for non-deleted records")
+      if Workflow::Definition::Workflow.where(name:, version:, deleted_at: nil).exists?
+        errors.add(:base, 'name and version combination must be unique for non-deleted records')
       end
     end
 
@@ -51,12 +52,12 @@ module Workflow
       return true if previous_version.nil?
 
       if recurring? && !previous_version.recurring?
-        errors.add(:base, "Cannot be recurring if previous version is not")
+        errors.add(:base, 'Cannot be recurring if previous version is not')
         throw(:abort)
       end
 
       if !recurring? && previous_version.recurring?
-        errors.add(:base, "Must be recurring if previous version is")
+        errors.add(:base, 'Must be recurring if previous version is')
         throw(:abort)
       end
     end
