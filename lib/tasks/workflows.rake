@@ -262,6 +262,14 @@ namespace :workflows do
 
     end
   end
+
+  desc 'update version to integer'
+  task update_version_number: :environment do
+    Workflow::Definition::Workflow.all.each do |workflow|
+      workflow.version = workflow.version_string.match(/\d+/)[0].to_i
+      workflow.save(validate: false)
+    end
+  end
 end
 
 # Team of 4

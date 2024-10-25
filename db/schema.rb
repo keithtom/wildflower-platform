@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_23_153058) do
+ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -569,7 +569,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_23_153058) do
   end
 
   create_table "workflow_definition_workflows", force: :cascade do |t|
-    t.string "version"
+    t.string "version_string"
     t.string "name"
     t.text "description"
     t.datetime "created_at", null: false
@@ -581,6 +581,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_23_153058) do
     t.datetime "deleted_at"
     t.boolean "needs_support", default: false
     t.boolean "recurring", default: false
+    t.integer "version"
     t.index ["deleted_at"], name: "index_workflow_definition_workflows_on_deleted_at"
   end
 

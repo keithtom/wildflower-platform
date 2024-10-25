@@ -15,9 +15,9 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
 
       it 'returns all workflows as JSON' do
-        workflow1 = create(:workflow_definition_workflow, name: "basic 1", version: "v0")
-        workflow2 = create(:workflow_definition_workflow, name: "basic 1", version: "v1")
-        workflow3 = create(:workflow_definition_workflow, name: "charter 1", version: "v0")
+        workflow1 = create(:workflow_definition_workflow, name: 'basic 1', version: 0)
+        workflow2 = create(:workflow_definition_workflow, name: 'basic 1', version: 1)
+        workflow3 = create(:workflow_definition_workflow, name: 'charter 1', version: 0)
         workflows = [workflow2, workflow3]
         get '/v1/workflow/definition/workflows'
         expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflows, { include: ['processes'] }).to_json
@@ -74,8 +74,9 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
     end
   end
+
   describe 'POST #create' do
-    let(:valid_params) { { workflow: { version: '1.0', name: 'Test Workflow', description: 'This is a test workflow' } } }
+    let(:valid_params) { { workflow: { version: 1, name: 'Test Workflow', description: 'This is a test workflow' } } }
 
     context 'when authenticated as admin' do
       let(:admin) { create(:user, :admin) }
@@ -114,9 +115,12 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       end
     end
   end
+
   describe 'PUT #update' do
     let!(:workflow) { create(:workflow_definition_workflow) }
-    let(:valid_params) { { workflow: { version: '2.0', name: 'Updated Workflow', description: 'This is an updated workflow' } } }
+    let(:valid_params) do
+      { workflow: { version: 2, name: 'Updated Workflow', description: 'This is an updated workflow' } }
+    end
 
     context 'when authenticated as admin' do
       let(:admin) { create(:user, :admin) }
@@ -129,20 +133,21 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       it 'updates the workflow' do
         workflow.reload
         expect(response).to have_http_status(:success)
-        expect(workflow.version).to eq('2.0')
+        expect(workflow.version).to eq(2)
         expect(workflow.name).to eq('Updated Workflow')
         expect(workflow.description).to eq('This is an updated workflow')
       end
 
       it 'returns the updated workflow as JSON' do
-        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow.reload, { include: ['processes'] }).to_json
+        expected_json = V1::Workflow::Definition::WorkflowSerializer.new(workflow.reload,
+                                                                         { include: ['processes'] }).to_json
         expect(response.body).to eq(expected_json)
       end
-    
-      context "workflow is published" do
+
+      context 'workflow is published' do
         let!(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
 
-        it "fails" do
+        it 'fails' do
           expect(response).to have_http_status(:unprocessable_entity)
         end
       end
@@ -177,19 +182,19 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       sign_in(admin)
     end
 
-    context "published workflow" do
+    context 'published workflow' do
       let(:workflow) { create(:workflow_definition_workflow, published_at: DateTime.now) }
 
-      it "request is unprocessable" do
+      it 'request is unprocessable' do
         delete "/v1/workflow/definition/workflows/#{workflow.id}"
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
-  
-    context "workflow in draft mode" do
+
+    context 'workflow in draft mode' do
       let(:workflow) { create(:workflow_definition_workflow) }
 
-      it "succeeds" do
+      it 'succeeds' do
         delete "/v1/workflow/definition/workflows/#{workflow.id}"
         expect(response).to have_http_status(:success)
       end
@@ -200,31 +205,33 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     let(:admin) { create(:user, :admin) }
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:prerequisite) { create(:workflow_definition_process) }
-    let(:process_params) { 
-      { 
-        process: { 
-          version: '1.0', 
-          title: 'Test Workflow', 
-          description: 'This is a test process', 
-          selected_processes_attributes: [{workflow_id: workflow.id, position: 200}],
-          steps_attributes: [
-            { 
-              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
-              decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
-              documents_attributes: [{title: "document title", link: "www.example.com"}]
-            },
-            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
-          ],
-          workable_dependencies_attributes: [
-            { workflow_id: workflow.id, prerequisite_workable_type: "Workflow::Definition::Process", prerequisite_workable_id: prerequisite.id},
-          ]
-        } 
-      } 
-    }
-    let(:recurring_process_params) {
+    let(:process_params) do
       {
         process: {
-          version: '1.0',
+          version: 1,
+          title: 'Test Workflow',
+          description: 'This is a test process',
+          selected_processes_attributes: [{ workflow_id: workflow.id, position: 200 }],
+          steps_attributes: [
+            {
+              title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
+              decision_options_attributes: [{ description: 'option 1' }, { description: 'option 2' }],
+              documents_attributes: [{ title: 'document title', link: 'www.example.com' }]
+            },
+            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT,
+              completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
+          ],
+          workable_dependencies_attributes: [
+            { workflow_id: workflow.id, prerequisite_workable_type: 'Workflow::Definition::Process',
+              prerequisite_workable_id: prerequisite.id }
+          ]
+        }
+      }
+    end
+    let(:recurring_process_params) do
+      {
+        process: {
+          version: 1,
           title: 'Test Workflow',
           description: 'This is a test process',
           duration: 1,
@@ -234,14 +241,15 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
           steps_attributes: [
             {
               title: 'Step 1', description: 'This is step 1', kind: Workflow::Definition::Step::DECISION, completion_type: Workflow::Definition::Step::ONE_PER_GROUP, min_worktime: 5, max_worktime: 10,
-              decision_options_attributes: [{description: "option 1"}, {description: "option 2"}],
-              documents_attributes: [{title: "document title", link: "www.example.com"}]
+              decision_options_attributes: [{ description: 'option 1' }, { description: 'option 2' }],
+              documents_attributes: [{ title: 'document title', link: 'www.example.com' }]
             },
-            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT, completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
+            { title: 'Step 2', description: 'This is step 2', kind: Workflow::Definition::Step::DEFAULT,
+              completion_type: Workflow::Definition::Step::ONE_PER_GROUP }
           ]
         }
       }
-    }
+    end
 
     before do
       sign_in(admin)
@@ -277,7 +285,9 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
           process = Workflow::Definition::Process.last
           expect(workflow.processes.last).to eq(process)
 
-          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
+          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process,
+                                                                          { include: %w[steps selected_processes
+                                                                                        prerequisites] }).to_json
           # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
           # puts pretty_json
           expect(response.body).to eq(expected_json)
@@ -300,7 +310,9 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
           process = Workflow::Definition::Process.last
           expect(workflow.processes.last).to eq(process)
 
-          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
+          expected_json = V1::Workflow::Definition::ProcessSerializer.new(process,
+                                                                          { include: %w[steps selected_processes
+                                                                                        prerequisites] }).to_json
           # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
           # puts pretty_json
           expect(response.body).to eq(expected_json)
@@ -313,13 +325,13 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     let(:admin) { create(:user, :admin) }
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:process) { create(:workflow_definition_process) }
-    let(:process_params) { 
-      { 
-        process: { 
-          selected_processes_attributes: [{workflow_id: workflow.id, position: 200}],
-        } 
-      } 
-    }
+    let(:process_params) do
+      {
+        process: {
+          selected_processes_attributes: [{ workflow_id: workflow.id, position: 200 }]
+        }
+      }
+    end
 
     before do
       sign_in(admin)
@@ -350,7 +362,9 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
         expect(workflow.processes.last).to eq(process)
         expect(process.selected_processes.last.position).to be(200)
 
-        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] }).to_json
+        expected_json = V1::Workflow::Definition::ProcessSerializer.new(process,
+                                                                        { include: %w[steps selected_processes
+                                                                                      prerequisites] }).to_json
         # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
         # puts pretty_json
         expect(response.body).to eq(expected_json)
@@ -358,7 +372,7 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     end
   end
 
-  describe "POST #new_version" do
+  describe 'POST #new_version' do
     let(:workflow) { create(:workflow_definition_workflow) }
     let(:admin) { create(:user, :admin) }
 
@@ -366,36 +380,38 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
       sign_in(admin)
     end
 
-    it "creates a new version of the workflow" do
+    it 'creates a new version of the workflow' do
       post "/v1/workflow/definition/workflows/#{workflow.id}/new_version"
 
       expect(response).to have_http_status(:success)
 
       new_version = JSON.parse(response.body)
-      expect(new_version["data"]["id"]).to_not eq(workflow.id)
-      expect(new_version["data"]["attributes"]["name"]).to eq(workflow.name)
+      expect(new_version['data']['id']).not_to eq(workflow.id)
+      expect(new_version['data']['attributes']['name']).to eq(workflow.name)
     end
   end
 
-  describe "POST #new_process_version" do
+  describe 'POST #new_process_version' do
     let(:workflow) { create(:workflow_definition_workflow) }
-    let(:process) { create(:workflow_definition_process, version: "v1") }
-    let!(:selected_process) { Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id, state: "replicated")}
+    let(:process) { create(:workflow_definition_process, version: 1) }
+    let!(:selected_process) do
+      Workflow::Definition::SelectedProcess.create!(workflow_id: workflow.id, process_id: process.id,
+                                                    state: 'replicated')
+    end
     let(:admin) { create(:user, :admin) }
 
     before do
       sign_in(admin)
     end
 
-    it "creates a new version of the process" do
+    it 'creates a new version of the process' do
       post "/v1/workflow/definition/workflows/#{workflow.id}/new_version/#{process.id}"
 
       new_version = JSON.parse(response.body)
       expect(response).to have_http_status(:success)
 
-      expect(selected_process.reload.process_id).to_not eq(process.id)
-      expect(selected_process.process_id.to_s).to eq(new_version["data"]["id"])
-
+      expect(selected_process.reload.process_id).not_to eq(process.id)
+      expect(selected_process.process_id.to_s).to eq(new_version['data']['id'])
     end
   end
 
@@ -406,37 +422,37 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
     before do
       sign_in(admin)
     end
-    
+
     context 'when the workflow is valid' do
       before do
         allow(Workflow::Definition::Workflow::Publish).to receive(:new).and_return(double(validate: true))
         allow(PublishWorkflowJob).to receive(:perform_later)
         put "/v1/workflow/definition/workflows/#{workflow.id}/publish"
       end
-      
+
       it 'returns a success status' do
         expect(response).to have_http_status(:success)
       end
-      
+
       it 'returns a success message' do
         expect(JSON.parse(response.body)['message']).to eq('Rollout in progress')
       end
-      
+
       it 'enqueues the PublishWorkflowJob' do
         expect(PublishWorkflowJob).to have_received(:perform_later).with(workflow.id.to_s)
       end
     end
-    
+
     context 'when the workflow is invalid' do
       before do
         allow(Workflow::Definition::Workflow::Publish).to receive(:new).and_raise(StandardError.new('Validation failed'))
         put "/v1/workflow/definition/workflows/#{workflow.id}/publish"
       end
-      
+
       it 'returns an unprocessable entity status' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
-      
+
       it 'returns an error message' do
         expect(JSON.parse(response.body)['error']).to eq('Validation failed')
       end
