@@ -14,9 +14,7 @@ class V1::ProfileImagesController < ApiController
 
       # Generate the URL for the processed variant
       url = variant_processed.url
-      url = url.sub("#{ENV.fetch('S3_BUCKET', 'ssj-local')}.s3.amazonaws.com", ENV.fetch('ASSET_HOST')) if ENV.fetch(
-        'ASSET_HOST', false
-      )
+      url = ImageHelper.cdn_url(url)
       redirect_to(url, allow_other_host: true)
     else
       render json: { error: 'Profile image not found' }, status: :not_found
