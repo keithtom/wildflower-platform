@@ -2,7 +2,9 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   before_action :authenticate_admin!
 
   def index
-    processes = Workflow::Definition::Process.includes([:taggings, :categories, steps: [:decision_options, :documents]]).all
+    processes = Workflow::Definition::Process.includes([:taggings, :categories, {
+                                                         steps: %i[decision_options documents]
+                                                       }]).all
     render json: V1::Workflow::Definition::ProcessSerializer.new(processes)
   end
 
@@ -10,13 +12,11 @@ class V1::Workflow::Definition::ProcessesController < ApiController
     process = Workflow::Definition::Process.find(params[:id])
 
     process_serialization_options = serialization_options
-    if params[:workflow_id]
-      process_serialization_options.merge!({params: {workflow_id: params[:workflow_id]}})
-    end
+    process_serialization_options.merge!({ params: { workflow_id: params[:workflow_id] } }) if params[:workflow_id]
 
     render json: V1::Workflow::Definition::ProcessSerializer.new(process, process_serialization_options)
   end
- 
+
   def create
     process = Workflow::Definition::Process.create!(process_params)
     render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
@@ -39,7 +39,7 @@ class V1::Workflow::Definition::ProcessesController < ApiController
     render json: V1::Workflow::Definition::ProcessSerializer.new(process, serialization_options)
   end
 
-  def destroy 
+  def destroy
     process = Workflow::Definition::Process.find(params[:id])
     if process.instances.empty?
       process.destroy!
@@ -53,15 +53,14 @@ class V1::Workflow::Definition::ProcessesController < ApiController
 
   def process_params
     params.require(:process).permit(:version, :title, :description, :recurring, :duration, :phase_list, [category_list: []], [due_months: []],
-      steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
-        decision_options_attributes: [:description],
-        documents_attributes: [:id, :title, :link]],
-      selected_processes_attributes: [:id, :workflow_id, :position],
-      workable_dependencies_attributes: [:id, :workflow_id, :prerequisite_workable_type, :prerequisite_workable_id]
-    )
+                                    steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
+                                                       { decision_options_attributes: [:description],
+                                                         documents_attributes: %i[id title link] }],
+                                    selected_processes_attributes: %i[id workflow_id position],
+                                    workable_dependencies_attributes: %i[id workflow_id prerequisite_workable_type prerequisite_workable_id])
   end
 
   def serialization_options
-    { include: ['steps', 'selected_processes', 'prerequisites', 'workable_dependencies'] }
+    { include: %w[steps selected_processes prerequisites workable_dependencies] }
   end
 end
