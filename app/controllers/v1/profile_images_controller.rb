@@ -15,7 +15,7 @@ class V1::ProfileImagesController < ApiController
       # Generate the URL for the processed variant
       url = variant_processed.url
       url = ImageHelper.cdn_url(url)
-      redirect_to(url, allow_other_host: true)
+      render json: { image_url: url }, status: :success
     else
       render json: { error: 'Profile image not found' }, status: :not_found
     end
