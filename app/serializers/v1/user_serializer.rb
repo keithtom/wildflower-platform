@@ -17,7 +17,10 @@ module V1
     attribute :image_url do |user|
       if person = user.person
         if person.profile_image.attached?
-          Rails.application.routes.url_helpers.rails_blob_url(person.profile_image)
+          signed_id = person.signed_id(expires_in: 1.hour)
+          Rails.application.routes.url_helpers.v1_person_profile_image_url(
+            person_id: person.external_identifier, signed_id:
+          )
         elsif person.image_url.present?
           person.image_url
         end
