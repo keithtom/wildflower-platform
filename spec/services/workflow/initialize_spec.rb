@@ -21,7 +21,7 @@ describe Workflow::Initialize do
       process_instance = subject.processes.where(definition_id: process_definition.id).first
       prerequisite_instance = subject.processes.where(definition_id: prerequisite_definition.id).first
 
-      slice = [:title, :description, :position]
+      slice = [:title, :title_es, :description, :description_es, :position]
       expect(process_instance.attributes.with_indifferent_access.slice(*slice).tap{ |attr| attr.delete(:position) }).to eq(process_definition.attributes.with_indifferent_access.slice(*slice))
       expect(prerequisite_instance.attributes.with_indifferent_access.slice(*slice).tap{ |attr| attr.delete(:position) }).to eq(prerequisite_definition.attributes.with_indifferent_access.slice(*slice))
       expect(process_instance.category_list).to eq(process_definition.category_list)
@@ -36,7 +36,7 @@ describe Workflow::Initialize do
       step1 = process_instance.steps.first
       step2 = prerequisite_instance.steps.first
 
-      slice = [:title, :description, :kind, :completion_type, :min_worktime, :max_worktime, :decision_question, :position]
+      slice = [:title, :title_es, :description, :description_es, :kind, :completion_type, :min_worktime, :max_worktime, :decision_question, :decision_question_es, :position]
       expect(step1.attributes.with_indifferent_access.slice(*slice)).to eq(step_definition.attributes.with_indifferent_access.slice(*slice))
       expect(step2.attributes.with_indifferent_access.slice(*slice)).to eq(step2_definition.attributes.with_indifferent_access.slice(*slice))
       expect(step1.title).to be_present

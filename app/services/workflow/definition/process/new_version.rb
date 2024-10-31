@@ -49,14 +49,14 @@ module Workflow
             step.documents.each do |document|
               # documents have external identifier, cannot use dup to clone
               attributes = document.attributes.with_indifferent_access.slice(:documentable_type, :inheritance_type,
-                                                                             :title, :link)
+                                                                             :title, :title_es, :link)
               attributes.merge!(documentable_id: new_step.id)
               Document.create!(attributes)
             end
 
             step.decision_options.each do |decision_option|
               # decision options have external identifier, cannot use dup to clone
-              attributes = decision_option.attributes.with_indifferent_access.slice(:description)
+              attributes = decision_option.attributes.with_indifferent_access.slice(:description, :description_es)
               attributes.merge!(decision_id: new_step.id)
               ::Workflow::DecisionOption.create!(attributes)
             end
