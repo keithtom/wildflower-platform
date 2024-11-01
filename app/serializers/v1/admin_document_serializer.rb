@@ -3,7 +3,6 @@
 module V1
   class AdminDocumentSerializer < ApplicationSerializer
     set_id :id
-    attributes :inheritance_type, :title, :link, :updated_at
+    attributes :inheritance_type, :title, :title_es, :link, :updated_at
   end
 end
-
