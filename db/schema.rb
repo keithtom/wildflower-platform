@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
+ActiveRecord::Schema[7.0].define(version: 2024_10_30_145218) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -174,6 +174,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
     t.string "external_identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title_es"
     t.index ["documentable_type", "documentable_id"], name: "index_documents_on_documentable"
   end
 
@@ -503,6 +504,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
     t.string "external_identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "description_es"
     t.index ["decision_id"], name: "index_workflow_decision_options_on_decision_id"
     t.index ["external_identifier"], name: "index_workflow_decision_options_on_external_identifier", unique: true
   end
@@ -534,6 +536,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
     t.boolean "recurring", default: false
     t.integer "due_months", array: true
     t.integer "duration"
+    t.string "title_es"
+    t.text "description_es"
     t.index ["deleted_at"], name: "index_workflow_definition_processes_on_deleted_at"
   end
 
@@ -564,6 +568,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
     t.string "completion_type"
     t.string "decision_question"
     t.datetime "deleted_at"
+    t.string "title_es"
+    t.text "description_es"
+    t.string "decision_question_es"
     t.index ["deleted_at"], name: "index_workflow_definition_steps_on_deleted_at"
     t.index ["process_id"], name: "index_workflow_definition_steps_on_process_id"
   end
@@ -621,6 +628,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
     t.date "suggested_start_date"
     t.date "due_date"
     t.string "recurring_type"
+    t.string "title_es"
+    t.text "description_es"
     t.index ["definition_id"], name: "index_workflow_instance_processes_on_definition_id"
     t.index ["deleted_at"], name: "index_workflow_instance_processes_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_processes_on_external_identifier", unique: true
@@ -655,6 +664,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_23_154415) do
     t.integer "max_worktime"
     t.string "decision_question"
     t.datetime "deleted_at"
+    t.string "title_es"
+    t.text "description_es"
+    t.string "decision_question_es"
     t.index ["definition_id"], name: "index_workflow_instance_steps_on_definition_id"
     t.index ["deleted_at"], name: "index_workflow_instance_steps_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_steps_on_external_identifier", unique: true

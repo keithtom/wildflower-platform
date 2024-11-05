@@ -3,8 +3,9 @@ module Workflow
     class Step
       class PropagateInstantaneousChange < BaseService
         VALID_ATTR_CHANGES = [
-          :title, :description, :position, :completion_type, :min_worktime, :max_worktime, :decision_question, 
-          documents_attributes: [:id, :title, :link], decision_options_attributes: [:id, :description]       
+          :title, :title_es, :description, :description_es, :position, :completion_type, :min_worktime, :max_worktime,
+          :decision_question, :decision_question_es, { documents_attributes: %i[id title title_es link],
+                                                       decision_options_attributes: %i[id description description_es] }
         ]
 
         def initialize(step_definition, param_changes)
@@ -29,7 +30,7 @@ module Workflow
             ActionController::Parameters.new(@param_changes).permit(VALID_ATTR_CHANGES)
           rescue ActionController::UnpermittedParameters => e
             ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
-            raise StandardError.new("Attribute(s) cannot be an instantaneously changed: #{e.params.join(", ")}")
+            raise StandardError, "Attribute(s) cannot be an instantaneously changed: #{e.params.join(', ')}"
           end
 
           ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
@@ -46,9 +47,7 @@ module Workflow
         end
 
         def update_instances
-          unless @param_changes.empty?
-            @step_definition.instances.update_all(@param_changes)
-          end
+          @step_definition.instances.update_all(@param_changes) unless @param_changes.empty?
         end
       end
     end

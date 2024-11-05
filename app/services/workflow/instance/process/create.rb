@@ -19,7 +19,8 @@ module Workflow
 
         def create_process_instance
           # puts "definition", process_definition.category_list, process_definition.phase_list
-          attributes = @process_definition.attributes.with_indifferent_access.slice(:title, :description)
+          attributes = @process_definition.attributes.with_indifferent_access.slice(:title, :title_es, :description,
+                                                                                    :description_es)
           # puts "attributes", attributes.as_json
           position = @process_definition.selected_processes.where(workflow_id: @workflow_definition.id).first.position
           attributes.merge!(workflow: @wf_instance, position:)
@@ -54,8 +55,9 @@ module Workflow
           @process_instances.each do |process_instance|
             @process_definition.steps.each do |step_definition|
               # copy over documents? that seems a bit much.
-              attributes = step_definition.attributes.with_indifferent_access.slice(:title, :description, :kind,
-                                                                                    :completion_type, :min_worktime, :max_worktime, :decision_question, :position)
+              attributes = step_definition.attributes.with_indifferent_access.slice(:title, :title_es, :description, :description_es, :kind,
+                                                                                    :completion_type, :min_worktime, :max_worktime, :decision_question,
+                                                                                    :decision_question_es, :position)
               attributes.merge!(process_id: process_instance.id)
               step_definition.instances.create!(attributes)
             end
