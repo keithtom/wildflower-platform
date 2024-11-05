@@ -83,6 +83,7 @@ class V1::Workflow::StepsController < ApiController
   # TODO: have a different set of params for a manual step
   def step_params
     # still would send this param? keep assignment of step the same interface.
-    params.require(:step).permit(:title, :position, :document, :completion_type, :after_position, :selected_option_id)
+    params.require(:step).permit(:title, :title_es, :description, :description_es, :position, :document,
+                                 :completion_type, :after_position, :selected_option_id, :decision_question, :decision_question_es)
   end
 end

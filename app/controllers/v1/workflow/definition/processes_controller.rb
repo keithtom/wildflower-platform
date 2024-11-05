@@ -52,9 +52,10 @@ class V1::Workflow::Definition::ProcessesController < ApiController
   private
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :recurring, :duration, :phase_list, [category_list: []], [due_months: []],
-                                    steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
-                                                       { decision_options_attributes: [:description],
+    params.require(:process).permit(:version, :title, :title_es, :description, :description_es, :recurring, :duration, :phase_list, [category_list: []], [due_months: []],
+                                    steps_attributes: [:id, :title, :title_es, :description, :description_es, :decision_question,
+                                                       :decision_question_es, :position, :kind, :completion_type, :min_worktime, :max_worktime,
+                                                       { decision_options_attributes: %i[description description_es],
                                                          documents_attributes: %i[id title link] }],
                                     selected_processes_attributes: %i[id workflow_id position],
                                     workable_dependencies_attributes: %i[id workflow_id prerequisite_workable_type prerequisite_workable_id])

@@ -2,6 +2,6 @@
 
 module V1
   class DocumentSerializer < ApplicationSerializer
-    attributes :inheritance_type, :title, :link, :updated_at
+    attributes :inheritance_type, :title, :title_es, :link, :updated_at
   end
 end

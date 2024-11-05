@@ -3,7 +3,7 @@ module Workflow
     class Process
       class PropagateInstantaneousChange < BaseService
         VALID_ATTR_CHANGES = [
-          :title, :description, :position, [:category_list => []]
+          :title, :title_es, :description, :description_es, :position, [category_list: []]
         ]
 
         def initialize(process_definition, param_changes)
@@ -20,7 +20,7 @@ module Workflow
           update_instances
         end
 
-        private 
+        private
 
         def validate_param_changes
           action_on_unpermitted_parameters = ActionController::Parameters.action_on_unpermitted_parameters
@@ -30,7 +30,7 @@ module Workflow
             ActionController::Parameters.new(@param_changes).permit(VALID_ATTR_CHANGES)
           rescue ActionController::UnpermittedParameters => e
             ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
-            raise StandardError.new("Attribute(s) cannot be an instantaneously changed: #{e.params.join(", ")}")
+            raise StandardError, "Attribute(s) cannot be an instantaneously changed: #{e.params.join(', ')}"
           end
 
           ActionController::Parameters.action_on_unpermitted_parameters = action_on_unpermitted_parameters
@@ -43,7 +43,7 @@ module Workflow
         def scrub_param_changes
           if selected_processes_attributes = @param_changes.delete(:selected_processes_attributes)
             if selected_processes_attributes.count > 1
-              raise StandardError.new("Can only update position of process to one workflow")
+              raise StandardError, 'Can only update position of process to one workflow'
             end
 
             selected_process = selected_processes_attributes.first
@@ -52,11 +52,9 @@ module Workflow
 
           @category_list = @param_changes.delete(:category_list)
         end
-      
+
         def update_instances
-          unless @param_changes.empty?
-            @process_definition.instances.update_all(@param_changes)
-          end
+          @process_definition.instances.update_all(@param_changes) unless @param_changes.empty?
 
           # TODO: push this to a background worker?
           if @category_list

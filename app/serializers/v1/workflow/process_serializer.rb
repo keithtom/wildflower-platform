@@ -2,8 +2,8 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
-  attributes :title, :position, :steps_count, :completed_steps_count, :description, :suggested_start_date, :due_date,
-             :recurring_type
+  attributes :title, :title_es, :position, :steps_count, :completed_steps_count, :description, :description_es,
+             :suggested_start_date, :due_date, :recurring_type
 
   attribute :status do |process|
     process_status(process)
@@ -26,11 +26,13 @@ class V1::Workflow::ProcessSerializer < ApplicationSerializer
     process.workflow
   end
 
-  has_many :steps, serializer: V1::Workflow::StepSerializer, id_method_name: :external_identifier do |process, params|
+  has_many :steps, serializer: V1::Workflow::StepSerializer, id_method_name: :external_identifier do |process, _params|
     process.steps.by_position
   end
 
-  has_many :prerequisite_processes, if: Proc.new { |process, params| params && params[:prerequisites] }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
+  has_many :prerequisite_processes, if: proc { |_process, params|
+                                          params && params[:prerequisites]
+                                        }, serializer: V1::Workflow::ProcessSerializer, id_method_name: :external_identifier do |process|
     process.prerequisites.by_position
   end
 end

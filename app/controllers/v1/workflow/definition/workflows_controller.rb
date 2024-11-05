@@ -8,32 +8,35 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
 
   def show
     workflow = Workflow::Definition::Workflow.find(params[:id])
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow,
+                                                                  serializer_options.merge!({ params: { workflow_id: params[:id] } }))
   end
 
   def create
     workflow = Workflow::Definition::Workflow.create!(workflow_params)
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow,
+                                                                  serializer_options.merge!({ params: { workflow_id: params[:id] } }))
   end
 
   def update
     workflow = Workflow::Definition::Workflow.find(params[:id])
     if workflow.published?
-      render json: { message: 'Cannot update a published workflow'}, status: :unprocessable_entity
+      render json: { message: 'Cannot update a published workflow' }, status: :unprocessable_entity
     else
       workflow.update!(workflow_params)
-      render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+      render json: V1::Workflow::Definition::WorkflowSerializer.new(workflow,
+                                                                    serializer_options.merge!({ params: { workflow_id: params[:id] } }))
     end
   end
 
   def destroy
     workflow = Workflow::Definition::Workflow.find(params[:id])
     if workflow.published? || !workflow.instances.count.zero?
-      render json: { message: 'Cannot delete a published workflow'}, status: :unprocessable_entity
+      render json: { message: 'Cannot delete a published workflow' }, status: :unprocessable_entity
     else
       workflow.destroy!
       # TODO: need to destroy the selected processes, and dependencies
-      render json: { message: 'Successfully deleted workflow'}
+      render json: { message: 'Successfully deleted workflow' }
     end
   end
 
@@ -41,7 +44,8 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
     workflow = Workflow::Definition::Workflow.find(params[:workflow_id])
     new_version = Workflow::Definition::Workflow::NewVersion.run(workflow)
 
-    render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version, serializer_options.merge!({params: {workflow_id: params[:id]}}))
+    render json: V1::Workflow::Definition::WorkflowSerializer.new(new_version,
+                                                                  serializer_options.merge!({ params: { workflow_id: params[:id] } }))
   end
 
   def publish
@@ -67,7 +71,9 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       return
     end
 
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process, { include: ['steps', 'selected_processes', 'prerequisites'] })
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process,
+                                                                 { include: %w[steps selected_processes
+                                                                               prerequisites] })
   end
 
   def add_process
@@ -86,7 +92,9 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       return
     end
 
-    render json: V1::Workflow::Definition::ProcessSerializer.new(process.reload, { include: ['steps', 'selected_processes', 'prerequisites'] })
+    render json: V1::Workflow::Definition::ProcessSerializer.new(process.reload,
+                                                                 { include: %w[steps selected_processes
+                                                                               prerequisites] })
   end
 
   def remove_process
@@ -101,7 +109,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       return
     end
 
-    render json: { message: "Successfully removed process" }
+    render json: { message: 'Successfully removed process' }
   end
 
   def new_process_version
@@ -116,7 +124,9 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
       return
     end
 
-    render json: V1::Workflow::Definition::ProcessSerializer.new(new_version, { include: ['steps', 'selected_processes', 'prerequisites'] })
+    render json: V1::Workflow::Definition::ProcessSerializer.new(new_version,
+                                                                 { include: %w[steps selected_processes
+                                                                               prerequisites] })
   end
 
   private
@@ -126,13 +136,14 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   end
 
   def process_params
-    params.require(:process).permit(:version, :title, :description, :phase_list, :category_list, :recurring, :duration,
-    [due_months: []],
-    steps_attributes: [:id, :title, :description, :position, :kind, :completion_type, :min_worktime, :max_worktime,
-    decision_options_attributes: [:description],
-    documents_attributes: [:id, :title, :link]],
-    selected_processes_attributes: [:id, :workflow_id, :position],
-    workable_dependencies_attributes: [:id, :workflow_id, :prerequisite_workable_type, :prerequisite_workable_id])
+    params.require(:process).permit(:version, :title_es, :description_es, :phase_list, :category_list, :recurring, :duration,
+                                    [due_months: []],
+                                    steps_attributes: [:id, :title_es, :description_es, :position, :kind, :completion_type,
+                                                       :min_worktime, :max_worktime, :decision_question, :decision_question_es,
+                                                       { decision_options_attributes: %i[description description_es],
+                                                         documents_attributes: %i[id title_es link] }],
+                                    selected_processes_attributes: %i[id workflow_id position],
+                                    workable_dependencies_attributes: %i[id workflow_id prerequisite_workable_type prerequisite_workable_id])
   end
 
   def serializer_options

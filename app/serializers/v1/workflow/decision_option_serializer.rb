@@ -1,3 +1,3 @@
 class V1::Workflow::DecisionOptionSerializer < ApplicationSerializer
-  attributes :description
+  attributes :description, :description_es
 end
