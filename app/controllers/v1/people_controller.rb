@@ -43,6 +43,7 @@ class V1::PeopleController < ApiController
                                    :email,
                                    :primary_language,
                                    :primary_language_other,
+                                   :preferred_language,
                                    [race_ethnicity_list: []],
                                    :race_ethnicity_other,
                                    :lgbtqia,

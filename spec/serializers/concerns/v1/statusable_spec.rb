@@ -49,8 +49,8 @@ RSpec.describe V1::Statusable, type: :concern do
       create(:workflow_instance_step, process: process)
     end
 
-    it "has 'to do' status" do
-      expect(StatusableFakeSerializer.process_status(process.reload)).to eq(V1::Statusable::TO_DO)
+    it "has 'in progress' status" do
+      expect(StatusableFakeSerializer.process_status(process.reload)).to eq(V1::Statusable::IN_PROGRESS)
     end
   
     context "has incomplete steps that are assigned" do
