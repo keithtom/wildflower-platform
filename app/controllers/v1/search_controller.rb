@@ -19,13 +19,9 @@ class V1::SearchController < ApplicationController
     default_search_options = { where:, limit:, offset:, track: tracking, page:,
                                per_page: }
 
-    person_includes = [:profile_image_attachment, :schools, :address, {
-      taggings: [:tag], school_relationships: [school: [taggings: :tag]]
-    }]
-    person_serialization_includes = %i[schools school_relationships]
-
-    school_includes = [:people, :address, :pod, { taggings: [:tag], school_relationships: [:person] }]
-    school_serialization_includes = %i[people address pod school_relationships]
+    person_includes = %i[profile_image_attachment address taggings]
+    school_includes = [:address, :logo_image_attachment, :banner_image_attachment, { taggings: [:tag] }]
+    school_serialization_includes = %i[address]
     case params[:models]
     when 'person', 'people', 'persons'
       # people where
@@ -33,7 +29,7 @@ class V1::SearchController < ApplicationController
       default_search_options[:where]&.merge!(active: true)
       @search = Person.search(query, **default_search_options.merge!({ includes: person_includes }))
       @results = @search.to_a
-      render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
+      render json: V1::PersonSearchSerializer.new(@results)
     when 'school', 'schools'
       if default_search_options[:where].present? && default_search_options[:where]['open_date'].present?
         open_date_selections = default_search_options[:where].delete('open_date')
@@ -43,13 +39,13 @@ class V1::SearchController < ApplicationController
 
       @search = School.search(query, **default_search_options.merge!({ includes: school_includes }))
       @results = @search.to_a
-      render json: V1::SchoolSerializer.new(@results, include: school_serialization_includes)
+      render json: V1::SchoolSearchSerializer.new(@results, include: school_serialization_includes)
     else
       default_search_options[:where]&.merge!(active: true)
       @search = Person.search(query,
                               **default_search_options.merge!({ includes: person_includes, models: model_whitelist }))
       @results = @search.to_a
-      render json: V1::PersonSerializer.new(@results, include: person_serialization_includes)
+      render json: V1::PersonSearchSerializer.new(@results)
     end
   end
 
