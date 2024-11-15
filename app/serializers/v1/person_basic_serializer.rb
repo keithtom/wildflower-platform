@@ -6,7 +6,8 @@ module V1
                :role_list,
                :show_ssj,
                :updated_at,
-               :is_onboarded
+               :is_onboarded,
+               :preferred_language
 
     attribute :image_url do |person|
       if person.profile_image.attached?

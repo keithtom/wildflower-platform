@@ -133,7 +133,7 @@ RSpec.describe 'Workflow Feature' do
 
       expect(process.completed_steps_count).to eq(1)
       expect(process.started?).to be_truthy
-      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
 
       Workflow::Instance::Step::Uncomplete.run(step, person1)
       expect(process.completed_steps_count).to eq(0)
@@ -177,7 +177,7 @@ RSpec.describe 'Workflow Feature' do
 
       Workflow::Instance::Step::Complete.run(step, person1)
       expect(process.started?).to be_truthy
-      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::TO_DO)
+      expect(StatusableFakeSerializer.process_status(process)).to eq(V1::Statusable::IN_PROGRESS)
 
       step2 = process.steps.last
       Workflow::Instance::Step::AssignPerson.run(step2, person1)
