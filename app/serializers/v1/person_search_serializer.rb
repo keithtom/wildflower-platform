@@ -5,10 +5,15 @@ module V1
     include V1::Imageable
     include V1::Locationable
 
-    attributes :email, :first_name, :last_name, :role_list
+    attributes :email, :first_name, :last_name
 
     attribute :image_url do |person|
       image_url(person)
+    end
+
+    # done this way to avoid n+1 queries
+    attribute :role_list do |person|
+      person.taggings.select { |tagging| tagging.context == 'roles' }.map { |tagging| tagging.tag.name }
     end
 
     # done this way to avoid n+1 queries

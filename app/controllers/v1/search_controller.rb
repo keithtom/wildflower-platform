@@ -21,7 +21,6 @@ class V1::SearchController < ApplicationController
 
     person_includes = %i[profile_image_attachment address taggings]
     school_includes = [:address, :logo_image_attachment, :banner_image_attachment, { taggings: [:tag] }]
-    school_serialization_includes = %i[address]
     case params[:models]
     when 'person', 'people', 'persons'
       # people where
@@ -39,7 +38,7 @@ class V1::SearchController < ApplicationController
 
       @search = School.search(query, **default_search_options.merge!({ includes: school_includes }))
       @results = @search.to_a
-      render json: V1::SchoolSearchSerializer.new(@results, include: school_serialization_includes)
+      render json: V1::SchoolSearchSerializer.new(@results)
     else
       default_search_options[:where]&.merge!(active: true)
       @search = Person.search(query,
