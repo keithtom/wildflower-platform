@@ -1,24 +1,14 @@
 # frozen_string_literal: true
 
 module V1
-  class PersonSearchSerializer < PersonBasicSerializer
-    attributes :email, :first_name, :middle_name, :last_name, :phone, :is_og?, :is_rgl?,
-               :role_list,
-               :show_ssj,
-               :updated_at,
-               :is_onboarded,
-               :preferred_language
+  class PersonSearchSerializer < ApplicationSerializer
+    include V1::Imageable
+    include V1::Locationable
 
-    attribute :show_network do |_person|
-      nil
-    end
+    attributes :email, :first_name, :last_name, :role_list
 
-    attribute :ssj_phase do |_person|
-      nil
-    end
-
-    has_one :address, id_method_name: :external_identifier do |_person|
-      nil
+    attribute :image_url do |person|
+      image_url(person)
     end
 
     # done this way to avoid n+1 queries
@@ -29,15 +19,7 @@ module V1
     end
 
     attribute :location do |person|
-      if person.address
-        if person.address.city.present? && person.address.state.present?
-          "#{person.address.city}, #{person.address.state}"
-        elsif person.address.city.blank? && person.address.state.present?
-          "#{person.address.state}"
-        elsif person.address.city.present?
-          "#{person.address.city}"
-        end
-      end
+      location(person)
     end
   end
 end
