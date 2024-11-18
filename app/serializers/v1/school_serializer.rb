@@ -2,6 +2,9 @@
 
 module V1
   class SchoolSerializer < ApplicationSerializer
+    include V1::Locationable
+    include V1::Imageable
+
     attributes :name, :short_name, :website, :phone, :email, :governance_type, :calendar,
                :max_enrollment, :facebook, :instagram, :status, :timezone, :domain,
                :hero_image2_url, :about, :about_es,
@@ -43,33 +46,15 @@ module V1
     end
 
     attribute :location do |school|
-      if school.address
-        if school.address.city.present? && school.address.state.present?
-          "#{school.address.city}, #{school.address.state}"
-        elsif school.address.city.blank? && school.address.state.present?
-          "#{school.address.state}"
-        elsif school.address.city.present?
-          "#{school.address.city}"
-        end
-      elsif school.hub.present?
-        school.hub.name
-      end
+      location(school)
     end
 
     attribute :hero_image_url do |school|
-      if school.banner_image.attached?
-        Rails.application.routes.url_helpers.rails_blob_url(school.banner_image)
-      elsif school.hero_image_url.present?
-        school.hero_image_url
-      end
+      hero_image_url(school)
     end
 
     attribute :logo_url do |school|
-      if school.logo_image.attached?
-        Rails.application.routes.url_helpers.rails_blob_url(school.logo_image)
-      elsif school.logo_url.present?
-        school.logo_url
-      end
+      logo_url(school)
     end
   end
 end

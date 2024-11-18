@@ -2,6 +2,9 @@
 
 module V1
   class PersonSerializer < ApplicationSerializer
+    include V1::Imageable
+    include V1::Locationable
+
     attributes :email, :first_name, :middle_name, :last_name, :phone, :journey_state, :preferred_language,
                :personal_email, :about, :primary_language, :updated_at, :race_ethnicity_other, :lgbtqia, :gender, :pronouns, :household_income,
                :primary_language_other, :gender_other, :pronouns_other, :montessori_certified, :montessori_certified_year,
@@ -30,15 +33,7 @@ module V1
     end
 
     attribute :location do |person|
-      if person.address
-        if person.address.city.present? && person.address.state.present?
-          "#{person.address.city}, #{person.address.state}"
-        elsif person.address.city.blank? && person.address.state.present?
-          "#{person.address.state}"
-        elsif person.address.city.present?
-          "#{person.address.city}"
-        end
-      end
+      location(person)
     end
 
     has_many :schools, id_method_name: :external_identifier do |person|
@@ -55,15 +50,7 @@ module V1
     end
 
     attribute :image_url do |person|
-      if person.profile_image.attached?
-        signed_id = person.signed_id(expires_in: 1.hour)
-        Rails.application.routes.url_helpers.v1_person_profile_image_url(
-          person_id: person.external_identifier, signed_id:
-        )
-        # ImageHelper.cdn_url(Rails.application.routes.url_helpers.rails_blob_url(person.profile_image))
-      elsif person.image_url.present?
-        person.image_url
-      end
+      image_url(person)
     end
   end
 end
