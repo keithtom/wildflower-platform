@@ -2,6 +2,8 @@
 
 module V1
   class PersonBasicSerializer < ApplicationSerializer
+    include V1::Imageable
+
     attributes :email, :first_name, :middle_name, :last_name, :phone, :is_og?, :is_rgl?,
                :role_list,
                :show_ssj,
@@ -10,14 +12,7 @@ module V1
                :preferred_language
 
     attribute :image_url do |person|
-      if person.profile_image.attached?
-        signed_id = person.signed_id(expires_in: 1.hour)
-        Rails.application.routes.url_helpers.v1_person_profile_image_url(
-          person_id: person.external_identifier, signed_id:
-        )
-      elsif person.image_url.present?
-        person.image_url
-      end
+      image_url(person)
     end
 
     attribute :show_network do |person|
