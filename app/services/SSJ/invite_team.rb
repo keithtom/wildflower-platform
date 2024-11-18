@@ -40,7 +40,7 @@ class SSJ::InviteTeam < BaseService
     person = Person.find_or_create_by!(email:)
     person.first_name ||= first_name
     person.last_name ||= last_name
-    person.active ||= false
+    person.active = false
     person.role_list.add(Person::ETL)
     person.save!
 
