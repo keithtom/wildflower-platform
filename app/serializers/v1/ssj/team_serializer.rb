@@ -1,4 +1,6 @@
 class V1::SSJ::TeamSerializer < ApplicationSerializer
+  include V1::Imageable
+
   attributes :expected_start_date, :temp_name, :temp_location
 
   attribute :workflow_id do |team|
@@ -21,12 +23,33 @@ class V1::SSJ::TeamSerializer < ApplicationSerializer
     team.partners.active
   end
 
-  belongs_to :ops_guide, serializer: V1::PersonBasicSerializer, id_method_name: :external_identifier do |team|
-    team.ops_guide
+  attribute :ops_guide do |team|
+    ops_guide = team.ops_guide
+    if ops_guide.nil?
+      nil
+    else
+      {
+        first_name: ops_guide.first_name,
+        last_name: ops_guide.last_name,
+        email: ops_guide.email,
+        phone: ops_guide.phone,
+        profileImage: image_url(ops_guide)
+      }
+    end
   end
 
-  belongs_to :regional_growth_lead, serializer: V1::PersonBasicSerializer,
-                                    id_method_name: :external_identifier do |team|
-    team.regional_growth_lead
+  attribute :rgl do |team|
+    rgl = team.regional_growth_lead
+    if rgl.nil?
+      nil
+    else
+      {
+        first_name: rgl.first_name,
+        last_name: rgl.last_name,
+        email: rgl.email,
+        phone: rgl.phone,
+        profileImage: image_url(rgl)
+      }
+    end
   end
 end

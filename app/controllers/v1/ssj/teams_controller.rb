@@ -3,13 +3,11 @@ class V1::SSJ::TeamsController < ApiController
 
   def index
     if current_user.is_admin
-      teams = SSJ::Team.all.includes([:workflow, {
-                                       partner_members: [person: %i[address taggings]]
-                                     }]).order(created_at: :desc)
+      teams = SSJ::Team.all.includes([:workflow, { ops_guide: [:profile_image_attachment] },
+                                      { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
     elsif current_user&.person&.is_og?
-      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow, {
-                                                                               partner_members: [person: %i[address taggings]]
-                                                                             }]).order(created_at: :desc)
+      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow,
+                                                                              { ops_guide: [:profile_image_attachment] }, { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
     else
       return render json: { message: 'Unauthorized' }, status: :unauthorized
     end
@@ -17,8 +15,8 @@ class V1::SSJ::TeamsController < ApiController
   end
 
   def show
-    if team = SSJ::Team.includes([partner_members: [person: [:profile_image_attachment, :schools,
-                                                             :school_relationships, { taggings: [:tag] }]]]).find_by!(external_identifier: params[:id])
+    if team = SSJ::Team.includes([{ ops_guide: [:profile_image_attachment] },
+                                  { regional_growth_lead: [:profile_image_attachment] }]).find_by!(external_identifier: params[:id])
       render json: V1::SSJ::TeamSerializer.new(team, team_options)
     else
       render json: { message: 'current user is not part of team' }, status: :unprocessable_entity
@@ -67,7 +65,7 @@ class V1::SSJ::TeamsController < ApiController
 
   def team_options
     options = {}
-    options[:include] = %i[partners ops_guide regional_growth_lead]
+    options[:include] = %i[partners]
     options
   end
 
