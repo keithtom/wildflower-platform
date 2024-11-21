@@ -43,7 +43,7 @@ class V1::Workflow::WorkflowsController < ApiController
     end
     serialization_options[:include] = ['process', 'documents', 'assignments', 'assignments.assignee', 'decision_options']
     serialization_options[:fields] = {
-      process: [:title],
+      process: [:title, :titleEs],
       person: [:firstName, :lastName, :profileImageAttachment, :imageUrl],
     }
 
