@@ -3,7 +3,7 @@ class V1::Workflow::Definition::BasicProcessSerializer < ApplicationSerializer
 
   set_id :id
 
-  attributes :title, :version, :recurring_type, :duration, :due_months
+  attributes :title, :title_es, :version, :recurring_type, :duration, :due_months
 
   attribute :phase do |process|
     process.phase_list.first
@@ -23,7 +23,8 @@ class V1::Workflow::Definition::BasicProcessSerializer < ApplicationSerializer
 
   attribute :is_prerequisite do |process, params|
     if params[:workflow_id]
-      !Workflow::Definition::Dependency.where(workflow_id: params[:workflow_id], prerequisite_workable_id: process.id, prerequisite_workable_type: process.class.to_s).empty?
+      !Workflow::Definition::Dependency.where(workflow_id: params[:workflow_id], prerequisite_workable_id: process.id,
+                                              prerequisite_workable_type: process.class.to_s).empty?
     end
   end
 
@@ -34,8 +35,6 @@ class V1::Workflow::Definition::BasicProcessSerializer < ApplicationSerializer
   end
 
   has_many :selected_processes, serializer: V1::Workflow::Definition::SelectedProcessSerializer do |process, params|
-    if params[:workflow_id]
-      process.selected_processes.where(workflow_id: params[:workflow_id]).order(:position)
-    end
+    process.selected_processes.where(workflow_id: params[:workflow_id]).order(:position) if params[:workflow_id]
   end
 end
