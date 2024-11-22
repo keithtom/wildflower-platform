@@ -3,33 +3,34 @@ class V1::SSJ::TeamsController < ApiController
 
   def index
     if current_user.is_admin
-      teams = SSJ::Team.all.includes([:workflow, partner_members: [person: [:address, :taggings]]]).order(created_at: :desc)
+      teams = SSJ::Team.all.includes([:workflow, { ops_guide: [:profile_image_attachment] },
+                                      { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
     elsif current_user&.person&.is_og?
-      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow, partner_members: [person: [:address, :taggings]]]).order(created_at: :desc)
+      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow,
+                                                                              { ops_guide: [:profile_image_attachment] }, { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
     else
-      return render json: { message: "Unauthorized" }, status: :unauthorized
+      return render json: { message: 'Unauthorized' }, status: :unauthorized
     end
     render json: V1::SSJ::TeamSerializer.new(teams, team_options)
   end
 
   def show
-    if team = SSJ::Team.includes([partner_members: [person: [:profile_image_attachment, :schools, :school_relationships, taggings: [:tag]]]]).find_by!(external_identifier: params[:id])
+    if team = SSJ::Team.includes([{ ops_guide: [:profile_image_attachment] },
+                                  { regional_growth_lead: [:profile_image_attachment] }]).find_by!(external_identifier: params[:id])
       render json: V1::SSJ::TeamSerializer.new(team, team_options)
     else
-      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+      render json: { message: 'current user is not part of team' }, status: :unprocessable_entity
     end
   end
 
   def create
-    begin
-      ops_guide = Person.find_by!(external_identifier: team_params[:ops_guide_id])
-      rgl = Person.find_by!(external_identifier: team_params[:rgl_id])
+    ops_guide = Person.find_by!(external_identifier: team_params[:ops_guide_id])
+    rgl = Person.find_by!(external_identifier: team_params[:rgl_id])
 
-      team = SSJ::InviteTeam.run(team_params[:etl_people_params], team_params[:workflow_id], ops_guide, rgl)
-      render json: { message: "team #{team.external_identifier} invite emails sent" }
-    rescue => e
-      render json: { message: e.message }, status: :unprocessable_entity
-    end
+    team = SSJ::InviteTeam.run(team_params[:etl_people_params], team_params[:workflow_id], ops_guide, rgl)
+    render json: { message: "team #{team.external_identifier} invite emails sent" }
+  rescue StandardError => e
+    render json: { message: e.message }, status: :unprocessable_entity
   end
 
   def update
@@ -37,7 +38,7 @@ class V1::SSJ::TeamsController < ApiController
       team.update!(team_params)
       render json: V1::SSJ::TeamSerializer.new(team, team_options)
     else
-      render json: { message: "unable to update team"}, status: :unprocessable_entity
+      render json: { message: 'unable to update team' }, status: :unprocessable_entity
     end
   end
 
@@ -46,15 +47,15 @@ class V1::SSJ::TeamsController < ApiController
       SSJ::InvitePartner.run(person_params, team, current_user)
       render json: V1::SSJ::TeamSerializer.new(team)
     else
-      render json: { message: "current user is not part of team"}, status: :unprocessable_entity
+      render json: { message: 'current user is not part of team' }, status: :unprocessable_entity
     end
   end
 
   private
-  
+
   def team_params
     params.require(:team).permit(
-      [:etl_people_params => [:first_name, :last_name, :email]],
+      [etl_people_params: %i[first_name last_name email]],
       :workflow_id,
       :ops_guide_id,
       :rgl_id,
@@ -64,12 +65,12 @@ class V1::SSJ::TeamsController < ApiController
 
   def team_options
     options = {}
-    options[:include] = ['partners']
-    return options
+    options[:include] = %i[partners]
+    options
   end
 
   def person_params
     params.require(:person).permit(:email, :first_name, :last_name, :primary_language, :race_ethnicity_other, :lgbtqia,
-                                   :gender, :pronouns, :household_income, :image_url, address_attributes: [:city, :state])
+                                   :gender, :pronouns, :household_income, :image_url, address_attributes: %i[city state])
   end
 end
