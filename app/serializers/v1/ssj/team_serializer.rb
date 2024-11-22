@@ -19,7 +19,7 @@ class V1::SSJ::TeamSerializer < ApplicationSerializer
     team.partner_members.invited.count > 0
   end
 
-  has_many :partners, serializer: V1::PersonSerializer, id_method_name: :external_identifier do |team|
+  has_many :partners, serializer: V1::PersonBasicSerializer, id_method_name: :external_identifier do |team|
     team.partners.active
   end
 
@@ -29,26 +29,26 @@ class V1::SSJ::TeamSerializer < ApplicationSerializer
       nil
     else
       {
-        first_name: ops_guide.first_name,
-        last_name: ops_guide.last_name,
+        firstName: ops_guide.first_name,
+        lastName: ops_guide.last_name,
         email: ops_guide.email,
         phone: ops_guide.phone,
-        profileImage: image_url(ops_guide)
+        imageUrl: image_url(ops_guide)
       }
     end
   end
 
-  attribute :rgl do |team|
+  attribute :regional_growth_lead do |team|
     rgl = team.regional_growth_lead
     if rgl.nil?
       nil
     else
       {
-        first_name: rgl.first_name,
-        last_name: rgl.last_name,
+        firstName: rgl.first_name,
+        lastName: rgl.last_name,
         email: rgl.email,
         phone: rgl.phone,
-        profileImage: image_url(rgl)
+        imageUrl: image_url(rgl)
       }
     end
   end
