@@ -91,7 +91,8 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         get '/v1/ssj/teams', headers: headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1],
-                                                                                       { include: ['partners'] }).to_json))
+                                                                                       { include: %w[partners
+                                                                                                     ops_guide regional_growth_lead] }).to_json))
       end
     end
 
@@ -110,7 +111,8 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         get '/v1/ssj/teams', headers: headers
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(JSON.parse(V1::SSJ::TeamSerializer.new([team2, team1],
-                                                                                       { include: ['partners'] }).to_json))
+                                                                                       { include: %w[partners
+                                                                                                     ops_guide regional_growth_lead] }).to_json))
       end
     end
 
