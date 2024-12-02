@@ -288,9 +288,17 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
           expected_json = V1::Workflow::Definition::ProcessSerializer.new(process,
                                                                           { include: %w[steps selected_processes
                                                                                         prerequisites] }).to_json
-          # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
+          # pretty_json = JSON.pretty_generate(JSON.parse(response.body))
           # puts pretty_json
+
           expect(response.body).to eq(expected_json)
+          expect(json_response['data']).to have_type(:process)
+          expect(json_response['data']['attributes']['description']).to eq(process_params[:process][:description])
+          expect(json_response['data']['attributes']['title']).to eq(process_params[:process][:title])
+
+          expect(json_response['included']).to include(have_type(:step).and(have_attribute(:title)))
+          expect(json_response['included']).to include(have_type(:selectedProcess).and(have_attribute(:position,
+                                                                                                      :state)))
         end
       end
 
@@ -315,7 +323,18 @@ RSpec.describe V1::Workflow::Definition::WorkflowsController, type: :request do
                                                                                         prerequisites] }).to_json
           # pretty_json = JSON.pretty_generate(JSON.parse(expected_json))
           # puts pretty_json
+
           expect(response.body).to eq(expected_json)
+          expect(json_response['data']).to have_type(:process)
+          expect(json_response['data']['attributes']['description']).to eq(recurring_process_params[:process][:description])
+          expect(json_response['data']['attributes']['title']).to eq(recurring_process_params[:process][:title])
+          expect(json_response['data']['attributes']['duration']).to eq(recurring_process_params[:process][:duration])
+          expect(json_response['data']['attributes']['recurring']).to eq(recurring_process_params[:process][:recurring])
+          expect(json_response['data']['attributes']['dueMonths']).to eq(recurring_process_params[:process][:due_months])
+
+          expect(json_response['included']).to include(have_type(:step).and(have_attribute(:title)))
+          expect(json_response['included']).to include(have_type(:selectedProcess).and(have_attribute(:position,
+                                                                                                      :state)))
         end
       end
     end
