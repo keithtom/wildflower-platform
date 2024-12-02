@@ -6,8 +6,10 @@ class V1::SSJ::TeamsController < ApiController
       teams = SSJ::Team.all.includes([:workflow, { ops_guide: [:profile_image_attachment] },
                                       { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
     elsif current_user&.person&.is_og?
-      teams = SSJ::Team.where(ops_guide_id: current_user.person_id).includes([:workflow,
-                                                                              { ops_guide: [:profile_image_attachment] }, { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
+      teams = SSJ::Team.where(ops_guide_id: current_user.person_id)
+                       .includes([:workflow,
+                                  { ops_guide: [:profile_image_attachment] },
+                                  { regional_growth_lead: [:profile_image_attachment] }]).order(created_at: :desc)
     else
       return render json: { message: 'Unauthorized' }, status: :unauthorized
     end
@@ -65,7 +67,7 @@ class V1::SSJ::TeamsController < ApiController
 
   def team_options
     options = {}
-    options[:include] = %i[partners]
+    options[:include] = %i[partners ops_guide regional_growth_lead]
     options
   end
 

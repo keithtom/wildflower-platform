@@ -1,4 +1,6 @@
 class V1::Workflow::Definition::WorkflowsController < ApiController
+  include WorkflowAttributes
+
   before_action :authenticate_admin!
 
   def index
@@ -136,14 +138,7 @@ class V1::Workflow::Definition::WorkflowsController < ApiController
   end
 
   def process_params
-    params.require(:process).permit(:version, :title_es, :description_es, :phase_list, :category_list, :recurring, :duration,
-                                    [due_months: []],
-                                    steps_attributes: [:id, :title_es, :description_es, :position, :kind, :completion_type,
-                                                       :min_worktime, :max_worktime, :decision_question, :decision_question_es,
-                                                       { decision_options_attributes: %i[description description_es],
-                                                         documents_attributes: %i[id title_es link] }],
-                                    selected_processes_attributes: %i[id workflow_id position],
-                                    workable_dependencies_attributes: %i[id workflow_id prerequisite_workable_type prerequisite_workable_id])
+    params.require(:process).permit(process_attributes)
   end
 
   def serializer_options
