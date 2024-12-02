@@ -1,4 +1,5 @@
 class V1::Workflow::Definition::StepsController < ApiController
+  include WorkflowAttributes
   before_action :authenticate_admin!
 
   def show
@@ -38,9 +39,7 @@ class V1::Workflow::Definition::StepsController < ApiController
   private
 
   def step_params
-    params.require(:step).permit(:process_id, :title, :title_es, :description, :description_es, :kind, :position,
-                                 :completion_type, :min_worktime, :max_worktime, :decision_question, :decision_question_es,
-                                 decision_options_attributes: %i[id description description_es], documents_attributes: %i[id title title_es link])
+    params.require(:step).permit(steps_attributes)
   end
 
   def serializer_options

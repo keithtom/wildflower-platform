@@ -1,4 +1,6 @@
 class V1::DocumentsController < ApiController
+  include WorkflowAttributes
+
   before_action :authenticate_admin!, only: [:destroy]
 
   def create
@@ -17,6 +19,6 @@ class V1::DocumentsController < ApiController
   protected
 
   def document_params
-    params.require(:document).permit(:documentable_type, :documentable_id, :link, :type)
+    params.require(:document).permit(*(documents_attributes + %i[documentable_type documentable_id type]))
   end
 end
