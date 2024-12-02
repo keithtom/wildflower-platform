@@ -7,7 +7,7 @@ module WorkflowAttributes
     private
 
     def steps_attributes
-      [:process_id, :title, :title_es, :description, :description_es, :kind, :position, :completion_type, :min_worktime,
+      [:id, :process_id, :title, :title_es, :description, :description_es, :kind, :position, :completion_type, :min_worktime,
        :max_worktime, :decision_question, :decision_question_es,
        { decision_options_attributes:, documents_attributes: }]
     end
