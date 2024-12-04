@@ -43,6 +43,12 @@ class TestController < ApplicationController
     end
   end
 
+  def reset_test_school
+    name = 'Cypress Test School for School History'
+    school = School.find_or_create_by(name:)
+    school.school_relationships.destroy_all
+  end
+
   def invite_email_link
     user = create_test_user_with_ssj(params[:email], nil, params[:is_onboarded])
     Users::GenerateToken.call(user)
