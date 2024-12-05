@@ -69,6 +69,22 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
         it 'adds a new process to the workflow instance' do
           expect { subject.run }.to change { workflow_instance.reload.processes.count }.by(1)
         end
+
+        context 'it is a prerequisite to another new added process' do
+          let(:process_with_prereq) { create(:workflow_definition_process) }
+          let!(:new_selected_process) do
+            create(:selected_process, workflow_id: workflow.id, process_id: process_with_prereq.id, position: 300,
+                                      state: 'added')
+          end
+          let!(:dependency) do
+            create(:workflow_definition_dependency, workflow:, workable: process_with_prereq,
+                                                    prerequisite_workable: process_definition)
+          end
+
+          it 'does create the dependency' do
+            expect { subject.run }.to change { workflow_instance.reload.dependencies.count }.by(1)
+          end
+        end
       end
 
       context 'when the previous process by position has been finished' do
@@ -82,6 +98,22 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
 
         it 'does not add a process to the workflow instance' do
           expect { subject.run }.not_to change { workflow_instance.reload.processes.count }
+        end
+
+        context 'it is a prerequisite to another new added process' do
+          let(:process_with_prereq) { create(:workflow_definition_process) }
+          let!(:new_selected_process) do
+            create(:selected_process, workflow_id: workflow.id, process_id: process_with_prereq.id, position: 300,
+                                      state: 'added')
+          end
+          let!(:dependency) do
+            create(:workflow_definition_dependency, workflow:, workable: process_with_prereq,
+                                                    prerequisite_workable: process_definition)
+          end
+
+          it 'does not create the dependency' do
+            expect { subject.run }.not_to change { workflow_instance.reload.dependencies.count }
+          end
         end
       end
     end
