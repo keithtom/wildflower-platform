@@ -15,10 +15,16 @@ module Workflow
         end
 
         def run
+          return unless validate_dependency_creation
+
+          create_dependency_instance
+          @dependency_instance
+        end
+
+        def validate_dependency_creation
           find_prerequisite_workable if @prerequisite_workable.nil?
           find_workable_process if @workable_process.nil?
-          create_dependency_instance
-          return @dependency_instance
+          @prerequisite_workable && @workable_process
         end
 
         def find_prerequisite_workable
@@ -32,10 +38,10 @@ module Workflow
             @prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_workable_definition.id).first
           end
 
-          if @prerequisite_workable.nil?
-            Rails.logger.info("prerequisite_workable_definition: #{prerequisite_workable_definition.id}")
-            raise CreateError.new("prerequisite workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
-          end
+          return unless @prerequisite_workable.nil?
+
+          Rails.logger.info("prerequisite_workable_definition: #{prerequisite_workable_definition.id}")
+          Rails.logger.info("prerequisite workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
         end
 
         def find_workable_process
@@ -49,9 +55,9 @@ module Workflow
             @workable_process = @wf_instance.processes.where(definition_id: workable_process_definition.id).first
           end
 
-          if @workable_process.nil?
-            raise CreateError.new("workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
-          end
+          return unless @workable_process.nil?
+
+          Rails.logger.info("workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
         end
 
         def create_dependency_instance
@@ -62,6 +68,7 @@ module Workflow
           )
         end
       end
+
       class CreateError < StandardError
       end
     end
