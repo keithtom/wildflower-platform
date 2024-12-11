@@ -102,7 +102,7 @@ class TestController < ApplicationController
     school = School.create!(name: 'Cypress Test School')
     school.address = Address.create!(addressable: school, state: 'CA', city: 'San Francisco', line1: '123 Main St',
                                      zip: '94105')
-    school.school_relationships.create!(person:, start_date: Date.today)
+    school.school_relationships.create!(person:, start_date: Date.today, role_list: [Person::TL])
     school.save!
     school
   end
