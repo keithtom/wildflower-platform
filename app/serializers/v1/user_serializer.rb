@@ -38,8 +38,6 @@ module V1
         workflow = ssj_team.workflow
         {
           currentPhase: workflow.current_phase,
-          opsGuide: V1::PersonSerializer.new(ssj_team.ops_guide),
-          regionalGrowthLead: V1::PersonSerializer.new(ssj_team.regional_growth_lead),
           expectedStartDate: ssj_team.expected_start_date,
           workflowId: workflow.external_identifier,
           teamId: ssj_team.external_identifier

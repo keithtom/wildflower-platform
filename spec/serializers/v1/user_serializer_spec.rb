@@ -22,8 +22,6 @@ describe V1::UserSerializer do
   it 'serializes properly' do
     expect(json_document['data']).to have_jsonapi_attributes(:email, :firstName, :lastName, :imageUrl, :ssj)
     expect(json_document['data']).to have_relationships(:person)
-    expect(json_document['data']['attributes']['ssj']['opsGuide']['data']).to have_id(ssj_team.ops_guide.external_identifier)
-    expect(json_document['data']['attributes']['ssj']['regionalGrowthLead']['data']).to have_id(ssj_team.regional_growth_lead.external_identifier)
     expect(json_document['data']['attributes']['ssj']['currentPhase']).to eq('visioning')
     expect(json_document['data']['attributes']['schools']).to eq([
                                                                    {
