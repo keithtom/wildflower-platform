@@ -8,7 +8,7 @@ class School < ApplicationRecord
 
   acts_as_taggable_on :ages_served, :tuition_assistance_types, :previous_names
 
-  searchkick callbacks: :async, text_middle: [:age_levels, :address_state]
+  searchkick callbacks: :async, text_middle: %i[age_levels address_state]
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
@@ -26,6 +26,8 @@ class School < ApplicationRecord
 
   has_one_attached :banner_image
   has_one_attached :logo_image
+
+  before_destroy :remove_from_airtable
 
   module Governance
     CHARTER = 'Charter'
@@ -71,28 +73,34 @@ class School < ApplicationRecord
   end
 
   # https://github.com/ankane/searchkick#indexing
-  scope :search_import, -> { includes([:school_relationships, :people, :address, {:taggings => :tag}]) }
+  scope :search_import, -> { includes([:school_relationships, :people, :address, { taggings: :tag }]) }
 
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
-      name: name,
-      short_name: short_name,
-      previous_names: previous_name_list.join(" "),
-      website: website,
-      email: email,
-      phone: phone,
-      domain: domain,
-      governance_type: governance_type,
+      name:,
+      short_name:,
+      previous_names: previous_name_list.join(' '),
+      website:,
+      email:,
+      phone:,
+      domain:,
+      governance_type:,
       age_levels: ages_served_list,
-      tuition_assistance_types: tuition_assistance_type_list.join(" "),
+      tuition_assistance_types: tuition_assistance_type_list.join(' '),
       address_city: address&.city,
       address_state: address&.state,
-      about: about, # limit memory usage...?
-      facility_type: facility_type,
+      about:, # limit memory usage...?
+      facility_type:,
       charter: charter_string,
       open_date: opened_on&.to_datetime,
-      affiliated: affiliated
+      affiliated:
     }
+  end
+
+  private
+
+  def remove_from_airtable
+    RemoveAirtableRecordJob.perform_later(platform_airtable_id, Airtable::Platform::SCHOOL) if platform_airtable_id
   end
 end
