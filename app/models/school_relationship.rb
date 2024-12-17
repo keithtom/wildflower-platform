@@ -7,8 +7,9 @@ class SchoolRelationship < ApplicationRecord
   belongs_to :school, touch: true
   belongs_to :person, touch: true
 
-  after_commit :reindex_models
   after_create :set_name
+  before_destroy :remove_from_airtable
+  after_commit :reindex_models
 
   private
 
@@ -20,6 +21,13 @@ class SchoolRelationship < ApplicationRecord
 
   def set_name
     self.name = "#{person.name} - #{school.name}"
-    self.save!
+    save!
+  end
+
+  def remove_from_airtable
+    if platform_airtable_id
+      RemoveAirtableRecordJob.perform_later(platform_airtable_id,
+                                            Airtable::Platform::SCHOOL_RELATIONSHIP)
+    end
   end
 end

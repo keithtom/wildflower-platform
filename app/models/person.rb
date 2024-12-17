@@ -1,22 +1,26 @@
 # frozen_string_literal: true
 
+require 'airtable/platform'
+
 class Person < ApplicationRecord
   include ApplicationRecord::ExternalIdentifier
 
   acts_as_paranoid
   audited
 
-  ROLES = [OPS_GUIDE = "Ops Guide", RGL = "Regional Entrepreneur", ETL = "Emerging Teacher Leader", TL = "Teacher Leader"]
+  ROLES = [OPS_GUIDE = 'Ops Guide', RGL = 'Regional Entrepreneur', ETL = 'Emerging Teacher Leader',
+           TL = 'Teacher Leader']
 
-  searchkick callbacks: :async, word_middle: [:name, :schools, :about, :montessori_certified_levels], text_middle: [:languages, :race_ethnicities, :roles, :genders]
+  searchkick callbacks: :async, word_middle: %i[name schools about montessori_certified_levels],
+             text_middle: %i[languages race_ethnicities roles genders]
   include Person::Workflow
   include Person::SSJ
 
   acts_as_taggable_on :roles, :tl_roles, :foundation_roles, :rse_roles, :og_roles,
-    :languages,
-    :race_ethnicity,
-    :montessori_certified_levels,
-    :classroom_age
+                      :languages,
+                      :race_ethnicity,
+                      :montessori_certified_levels,
+                      :classroom_age
 
   belongs_to :hub, optional: true
   belongs_to :pod, optional: true
@@ -31,45 +35,48 @@ class Person < ApplicationRecord
 
   has_one :address, as: :addressable
   # Allows update of address via person without passing in an id. We currently don't create a user w/ an address, so this is fine.
-  accepts_nested_attributes_for :address, update_only: true 
+  accepts_nested_attributes_for :address, update_only: true
 
-  has_many :decisions, class_name: "Advice::Decision", foreign_key: :creator_id
+  has_many :decisions, class_name: 'Advice::Decision', foreign_key: :creator_id
 
   # https://github.com/ankane/searchkick#indexing
-  scope :search_import, -> { includes([:school_relationships, :schools, :address, {:taggings => :tag}]) }
+  scope :search_import, -> { includes([:school_relationships, :schools, :address, { taggings: :tag }]) }
 
   attr_accessor :full_name
-  before_validation :set_name, if: Proc.new { |person| person.full_name.present? }
+
+  before_validation :set_name, if: proc { |person| person.full_name.present? }
 
   has_one_attached :profile_image
 
   validates :email, uniqueness: true
 
+  before_destroy :remove_from_airtable
+
   # https://github.com/ankane/searchkick#indexing
   def search_data
     {
       # general free text search, ordered by general relevance
-      name: name,
-      schools: schools.map(&:name).join(" "),
-      about: about, # limit memory usage...?
+      name:,
+      schools: schools.map(&:name).join(' '),
+      about:, # limit memory usage...?
       roles: role_list,
-      tl_roles: tl_role_list.join(" "),
+      tl_roles: tl_role_list.join(' '),
       race_ethnicities: race_ethnicity_list.add(race_ethnicity_other),
-      primary_language: primary_language,
+      primary_language:,
       languages: language_list.add(primary_language),
-      montessori_certified_levels: montessori_certified_level_list.join(" "),
+      montessori_certified_levels: montessori_certified_level_list.join(' '),
       hub: hub&.name,
       pod: pod&.name,
       address_city: address&.city,
-      email: email,
-      classroom_age: classroom_age_list.join(" "),
-      foundation_roles: foundation_role_list.join(" "),
-      rse_roles: rse_role_list.join(" "),
-      og_roles: og_role_list.join(" "),
+      email:,
+      classroom_age: classroom_age_list.join(' '),
+      foundation_roles: foundation_role_list.join(' '),
+      rse_roles: rse_role_list.join(' '),
+      og_roles: og_role_list.join(' '),
       genders: [gender, gender_other],
       address_state: address&.state,
-      is_onboarded: is_onboarded,
-      active: active,
+      is_onboarded:,
+      active:
     }
   end
 
@@ -97,8 +104,10 @@ class Person < ApplicationRecord
     names = full_name.split
     self.first_name = names.first
     self.last_name = names.last
-    if names.length == 3
-      self.middle_name = names[1]
-    end
+    self.middle_name = names[1] if names.length == 3
+  end
+
+  def remove_from_airtable
+    RemoveAirtableRecordJob.perform_later(platform_airtable_id, Airtable::Platform::PEOPLE) if platform_airtable_id
   end
 end
