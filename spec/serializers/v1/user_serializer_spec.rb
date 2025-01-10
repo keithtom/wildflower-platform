@@ -31,7 +31,8 @@ describe V1::UserSerializer do
                                                                      'name' => school.name,
                                                                      'role_list' => school_relationship.role_list,
                                                                      'start_date' => school_relationship.start_date.to_s('yyyy-mm-dd'),
-                                                                     'workflowId' => workflow.external_identifier
+                                                                     'workflowId' => workflow.external_identifier,
+                                                                     'workflowIds' => []
                                                                    }
                                                                  ])
     expect(json_document['included']).to include(have_type('address').and(have_attribute(:city)))
