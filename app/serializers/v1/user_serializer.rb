@@ -51,7 +51,7 @@ module V1
       if person && school_relatonships.length > 0
         school_relatonships.map do |sr|
           {
-            id: sr.school_id,
+            id: sr.school&.external_identifier,
             name: sr.school&.name,
             workflowId: sr.school&.workflow&.external_identifier,
             affiliated: sr.school&.affiliated,
