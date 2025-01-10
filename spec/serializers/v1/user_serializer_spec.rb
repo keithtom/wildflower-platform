@@ -25,7 +25,7 @@ describe V1::UserSerializer do
     expect(json_document['data']['attributes']['ssj']['currentPhase']).to eq('visioning')
     expect(json_document['data']['attributes']['schools']).to eq([
                                                                    {
-                                                                     'id' => school_relationship.school_id,
+                                                                     'id' => school_relationship.school.external_identifier,
                                                                      'affiliated' => true,
                                                                      'end_date' => school_relationship.end_date.to_s('%yyyy-mm-dd'),
                                                                      'name' => school.name,
