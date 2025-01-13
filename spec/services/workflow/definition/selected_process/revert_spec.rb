@@ -7,14 +7,14 @@ RSpec.describe Workflow::Definition::SelectedProcess::Revert do
 
     context 'when selected process does not have previous version' do
       let(:selected_process) { create(:selected_process) }
-    
+
       it 'raises an error' do
-        expect{ subject.run }.to raise_error(Workflow::Definition::SelectedProcess::RevertError)
+        expect { subject.run }.to raise_error(Workflow::Definition::SelectedProcess::RevertError)
       end
     end
 
-    context "when the selected process is upgraded" do
-      let(:selected_process) { create(:selected_process, previous_version: previous_version) }
+    context 'when the selected process is upgraded' do
+      let(:selected_process) { create(:selected_process, previous_version:) }
 
       before do
         selected_process.replicate!
@@ -29,8 +29,10 @@ RSpec.describe Workflow::Definition::SelectedProcess::Revert do
       end
     end
 
-    context "when selected process is removed" do
-      let(:selected_process) { create(:selected_process, process: previous_version.process, previous_version: previous_version) }
+    context 'when selected process is removed' do
+      let(:selected_process) do
+        create(:selected_process, process: previous_version.process, previous_version:)
+      end
 
       before do
         selected_process.replicate!
@@ -38,32 +40,37 @@ RSpec.describe Workflow::Definition::SelectedProcess::Revert do
       end
 
       it "sets state back to replicated, and doesn't delete the process" do
-        expect { subject.run }.to change { Workflow::Definition::Process.count }.by(0)
+        expect { subject.run }.not_to change { Workflow::Definition::Process.count }
         expect(selected_process.process).to eq(previous_version.process)
         expect(selected_process.position).to eq(previous_version.position)
         expect(selected_process.replicated?).to be true
       end
     end
 
-    context "when selected process is repositioned" do
-      let(:selected_process) { create(:selected_process, process: previous_version.process, previous_version: previous_version, position: 200) }
+    context 'when selected process is repositioned' do
+      let(:selected_process) do
+        create(:selected_process, process: previous_version.process, previous_version:, position: 200)
+      end
 
       before do
         selected_process.replicate!
         selected_process.reposition!
       end
 
-      it "sets state back to replicated, and reverts position" do
-        expect { subject.run }.to change { Workflow::Definition::Process.count }.by(0)
+      it 'sets state back to replicated, and reverts position' do
+        expect { subject.run }.not_to change { Workflow::Definition::Process.count }
         expect(selected_process.process).to eq(previous_version.process)
         expect(selected_process.position).to eq(previous_version.position)
         expect(selected_process.replicated?).to be true
       end
     end
-    
+
     context 'when process is a prerequisite' do
-      let(:selected_process) { create(:selected_process, previous_version: previous_version) }
-      let!(:dependency) { create(:workflow_definition_dependency, workflow_id: selected_process.workflow_id, prerequisite_workable: selected_process.process) }
+      let(:selected_process) { create(:selected_process, previous_version:) }
+      let!(:dependency) do
+        create(:workflow_definition_dependency, workflow_id: selected_process.workflow_id,
+                                                prerequisite_workable: selected_process.process)
+      end
 
       before do
         selected_process.replicate!
@@ -77,8 +84,11 @@ RSpec.describe Workflow::Definition::SelectedProcess::Revert do
     end
 
     context 'when process has a prerequisite' do
-      let(:selected_process) { create(:selected_process, previous_version: previous_version) }
-      let!(:dependency) { create(:workflow_definition_dependency, workflow_id: selected_process.workflow_id, workable: selected_process.process) }
+      let(:selected_process) { create(:selected_process, previous_version:) }
+      let!(:dependency) do
+        create(:workflow_definition_dependency, workflow_id: selected_process.workflow_id,
+                                                workable: selected_process.process)
+      end
 
       before do
         selected_process.replicate!

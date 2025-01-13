@@ -25,12 +25,14 @@ describe V1::UserSerializer do
     expect(json_document['data']['attributes']['ssj']['currentPhase']).to eq('visioning')
     expect(json_document['data']['attributes']['schools']).to eq([
                                                                    {
+                                                                     'id' => school_relationship.school.external_identifier,
                                                                      'affiliated' => true,
                                                                      'end_date' => school_relationship.end_date.to_s('%yyyy-mm-dd'),
                                                                      'name' => school.name,
                                                                      'role_list' => school_relationship.role_list,
                                                                      'start_date' => school_relationship.start_date.to_s('yyyy-mm-dd'),
-                                                                     'workflowId' => workflow.external_identifier
+                                                                     'workflowId' => workflow.external_identifier,
+                                                                     'workflowIds' => []
                                                                    }
                                                                  ])
     expect(json_document['included']).to include(have_type('address').and(have_attribute(:city)))

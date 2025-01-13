@@ -270,6 +270,37 @@ namespace :workflows do
       workflow.save(validate: false)
     end
   end
+
+  desc 'add school ids to each workflow'
+  task copy_school_id_to_workflow: :environment do
+    updates = 0
+
+    # copy over school_id from the school itself
+    School.where.not(workflow_id: nil).each do |school|
+      workflow = school.workflow
+      next unless workflow.school.nil?
+
+      workflow.school_id = school.id
+      workflow.save!
+      updates += 1
+    end
+
+    # copy over school_id from loosely associated ssj team to workflow_id
+    SSJ::Team.all.each do |team|
+      next unless school = School.find_by(name: team.temp_name)
+
+      workflow = team.workflow
+      next unless workflow.school.nil?
+
+      workflow.school_id = school.id
+      workflow.save!
+      updates += 1
+    end
+
+    orphaned_count = Workflow::Instance::Workflow.where(school_id: nil).count
+    puts "#{orphaned_count} workflows with no school ids found"
+    puts "updated school id on #{updates} workflows"
+  end
 end
 
 # Team of 4

@@ -12,6 +12,8 @@ module Workflow
 
     has_many :dependencies
 
+    belongs_to :school, optional: true
+
     def name
       self.definition.name
     end
