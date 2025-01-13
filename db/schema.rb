@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_11_14_175714) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_10_214139) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -682,6 +682,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_14_175714) do
     t.string "current_phase", default: "visioning"
     t.string "version"
     t.datetime "deleted_at"
+    t.bigint "school_id"
     t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["deleted_at"], name: "index_workflow_instance_workflows_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true
