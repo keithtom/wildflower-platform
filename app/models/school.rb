@@ -99,6 +99,34 @@ class School < ApplicationRecord
     }
   end
 
+  def ops_guides
+    Person.where(id: school_relationships.tagged_with(Person::OPS_GUIDE).pluck(:person_id))
+  end
+
+  def rgls
+    Person.where(id: school_relationships.tagged_with(Person::RGL).pluck(:person_id))
+  end
+
+  def etls
+    Person.where(id: school_relationships.tagged_with(Person::ETL).pluck(:person_id))
+  end
+
+  def tls
+    Person.where(id: school_relationships.tagged_with(Person::TL).pluck(:person_id))
+  end
+
+  def active_partners
+    Person.where(id: school_relationships.partners.active.pluck(:person_id))
+  end
+
+  def invited_partners
+    Person.where(id: school_relationships.partners.invited.pluck(:person_id))
+  end
+
+  def partner_count
+    school_relationships.partners.count
+  end
+
   private
 
   def remove_from_airtable

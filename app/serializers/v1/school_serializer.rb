@@ -9,7 +9,7 @@ module V1
                :max_enrollment, :facebook, :instagram, :status, :timezone, :domain,
                :hero_image2_url, :about, :about_es,
                :affiliation_date, :closed_on, :num_classrooms, :charter_string,
-               :opened_on, :updated_at,
+               :opened_on, :updated_at, :expected_start_date,
                :facility_type
 
     # done this way to avoid n+1 queries
@@ -45,6 +45,26 @@ module V1
       school.address
     end
 
+    attribute :ops_guides do |school|
+      school.ops_guides.map { |ops_guide| V1::PersonCardSerializer.new(ops_guide) }
+    end
+
+    attribute :rgls do |school|
+      school.rgls.map { |rgl| V1::PersonCardSerializer.new(rgl) }
+    end
+
+    attribute :active_partners do |school|
+      school.active_parnters.map { |rgl| V1::PersonCardSerializer.new(rgl) }
+    end
+
+    attribute :invited_partners do |school|
+      school.invited_partners.map { |rgl| V1::PersonCardSerializer.new(rgl) }
+    end
+
+    attribute :has_partner do |school|
+      school.partner_count > 1
+    end
+
     attribute :location do |school|
       location(school)
     end
@@ -55,6 +75,15 @@ module V1
 
     attribute :logo_url do |school|
       logo_url(school)
+    end
+
+    attribute :workflow_ids do |school|
+      school.workflows.pluck(:external_identifier)
+    end
+
+    # for SSJ only
+    attribute :current_phase do |school|
+      school.workflow&.current_phase
     end
   end
 end

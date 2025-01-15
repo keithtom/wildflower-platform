@@ -63,6 +63,7 @@ class V1::SchoolsController < ApiController
       :logo_image,
       :about,
       :opened_on,
+      :expected_start_date,
       [ages_served_list: []],
       :governance_type,
       :max_enrollment,
