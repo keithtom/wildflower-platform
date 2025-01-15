@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_10_214139) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_13_172320) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -407,6 +407,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_10_214139) do
     t.datetime "airtable_sync_at"
     t.datetime "deleted_at"
     t.bigint "workflow_id"
+    t.date "expected_start_date"
     t.index ["airtable_id"], name: "index_schools_on_airtable_id", unique: true
     t.index ["charter_id"], name: "index_schools_on_charter_id"
     t.index ["deleted_at"], name: "index_schools_on_deleted_at"
