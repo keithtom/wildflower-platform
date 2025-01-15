@@ -1,7 +1,7 @@
 class V1::SchoolsController < ApiController
   def index
     @schools = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
-                               [:sister_schools], taggings: [:tag], school_relationships: [:person]).all
+                               [:workflow], [:sister_schools], taggings: [:tag], school_relationships: [:person]).all
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -50,6 +50,7 @@ class V1::SchoolsController < ApiController
       :address,
       :banner_image_attachment,
       :logo_image_attachment,
+      [:workflow],
       [:sister_schools],
       { taggings: [:tag],
         school_relationships: [:person],

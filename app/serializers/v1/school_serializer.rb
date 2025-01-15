@@ -54,7 +54,7 @@ module V1
     end
 
     attribute :active_partners do |school|
-      school.active_parnters.map { |rgl| V1::PersonCardSerializer.new(rgl) }
+      school.active_partners.map { |rgl| V1::PersonCardSerializer.new(rgl) }
     end
 
     attribute :invited_partners do |school|
