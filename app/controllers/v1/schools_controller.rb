@@ -1,7 +1,7 @@
 class V1::SchoolsController < ApiController
   def index
     status = filter_params[:status]
-    person_id = filter_params[:person_id]
+    person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
     role = filter_params[:role]
 
     query = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,

@@ -22,7 +22,7 @@ describe 'API V1 School', type: :request do
 
     describe 'with person_id query parameter' do
       it 'succeeds' do
-        get "/v1/schools?person_id=#{person.id}", headers: { 'ACCEPT' => 'application/json' }
+        get "/v1/schools?person_id=#{person.external_identifier}", headers: { 'ACCEPT' => 'application/json' }
         expect(response).to have_http_status(:success)
         expect(json_response['data'].first['id']).to eq(school.external_identifier)
       end
@@ -30,7 +30,8 @@ describe 'API V1 School', type: :request do
 
     describe 'with person_id query parameter' do
       it 'succeeds' do
-        get "/v1/schools?person_id=#{person.id}&role=Ops%20Guide", headers: { 'ACCEPT' => 'application/json' }
+        get "/v1/schools?person_id=#{person.external_identifier}&role=Ops%20Guide",
+            headers: { 'ACCEPT' => 'application/json' }
         expect(response).to have_http_status(:success)
         expect(json_response['data']).to be_empty
       end
