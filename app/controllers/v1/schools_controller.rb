@@ -1,7 +1,22 @@
 class V1::SchoolsController < ApiController
   def index
-    @schools = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
-                               [:workflow], [:sister_schools], taggings: [:tag], school_relationships: [:person]).all
+    status = filter_params[:status]
+    person_id = filter_params[:person_id]
+    role = filter_params[:role]
+
+    query = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
+                               [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] })
+
+    if person_id
+      school_id_query = SchoolRelationship.where(person_id:)
+      school_id_query = school_id_query.tagged_with(role) if role
+      @schools = query.where(id: school_id_query.pluck(:school_id))
+    else
+      @schools = query.all
+    end
+
+    @schools = @schools.tagged_with(status) if status
+
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -73,5 +88,9 @@ class V1::SchoolsController < ApiController
       school_relationships_attributes: [:person_id],
       address_attributes: %i[city state]
     )
+  end
+
+  def filter_params
+    params.permit(:person_id, :status, :role)
   end
 end

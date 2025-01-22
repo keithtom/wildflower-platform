@@ -278,6 +278,7 @@ namespace :workflows do
     # copy over school_id from the school itself
     School.where.not(workflow_id: nil).each do |school|
       workflow = school.workflow
+      next if workflow.definition.nil?
       next unless workflow.school.nil?
 
       workflow.school_id = school.id
@@ -290,6 +291,7 @@ namespace :workflows do
       next unless school = School.find_by(name: team.temp_name)
 
       workflow = team.workflow
+      next if workflow.definition.nil?
       next unless workflow.school.nil?
 
       workflow.school_id = school.id

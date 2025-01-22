@@ -13,6 +13,7 @@ class School::InvitePartner < BaseService
     person.save!
 
     sr = SchoolRelationship.find_or_create_by!(school_id: @school.id, person_id: person.id)
+    sr.role_list.add(Person::TL)
     sr.update!(@school_relationship_params)
 
     unless user = User.find_by(person_id: person.id)
