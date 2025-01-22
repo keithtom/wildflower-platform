@@ -24,7 +24,7 @@ describe 'API V1 School', type: :request do
       it 'succeeds' do
         get "/v1/schools?person_id=#{person.id}", headers: { 'ACCEPT' => 'application/json' }
         expect(response).to have_http_status(:success)
-        expect(json_response['data'].first['id']).to be(school.external_identifier)
+        expect(json_response['data'].first['id']).to eq(school.external_identifier)
       end
     end
 
