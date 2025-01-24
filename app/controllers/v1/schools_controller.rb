@@ -1,4 +1,6 @@
 class V1::SchoolsController < ApiController
+  before_action :authenticate_admin!, only: [:create]
+
   def index
     status = filter_params[:status]
     person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
@@ -35,6 +37,16 @@ class V1::SchoolsController < ApiController
                              school_relationships: [:person]).find_by!(external_identifier: params[:id])
     school.update!(school_params)
     render json: V1::SchoolSerializer.new(school.reload)
+  end
+
+  def create
+    ops_guide = Person.find_by!(external_identifier: school_params[:ops_guide_id])
+    rgl = Person.find_by!(external_identifier: school_params[:rgl_id])
+
+    school = SSJ::InviteSchool.run(school_params[:etl_people_params], school_params[:workflow_id], ops_guide, rgl)
+    render json: { message: "school #{school.external_identifier} invite emails sent" }
+  rescue StandardError => e
+    render json: { message: e.message }, status: :unprocessable_entity
   end
 
   def invite_partner
@@ -75,6 +87,11 @@ class V1::SchoolsController < ApiController
 
   def school_params
     params.require(:school).permit(
+      [etl_people_params: %i[first_name last_name email]],
+      :workflow_id,
+      :ops_guide_id,
+      :rgl_id,
+      :expected_start_date,
       :banner_image,
       :logo_image,
       :about,
