@@ -19,6 +19,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
                                                                                              ]])
   end
 
+  ## DEPRECATE
   describe 'POST #create' do
     let(:user) { create(:user, :admin) }
 
@@ -31,7 +32,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         allow(controller).to receive(:authenticate_admin!).and_return(true)
         allow(Person).to receive(:find_by!).with(external_identifier: ops_guide.external_identifier).and_return(ops_guide)
         allow(Person).to receive(:find_by!).with(external_identifier: rgl.external_identifier).and_return(rgl)
-        allow(SSJ::InviteTeam).to receive(:run).with(etl_params_controller[:etl_people_params],
+        allow(SSJ::InviteSchool).to receive(:run).with(etl_params_controller[:etl_people_params],
                                                      workflow_definition.id.to_s, ops_guide, rgl).and_return(team)
       end
 
@@ -51,7 +52,7 @@ RSpec.describe V1::SSJ::TeamsController, type: :request do
         let(:team) { nil }
 
         before do
-          allow(SSJ::InviteTeam).to receive(:run).and_raise(error_message)
+          allow(SSJ::InviteSchool).to receive(:run).and_raise(error_message)
         end
 
         it 'returns an error message' do

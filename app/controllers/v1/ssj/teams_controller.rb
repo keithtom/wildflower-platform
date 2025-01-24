@@ -25,11 +25,12 @@ class V1::SSJ::TeamsController < ApiController
     end
   end
 
+  ## Deprecate
   def create
     ops_guide = Person.find_by!(external_identifier: team_params[:ops_guide_id])
     rgl = Person.find_by!(external_identifier: team_params[:rgl_id])
 
-    team = SSJ::InviteTeam.run(team_params[:etl_people_params], team_params[:workflow_id], ops_guide, rgl)
+    team = SSJ::InviteSchool.run(team_params[:etl_people_params], team_params[:workflow_id], ops_guide, rgl)
     render json: { message: "team #{team.external_identifier} invite emails sent" }
   rescue StandardError => e
     render json: { message: e.message }, status: :unprocessable_entity
