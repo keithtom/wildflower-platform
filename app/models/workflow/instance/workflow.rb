@@ -14,16 +14,12 @@ module Workflow
 
     belongs_to :school, optional: true
 
-    def name
-      self.definition.name
-    end
+    delegate :name, to: :definition
 
-    def description
-      self.definition.description
-    end
+    delegate :description, to: :definition
 
-    def version
-      self.definition.version
-    end
+    delegate :version, to: :definition
+
+    delegate :recurring, to: :definition
   end
 end
