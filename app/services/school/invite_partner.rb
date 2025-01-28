@@ -8,19 +8,29 @@ class School::InvitePartner < BaseService
 
   def run
     person = Person.find_or_create_by!(email: @person_params[:email])
-    person.update(@person_params.merge(active: true))
-    person.role_list.add(Person::TL)
+    role = Person::TL
+    if school.status == School::EMERGING
+      person.update!(@person_params.merge(active: false))
+      role = Person::ETL
+    else
+      person.update(@person_params.merge(active: true))
+    end
+    person.role_list.add(role)
     person.save!
 
     sr = SchoolRelationship.find_or_create_by!(school_id: @school.id, person_id: person.id)
-    sr.role_list.add(Person::TL)
-    sr.update!(@school_relationship_params)
+    sr.role_list.add(role)
+    sr.update!(@school_relationship_params) # TODO, what params are being passed here?
 
     unless user = User.find_by(person_id: person.id)
       user = User.create!(email: person.email, person_id: person.id)
     end
     Users::GenerateToken.call(user)
 
-    OpenTlMailer.invite_partner(user.id, @inviter.id).deliver_later
+    if school.status == School::EMERGING
+      SSJMailer.invite_partner(user.id, @inviter.id, @school.ops_guides.first).deliver_later
+    else
+      OpenTlMailer.invite_partner(user.id, @inviter.id).deliver_later
+    end
   end
 end
