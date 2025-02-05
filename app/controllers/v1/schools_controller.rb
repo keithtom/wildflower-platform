@@ -53,7 +53,14 @@ class V1::SchoolsController < ApiController
   def invite_partner
     school = School.includes(taggings: [:tag],
                              school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
-    School::InvitePartner.run(person_params, school_relationship_params, school, current_user)
+    begin
+      School::InvitePartner.run(person_params, school_relationship_params, school, current_user)
+    rescue Exception => e
+      log_error(e)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
     render json: V1::SchoolSerializer.new(school.reload, school_options)
   end
 
@@ -70,6 +77,8 @@ class V1::SchoolsController < ApiController
   end
 
   def school_relationship_params
+    return nil unless params[:school_relationship]
+
     params.require(:school_relationship).permit(:title, :start_date, :end_date)
   end
 

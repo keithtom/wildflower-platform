@@ -71,6 +71,7 @@ class School < ApplicationRecord
     PAUSED = 'Paused'
     DISAFFILIATED = 'Disaffiliated'
     PERMANENTLY_CLOSED = 'Permanently Closed'
+    ABANDONED = 'Abandoned'
   end
 
   # https://github.com/ankane/searchkick#indexing

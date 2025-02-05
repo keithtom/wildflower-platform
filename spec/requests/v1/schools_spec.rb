@@ -4,6 +4,7 @@ describe 'API V1 School', type: :request do
   let(:school) { create(:school) }
   let(:person) { create(:person) }
   let(:address) { create(:address) }
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
 
   before do
     create(:school)
@@ -101,7 +102,6 @@ describe 'API V1 School', type: :request do
         { first_name: Faker::Name.first_name, last_name: Faker::Name.last_name, email: Faker::Internet.email }
       ]
     end
-    let(:headers) { { 'ACCEPT' => 'application/json' } }
     let(:etl_params_controller) do
       ActionController::Parameters.new({ school: { etl_people_params: } }).require(:school).permit([etl_people_params: %i[
                                                                                                      first_name last_name email
@@ -159,6 +159,63 @@ describe 'API V1 School', type: :request do
              headers: headers
         expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)).to eq({ 'message' => 'Unauthorized' })
+      end
+    end
+  end
+
+  describe 'POST /v1/schools/:school_id/invite_partner' do
+    let(:user) { create(:user, :admin) }
+    let(:school) { create(:school, status:) }
+    let(:person_params) { { email: 'partner@example.com', first_name: 'John', last_name: 'Doe' } }
+    let(:school_relationship_params) { { title: 'Partner', start_date: '2023-01-01' } }
+
+    context 'when the request is valid (TL)' do
+      let(:status) { School::Status::OPEN }
+
+      it 'invites a partner and returns the updated school' do
+        expect(OpenTlMailer).to receive(:invite_partner).and_call_original
+
+        put "/v1/schools/#{school.external_identifier}/invite_partner",
+             params: { person: person_params, school_relationship: school_relationship_params },
+             headers: headers
+        expect(response).to have_http_status(:success)
+        expect(json_response['data']['id']).to eq(school.external_identifier)
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:email).with_value('partner@example.com')))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:roleList).with_value(['Teacher Leader'])))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:active).with_value(true)))
+      end
+    end
+
+    context 'when the request is valid' do
+      let(:status) { School::Status::EMERGING }
+
+      it 'invites a partner and returns the updated school' do
+        expect(SSJMailer).to receive(:invite_partner).and_call_original
+
+        put "/v1/schools/#{school.external_identifier}/invite_partner",
+             params: { person: person_params },
+             headers: headers
+        expect(response).to have_http_status(:success)
+        expect(json_response['data']['id']).to eq(school.external_identifier)
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:email).with_value('partner@example.com')))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:roleList).with_value(['Emerging Teacher Leader'])))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:active).with_value(false)))
+      end
+    end
+
+    context 'when the request is invalid' do
+      before do
+        allow(School::InvitePartner).to receive(:run).and_raise(StandardError, 'Something went wrong')
+      end
+
+      it 'returns an error message' do
+        Bullet.enable = false
+        put "/v1/schools/#{school.external_identifier}/invite_partner",
+             params: { person: person_params, school_relationship: school_relationship_params },
+             headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response['error']).to eq('Something went wrong')
+        Bullet.enable = true
       end
     end
   end
