@@ -173,25 +173,33 @@ describe 'API V1 School', type: :request do
       let(:status) { School::Status::OPEN }
 
       it 'invites a partner and returns the updated school' do
+        expect(OpenTlMailer).to receive(:invite_partner).and_call_original
+
         put "/v1/schools/#{school.external_identifier}/invite_partner",
              params: { person: person_params, school_relationship: school_relationship_params },
              headers: headers
         expect(response).to have_http_status(:success)
         expect(json_response['data']['id']).to eq(school.external_identifier)
         expect(json_response['included']).to include(have_type(:person).and(have_attribute(:email).with_value('partner@example.com')))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:roleList).with_value(['Teacher Leader'])))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:active).with_value(true)))
       end
     end
 
-    context 'when the request is valid (ETL)' do
+    context 'when the request is valid' do
       let(:status) { School::Status::EMERGING }
 
       it 'invites a partner and returns the updated school' do
+        expect(SSJMailer).to receive(:invite_partner).and_call_original
+
         put "/v1/schools/#{school.external_identifier}/invite_partner",
              params: { person: person_params },
              headers: headers
         expect(response).to have_http_status(:success)
         expect(json_response['data']['id']).to eq(school.external_identifier)
         expect(json_response['included']).to include(have_type(:person).and(have_attribute(:email).with_value('partner@example.com')))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:roleList).with_value(['Emerging Teacher Leader'])))
+        expect(json_response['included']).to include(have_type(:person).and(have_attribute(:active).with_value(false)))
       end
     end
 
