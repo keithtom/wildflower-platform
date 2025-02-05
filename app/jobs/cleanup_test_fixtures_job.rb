@@ -61,5 +61,9 @@ class CleanupTestFixturesJob < ActiveJob::Base
     rescue StandardError => e
       Rails.logger.error("Unable to detroy user record and associated records for id #{user.id}: #{e.message}")
     end
+    School.where(name: 'Cypress Test School').each do |school|
+      school.school_relationships.destroy_all
+      school.destroy!
+    end
   end
 end
