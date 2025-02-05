@@ -117,7 +117,7 @@ describe 'API V1 School', type: :request do
                                                        workflow_definition.id.to_s, ops_guide, rgl).and_return(school)
       end
 
-      context 'when the team is successfully invited' do
+      context 'when the school is successfully invited' do
         it 'returns a success message' do
           post '/v1/schools',
                params: { school: { workflow_id: workflow_definition.id, ops_guide_id: ops_guide.external_identifier,
@@ -128,7 +128,7 @@ describe 'API V1 School', type: :request do
         end
       end
 
-      context 'when inviting the team fails' do
+      context 'when inviting the school fails' do
         let(:error_message) { 'Something went wrong' }
         let(:school) { nil }
 

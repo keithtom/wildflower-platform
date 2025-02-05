@@ -6,15 +6,16 @@ class V1::SchoolsController < ApiController
     person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
     role = filter_params[:role]
 
-    query = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
-                               [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] })
+    query = School
+    includes = [:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
+                               [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] }]
 
     if person_id
       school_id_query = SchoolRelationship.where(person_id:)
       school_id_query = school_id_query.tagged_with(role) if role
-      @schools = query.where(id: school_id_query.pluck(:school_id))
+      @schools = query.where(id: school_id_query.pluck(:school_id)).includes(*includes)
     else
-      @schools = query.all
+      @schools = query.all.includes(*includes)
     end
 
     @schools = @schools.tagged_with(status) if status
