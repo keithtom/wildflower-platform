@@ -58,11 +58,17 @@ class V1::Workflow::StepSerializer < ApplicationSerializer
     step.assigned_to?(params[:current_user].person) if params[:current_user]
   end
 
+  # this means can assign to yourself!
   attribute :can_assign do |step, params|
-    if params[:current_user]
+      return false unless params[:current_user]
+
       person = params[:current_user].person
-      !step.assigned_to?(person) && !step.completed_for?(params[:current_user].person)
-    end
+      role_list = step&.process&.workflow&.school&.school_relationships&.find_by(person_id: person.id)&.role_list
+      if role_list&.include?(Person::TL) || role_list&.include?(Person::ETL)
+        !step.assigned_to?(person) && !step.completed_for?(params[:current_user].person)
+      else
+        false
+      end
   end
 
   attribute :can_unassign do |step, params|

@@ -1,4 +1,4 @@
-class SSJ::InviteTeam < BaseService
+class SSJ::InviteSchool < BaseService
   def initialize(user_params, workflow_id, ops_guide, regional_growth_leader)
     @ops_guide = ops_guide
     @ops_guide_user = User.find_by(person_id: @ops_guide.id)
@@ -12,10 +12,12 @@ class SSJ::InviteTeam < BaseService
     @users = []
 
     @team = nil
+    @school = nil
     @workflow_definition = Workflow::Definition::Workflow.find(workflow_id)
     raise "Workflow definition not found for id: #{workflow_id}" if @workflow_definition.nil?
-    raise "Workflow definition must be published" unless @workflow_definition.published?
-    raise "Workflow definition must be the latest version" unless @workflow_definition.next_version.nil?
+    raise 'Workflow definition must be published' unless @workflow_definition.published?
+    raise 'Workflow definition must be the latest version' unless @workflow_definition.next_version.nil?
+
     @workflow_instance = nil
   end
 
@@ -25,7 +27,7 @@ class SSJ::InviteTeam < BaseService
     create_team
     create_school
     send_emails
-    @team
+    @school
   end
 
   private
@@ -53,6 +55,7 @@ class SSJ::InviteTeam < BaseService
     Workflow::InitializeWorkflowJob.perform_later(@workflow_instance.id)
   end
 
+  ## DEPRECATE
   def create_team
     @team = SSJ::Team.create!(
       workflow: @workflow_instance,
@@ -72,10 +75,13 @@ class SSJ::InviteTeam < BaseService
     @team.save!
   end
 
+  # TODO: remove @team after deprecation
   def create_school
-    school = School.create!(name: @team.temp_name, affiliated: false, status: School::Status::EMERGING)
+    @school = School.create!(name: @team.temp_name, affiliated: false, status: School::Status::EMERGING)
     @team.partner_members.each do |member|
-      SchoolRelationship.create!(school_id: school.id, person_id: member.person_id)
+      sr = SchoolRelationship.create!(school_id: @school.id, person_id: member.person_id)
+      sr.role_list.add(Person::ETL)
+      sr.save!
     end
   end
 

@@ -1,7 +1,25 @@
 class V1::SchoolsController < ApiController
+  before_action :authenticate_admin!, only: [:create]
+
   def index
-    @schools = School.includes(:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
-                               [:sister_schools], taggings: [:tag], school_relationships: [:person]).all
+    status = filter_params[:status]
+    person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
+    role = filter_params[:role]
+
+    query = School
+    includes = [:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
+                               [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] }]
+
+    if person_id
+      school_id_query = SchoolRelationship.where(person_id:)
+      school_id_query = school_id_query.tagged_with(role) if role
+      @schools = query.where(id: school_id_query.pluck(:school_id)).includes(*includes)
+    else
+      @schools = query.all.includes(*includes)
+    end
+
+    @schools = @schools.tagged_with(status) if status
+
     render json: V1::SchoolSerializer.new(@schools)
   end
 
@@ -22,10 +40,27 @@ class V1::SchoolsController < ApiController
     render json: V1::SchoolSerializer.new(school.reload)
   end
 
+  def create
+    ops_guide = Person.find_by!(external_identifier: school_params[:ops_guide_id])
+    rgl = Person.find_by!(external_identifier: school_params[:rgl_id])
+
+    school = SSJ::InviteSchool.run(school_params[:etl_people_params], school_params[:workflow_id], ops_guide, rgl)
+    render json: { message: "school #{school.external_identifier} invite emails sent" }
+  rescue StandardError => e
+    render json: { message: e.message }, status: :unprocessable_entity
+  end
+
   def invite_partner
     school = School.includes(taggings: [:tag],
                              school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
-    School::InvitePartner.run(person_params, school_relationship_params, school, current_user)
+    begin
+      School::InvitePartner.run(person_params, school_relationship_params, school, current_user)
+    rescue Exception => e
+      log_error(e)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
     render json: V1::SchoolSerializer.new(school.reload, school_options)
   end
 
@@ -42,6 +77,8 @@ class V1::SchoolsController < ApiController
   end
 
   def school_relationship_params
+    return nil unless params[:school_relationship]
+
     params.require(:school_relationship).permit(:title, :start_date, :end_date)
   end
 
@@ -50,6 +87,7 @@ class V1::SchoolsController < ApiController
       :address,
       :banner_image_attachment,
       :logo_image_attachment,
+      [:workflow],
       [:sister_schools],
       { taggings: [:tag],
         school_relationships: [:person],
@@ -59,10 +97,16 @@ class V1::SchoolsController < ApiController
 
   def school_params
     params.require(:school).permit(
+      [etl_people_params: %i[first_name last_name email]],
+      :workflow_id,
+      :ops_guide_id,
+      :rgl_id,
+      :expected_start_date,
       :banner_image,
       :logo_image,
       :about,
       :opened_on,
+      :expected_start_date,
       [ages_served_list: []],
       :governance_type,
       :max_enrollment,
@@ -71,5 +115,9 @@ class V1::SchoolsController < ApiController
       school_relationships_attributes: [:person_id],
       address_attributes: %i[city state]
     )
+  end
+
+  def filter_params
+    params.permit(:person_id, :status, :role)
   end
 end

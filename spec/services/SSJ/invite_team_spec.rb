@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe SSJ::InviteTeam, type: :service do
+RSpec.describe SSJ::InviteSchool, type: :service do
   let(:ops_guide) { create(:person) }
   let(:regional_growth_leader) { create(:person) }
   let(:workflow_definition) { create(:workflow_definition_workflow, published_at: DateTime.now) }
