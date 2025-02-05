@@ -33,12 +33,20 @@ describe 'API V1 School', type: :request do
         end
       end
 
-      describe 'with person_id query parameter' do
+      describe 'with role and person_id query parameter' do
         it 'succeeds' do
           get "/v1/schools?person_id=#{person.external_identifier}&role=Ops%20Guide",
               headers: { 'ACCEPT' => 'application/json' }
           expect(response).to have_http_status(:success)
           expect(json_response['data']).to be_empty
+        end
+      end
+
+      describe 'with name only query parameter' do
+        it 'succeeds' do
+          get '/v1/schools?name_only=true',
+              headers: { 'ACCEPT' => 'application/json' }
+          expect(response).to have_http_status(:success)
         end
       end
     end
