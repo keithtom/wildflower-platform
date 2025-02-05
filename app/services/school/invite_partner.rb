@@ -7,6 +7,8 @@ class School::InvitePartner < BaseService
   end
 
   def run
+    validate_school_status
+
     person = Person.find_or_create_by!(email: @person_params[:email])
     role = Person::TL
     if @school.status == School::Status::EMERGING
@@ -32,5 +34,9 @@ class School::InvitePartner < BaseService
     else
       OpenTlMailer.invite_partner(user.id, @inviter.id).deliver_later
     end
+  end
+
+  def validate_school_status
+    raise StandardError, 'School must have status' unless @school.status
   end
 end
