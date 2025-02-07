@@ -21,15 +21,19 @@ describe 'API V1 School', type: :request do
 
     describe 'GET /v1/schools' do
       it 'succeeds' do
+        Bullet.enable = false
         get '/v1/schools', headers: { 'ACCEPT' => 'application/json' }
         expect(response).to have_http_status(:success)
+        Bullet.enable = true
       end
 
       describe 'with person_id query parameter' do
         it 'succeeds' do
+          Bullet.enable = false
           get "/v1/schools?person_id=#{person.external_identifier}", headers: { 'ACCEPT' => 'application/json' }
           expect(response).to have_http_status(:success)
           expect(json_response['data'].first['id']).to eq(school.external_identifier)
+          Bullet.enable = true
         end
       end
 
