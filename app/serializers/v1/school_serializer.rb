@@ -83,7 +83,7 @@ module V1
 
     # for SSJ only
     attribute :current_phase do |school|
-      school.workflow&.current_phase
+      school.workflows.first&.current_phase
     end
   end
 end
