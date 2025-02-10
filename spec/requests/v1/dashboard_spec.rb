@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'V1::SSJ::Dashboard', type: :request do
+RSpec.describe 'V1::Dashboard', type: :request do
   let(:headers) { { 'ACCEPT' => 'application/json' } }
   let(:person) { create(:person) }
   let(:user) { create(:user, person_id: person.id) }
@@ -27,9 +27,9 @@ RSpec.describe 'V1::SSJ::Dashboard', type: :request do
     p.save!
   end
 
-  describe 'GET /v1/ssj/dashboard/resources' do
+  describe 'GET /v1/dashboard/resources' do
     it 'succeeds' do
-      get '/v1/ssj/dashboard/resources', headers: headers
+      get '/v1/dashboard/resources', headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response['by_category'][1]['Finance']).not_to be_nil
       expect(json_response['by_category'][4]['Human Resources']).not_to be_nil
@@ -38,10 +38,10 @@ RSpec.describe 'V1::SSJ::Dashboard', type: :request do
     end
   end
 
-  describe 'GET /v1/ssj/dashboard/progress' do
+  describe 'GET /v1/dashboard/progress' do
     context 'when the request is valid' do
       it 'returns the progress data' do
-        get '/v1/ssj/dashboard/progress', headers: headers
+        get '/v1/dashboard/progress', headers: headers
         expect(response).to have_http_status(:success)
       end
     end
@@ -52,13 +52,13 @@ RSpec.describe 'V1::SSJ::Dashboard', type: :request do
       end
 
       it 'returns an unauthorized error message' do
-        get '/v1/ssj/dashboard/progress', headers: headers
+        get '/v1/dashboard/progress', headers: headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
 
-  describe 'GET /v1/ssj/dashboard/progress' do
+  describe 'GET /v1/dashboard/progress' do
     context 'when the workflow is recurring' do
       let(:recurring_workflow_definition) do
         create(:workflow_definition_workflow, :with_recurring_processes, recurring: true)
@@ -71,7 +71,7 @@ RSpec.describe 'V1::SSJ::Dashboard', type: :request do
       end
 
       it 'returns the progress data for recurring workflows' do
-        get "/v1/ssj/dashboard/progress?workflow_id=#{recurring_workflow.external_identifier}", headers: headers
+        get "/v1/dashboard/progress?workflow_id=#{recurring_workflow.external_identifier}", headers: headers
         expect(response).to have_http_status(:success)
         expect(json_response['by_due_month']).to be_an(Array)
         expect(json_response['by_due_month']).not_to be_empty
@@ -90,7 +90,7 @@ RSpec.describe 'V1::SSJ::Dashboard', type: :request do
       end
 
       it 'returns the progress data for non-recurring workflows' do
-        get "/v1/ssj/dashboard/progress?workflow_id=#{non_recurring_workflow.external_identifier}", headers: headers
+        get "/v1/dashboard/progress?workflow_id=#{non_recurring_workflow.external_identifier}", headers: headers
         expect(response).to have_http_status(:success)
         expect(json_response['by_due_month']).to be_an(Array)
         expect(json_response['by_due_month']).to be_empty
@@ -103,7 +103,7 @@ RSpec.describe 'V1::SSJ::Dashboard', type: :request do
       end
 
       it 'returns an unauthorized error message' do
-        get '/v1/ssj/dashboard/progress', headers: headers
+        get '/v1/dashboard/progress', headers: headers
         expect(response).to have_http_status(:unauthorized)
       end
     end

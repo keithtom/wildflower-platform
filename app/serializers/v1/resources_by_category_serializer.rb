@@ -1,5 +1,4 @@
-## DEPRECATE. Duplicate version not nested under SSJ
-class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
+class V1::ResourcesByCategorySerializer < ApplicationSerializer
   include V1::Categorizable
 
   def serializable_hash
@@ -26,7 +25,7 @@ class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
     end
 
     grouped_documents.map do |key, value|
-      { key => value }
+      {key => value}
     end
   end
 
@@ -43,7 +42,7 @@ class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
     end
 
     grouped_documents.map do |key, value|
-      { key => value }
+      {key => value}
     end
   end
 

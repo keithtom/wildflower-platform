@@ -1,5 +1,4 @@
-## DEPRECATE. Duplicate version not nested under SSJ
-class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
+class V1::ProcessProgressSerializer < ApplicationSerializer
   include V1::Statusable
   include V1::Categorizable
 
