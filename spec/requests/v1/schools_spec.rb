@@ -175,7 +175,7 @@ describe 'API V1 School', type: :request do
     end
   end
 
-  describe 'POST /v1/schools/:school_id/invite_partner' do
+  describe 'PUT /v1/schools/:school_id/invite_partner' do
     let(:user) { create(:user, :admin) }
     let(:school) { create(:school, status:) }
     let(:person_params) { { email: 'partner@example.com', first_name: 'John', last_name: 'Doe' } }
@@ -224,6 +224,56 @@ describe 'API V1 School', type: :request do
         Bullet.enable = false
         put "/v1/schools/#{school.external_identifier}/invite_partner",
              params: { person: person_params, school_relationship: school_relationship_params },
+             headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response['error']).to eq('Something went wrong')
+        Bullet.enable = true
+      end
+    end
+  end
+
+  describe 'PUT /v1/schools/:school_id/reinvite_partner' do
+    let(:user) { create(:user, :admin) }
+    let(:school) { create(:school, status:) }
+    let(:person) { create(:person) }
+    let(:person_params) { { id: person.external_identifier } }
+
+    context 'when the request is valid (TL)' do
+      let(:status) { School::Status::OPEN }
+
+      it 'invites a partner and returns the updated school' do
+        expect(OpenTlMailer).to receive(:invite_partner).and_call_original
+
+        put "/v1/schools/#{school.external_identifier}/reinvite_partner",
+             params: { person: person_params },
+             headers: headers
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context 'when the request is valid' do
+      let(:status) { School::Status::EMERGING }
+
+      it 'invites a partner and returns the updated school' do
+        expect(SSJMailer).to receive(:invite_partner).and_call_original
+
+        put "/v1/schools/#{school.external_identifier}/reinvite_partner",
+             params: { person: person_params },
+             headers: headers
+        expect(response).to have_http_status(:success)
+        expect(json_response['data']['id']).to eq(school.external_identifier)
+      end
+    end
+
+    context 'when the request is invalid' do
+      before do
+        allow(School::ReinvitePartner).to receive(:run).and_raise(StandardError, 'Something went wrong')
+      end
+
+      it 'returns an error message' do
+        Bullet.enable = false
+        put "/v1/schools/#{school.external_identifier}/reinvite_partner",
+             params: { person: person_params },
              headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
         expect(json_response['error']).to eq('Something went wrong')
