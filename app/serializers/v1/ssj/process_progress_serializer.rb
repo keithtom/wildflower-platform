@@ -5,7 +5,8 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
   def serializable_hash
     {
       by_phase: grouped_by_phase(@resource),
-      by_category: grouped_by_category(@resource)
+      by_category: grouped_by_category(@resource),
+      by_due_month: grouped_by_due_month(@resource)
     }
   end
 
@@ -15,7 +16,7 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
     grouped_processes = {}
 
     SSJ::Phase::PHASES.each do |phase|
-      grouped_processes[phase] = {name: phase, total: 0, statuses: []}
+      grouped_processes[phase] = { name: phase, total: 0, statuses: [] }
     end
 
     processes.each do |process|
@@ -28,10 +29,10 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
       grouped_processes[process.phase.first.name][:statuses] << process_status(process)
     end
 
-    grouped_processes.each do |phase, status_info|
-      status_info[:statuses] = status_info[:statuses].sort_by{|status| V1::Statusable::STATUS.index(status)}
+    grouped_processes.each do |_phase, status_info|
+      status_info[:statuses] = status_info[:statuses].sort_by { |status| V1::Statusable::STATUS.index(status) }
     end
-    return grouped_processes.values
+    grouped_processes.values
   end
 
   def grouped_by_category(processes)
@@ -39,7 +40,7 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
 
     SSJ::Category::CATEGORIES.each do |category|
       category_name = category.parameterize(separator: '_')
-      grouped_processes[category_name] = {name: category, total: 0, statuses: []}
+      grouped_processes[category_name] = { name: category, total: 0, statuses: [] }
     end
 
     processes.each do |process|
@@ -54,11 +55,33 @@ class V1::SSJ::ProcessProgressSerializer < ApplicationSerializer
       end
     end
 
-    grouped_processes.each do |category, status_info|
-      status_info[:statuses] = status_info[:statuses].sort_by{|status| V1::Statusable::STATUS.index(status)}
+    grouped_processes.each do |_category, status_info|
+      status_info[:statuses] = status_info[:statuses].sort_by { |status| V1::Statusable::STATUS.index(status) }
     end
 
-    return grouped_processes.values
+    grouped_processes.values
+  end
+
+  def grouped_by_due_month(processes)
+    grouped_processes = {}
+
+    processes.each do |process|
+      due_date = process.due_date
+      if due_date.nil?
+        Rails.logger.warn("process due_date doesn't exist, id: #{process.id}")
+        next
+      end
+
+      grouped_processes[due_date] = { name: due_date, total: 0, statuses: [] } if grouped_processes[due_date].nil?
+      grouped_processes[due_date][:total] += 1
+      grouped_processes[due_date][:statuses] << process_status(process)
+    end
+
+    grouped_processes.each do |_phase, status_info|
+      status_info[:statuses] = status_info[:statuses].sort_by { |status| V1::Statusable::STATUS.index(status) }
+    end
+
+    grouped_processes&.values
   end
 
   def process_status(process)
