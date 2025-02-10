@@ -2,8 +2,8 @@
 class V1::SSJ::DashboardController < ApiController
   # helps draw the SSJ dashboard page.
   def progress
-    processes = workflow.processes.eager_load(:prerequisites, :categories, steps: [:assignments],
-                                                                           definition: %i[phase categories])
+    processes = workflow.processes.eager_load(:prerequisites, :categories, [:phase], steps: [:assignments],
+                                                                                     definition: %i[phase categories])
 
     assigned_steps_count = Workflow::Instance::StepAssignment.where(assignee_id: current_user.person_id).for_workflow(workflow_id).incomplete.count
 
