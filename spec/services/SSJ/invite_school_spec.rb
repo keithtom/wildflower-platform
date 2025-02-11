@@ -54,13 +54,15 @@ RSpec.describe SSJ::InviteSchool, type: :service do
          { email: Faker::Internet.email, first_name: 'Test', last_name: 'Two' }]
       end
 
-      it 'creates users, people, a workflow instance, a team, and sends emails' do
+      it 'creates users, people, a workflow instance, a school, and sends emails' do
         perform_enqueued_jobs do
           expect { described_class.new(user_params, workflow_definition.id, ops_guide, regional_growth_leader).run }
             .to change { User.count }.by(2)
             .and change { Person.count }.by(2)
             .and change { SSJ::Team.count }.by(1)
+            .and change { School.count }.by(1)
             .and change { SSJ::TeamMember.count }.by(4)
+            .and change { SchoolRelationship.count }.by(4)
             .and change { Workflow::Instance::Workflow.count }.by(1)
             .and change { ActionMailer::Base.deliveries.count }.by(2)
         end
@@ -81,7 +83,9 @@ RSpec.describe SSJ::InviteSchool, type: :service do
             .to change { User.count }.by(1)
             .and change { Person.count }.by(1)
             .and change { SSJ::Team.count }.by(1)
+            .and change { School.count }.by(1)
             .and change { SSJ::TeamMember.count }.by(4)
+            .and change { SchoolRelationship.count }.by(4)
             .and change { Workflow::Instance::Workflow.count }.by(1)
             .and change { ActionMailer::Base.deliveries.count }.by(2)
         end
