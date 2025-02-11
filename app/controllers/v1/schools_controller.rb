@@ -5,10 +5,15 @@ class V1::SchoolsController < ApiController
     status = filter_params[:status]
     person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
     role = filter_params[:role]
+    serialization_options = {}
 
     query = School
     includes = [:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
                                [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] }]
+    if filter_params[:name_only]
+      serialization_options = { fields: { school: [:name] } }
+      includes = [[]]
+    end
 
     if person_id
       school_id_query = SchoolRelationship.where(person_id:)
@@ -20,7 +25,7 @@ class V1::SchoolsController < ApiController
 
     @schools = @schools.tagged_with(status) if status
 
-    render json: V1::SchoolSerializer.new(@schools)
+    render json: V1::SchoolSerializer.new(@schools, serialization_options)
   end
 
   def show
@@ -64,6 +69,21 @@ class V1::SchoolsController < ApiController
     render json: V1::SchoolSerializer.new(school.reload, school_options)
   end
 
+  def reinvite_partner
+    school = School.includes(taggings: [:tag],
+                             school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
+    person = Person.find_by!(external_identifier: person_params['id'])
+    begin
+      School::ReinvitePartner.run(person, school, current_user)
+    rescue Exception => e
+      log_error(e)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
+    render json: V1::SchoolSerializer.new(school.reload, school_options)
+  end
+
   protected
 
   def school_options
@@ -73,7 +93,7 @@ class V1::SchoolsController < ApiController
   end
 
   def person_params
-    params.require(:person).permit(:email, :first_name, :last_name)
+    params.require(:person).permit(:id, :email, :first_name, :last_name)
   end
 
   def school_relationship_params
@@ -118,6 +138,6 @@ class V1::SchoolsController < ApiController
   end
 
   def filter_params
-    params.permit(:person_id, :status, :role)
+    params.permit(:person_id, :status, :role, :name_only)
   end
 end

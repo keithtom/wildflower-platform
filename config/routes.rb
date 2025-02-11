@@ -28,6 +28,7 @@ Rails.application.routes.draw do
 
     resources :schools, except: [:destroy] do
       put 'invite_partner', to: 'schools#invite_partner'
+      put 'reinvite_partner', to: 'schools#reinvite_partner'
     end
     
     resources :school_relationships
@@ -69,9 +70,12 @@ Rails.application.routes.draw do
     # resources :hubs, except: :destroy do
     #   resources :pods, except: :destroy
     # end
+    get "dashboard/progress", to: "dashboard#progress"
+    get 'dashboard/resources', to: 'dashboard#resources'
+
     namespace :ssj do
-      get "dashboard/progress", to: "dashboard#progress"
-      get 'dashboard/resources', to: 'dashboard#resources'
+      get "dashboard/progress", to: "dashboard#progress" #DEPRECATE
+      get 'dashboard/resources', to: 'dashboard#resources' #DEPRECATE
     
       resources :teams, only: [:create, :index, :show, :update] do
         put '/invite_partner', to: 'teams#invite_partner'
