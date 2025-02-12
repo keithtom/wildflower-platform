@@ -84,6 +84,22 @@ class V1::SchoolsController < ApiController
     render json: V1::SchoolSerializer.new(school.reload, school_options)
   end
 
+  def remove_partner
+    school = School.includes(taggings: [:tag],
+                             school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
+    person = Person.find_by!(external_identifier: person_params['id'])
+
+    begin
+      School::RemoveAirtableRecord.run(person, school)
+    rescue Exception => e
+      log_error(e)
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
+    end
+
+    render json: V1::SchoolSerializer.new(school.reload, school_options)
+  end
+
   protected
 
   def school_options
