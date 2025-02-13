@@ -9,7 +9,7 @@ class School::InvitePartner < BaseService
   def run
     validate_school_status
 
-    person = Person.find_or_create_by!(email: @person_params[:email])
+    person = Person.find_or_create_by!(email: @person_params[:email].downcase)
     role = Person::TL
     if @school.status == School::Status::EMERGING
       person.update!(@person_params.merge(active: false))
