@@ -49,7 +49,7 @@ module V1
       person = user.person
       school_relationships = person&.school_relationships
       if person && school_relationships.length > 0
-        school_relatonships.map do |sr|
+        school_relationships.map do |sr|
           {
             id: sr.school&.external_identifier,
             name: sr.school&.name,
