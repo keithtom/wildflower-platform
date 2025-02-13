@@ -16,7 +16,7 @@ class School::ReinvitePartner < BaseService
     Users::GenerateToken.call(user)
 
     if @school.status == School::Status::EMERGING
-      SSJMailer.invite_partner(user.id, @inviter.id, @school.ops_guides.first).deliver_later
+      SSJMailer.invite_partner(user.id, @inviter.id, @school.ops_guides.first&.id).deliver_later
     else
       OpenTlMailer.invite_partner(user.id, @inviter.id).deliver_later
     end
