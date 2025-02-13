@@ -6,7 +6,7 @@ class SSJ::InvitePartner < BaseService
   end
 
   def run
-    person = Person.find_or_create_by!(email: @person_params[:email])
+    person = Person.find_or_create_by!(email: @person_params[:email].downcase)
     person.update!(@person_params.merge(active: false))
     person.role_list.add(Person::ETL)
     person.save

@@ -47,9 +47,9 @@ module V1
 
     attribute :schools do |user|
       person = user.person
-      school_relatonships = person&.school_relationships
-      if person && school_relatonships.length > 0
-        school_relatonships.map do |sr|
+      school_relationships = person&.school_relationships
+      if person && school_relationships.length > 0
+        school_relationships.map do |sr|
           {
             id: sr.school&.external_identifier,
             name: sr.school&.name,
