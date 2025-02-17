@@ -39,7 +39,7 @@ class V1::SchoolsController < ApiController
   end
 
   def update
-    school = School.includes(taggings: [:tag],
+    school = School.includes(:taggings,
                              school_relationships: [:person]).find_by!(external_identifier: params[:id])
     school.update!(school_params)
     render json: V1::SchoolSerializer.new(school.reload)
@@ -85,12 +85,11 @@ class V1::SchoolsController < ApiController
   end
 
   def remove_partner
-    school = School.includes(taggings: [:tag],
-                             school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
+    school = School.find_by!(external_identifier: params[:school_id])
     person = Person.find_by!(external_identifier: person_params['id'])
 
     begin
-      School::RemovePartner(person, school)
+      School::RemovePartner.run(person, school)
     rescue Exception => e
       log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
