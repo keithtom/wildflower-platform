@@ -281,4 +281,37 @@ describe 'API V1 School', type: :request do
       end
     end
   end
+
+  describe 'PUT v1/schools/:school_id/remove_partner' do
+    let(:user) { create(:user, :admin) }
+    let(:school) { create(:school) }
+    let(:person) { create(:person) }
+    let!(:school_relationship) { create(:school_relationship, person:, school:, start_date: Date.today, end_date: nil) }
+    let(:person_params) { { id: person.external_identifier } }
+
+    context 'when the request is valid' do
+      it 'removes the partner and returns the updated school' do
+        put "/v1/schools/#{school.external_identifier}/remove_partner",
+            params: { person: person_params },
+            headers: headers
+        expect(response).to have_http_status(:success)
+        expect(school.reload.school_relationships.active).not_to include(school_relationship)
+        expect(school.reload.active_partners).not_to include(person)
+      end
+    end
+
+    context 'when the request is invalid' do
+      before do
+        allow(School::RemovePartner).to receive(:run).and_raise(StandardError, 'Something went wrong')
+      end
+
+      it 'returns an error message' do
+        put "/v1/schools/#{school.external_identifier}/remove_partner",
+            params: { person: person_params },
+            headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json_response['error']).to eq('Something went wrong')
+      end
+    end
+  end
 end
