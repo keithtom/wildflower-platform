@@ -90,7 +90,7 @@ class V1::SchoolsController < ApiController
     person = Person.find_by!(external_identifier: person_params['id'])
 
     begin
-      School::RemoveAirtableRecord.run(person, school)
+      School::RemovePartner(person, school)
     rescue Exception => e
       log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
