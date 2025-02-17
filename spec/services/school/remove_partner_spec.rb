@@ -3,11 +3,8 @@ require 'rails_helper'
 RSpec.describe School::RemovePartner, type: :service do
   let(:school) { create(:school) }
   let(:person) { create(:person) }
-  let(:user) { create(:user, person_id: person.id) }
-
-  before do
-    create(:school_relationship, school:, person:, start_date: Date.today)
-  end
+  let!(:user) { create(:user, person_id: person.id) }
+  let!(:school_relationship) { create(:school_relationship, school:, person:, start_date: Date.today, end_date: nil) }
 
   describe '.run' do
     context 'when the partner is successfully removed' do
@@ -20,59 +17,55 @@ RSpec.describe School::RemovePartner, type: :service do
 
         it 'sets the end_date for the school_relationship' do
           School::RemovePartner.run(person, school)
-          school_relationship = SchoolRelationship.find_by(school:, person:)
-          expect(school_relationship.end_date).not_to be_nil
+          expect(school_relationship.reload.end_date).not_to be_nil
         end
 
         it 'removes person from the directory' do
           School::RemovePartner.run(person, school)
-          expect(person.active).to be_false
+          expect(person.active).to be_falsey
         end
 
         it 'deletes user login' do
           School::RemovePartner.run(person, school)
-          expect(user).to be_nil
+          expect(user.reload.deleted?).to be_truthy
         end
       end
 
       context 'partner is associated to another school' do
         before do
-          create(:school_relationship, school: create(:school), person:, start_date: Date.today)
+          create(:school_relationship, school: create(:school), person:, start_date: Date.today, end_date: nil)
         end
 
         it 'removes the partner from the school' do
           expect do
             School::RemovePartner.run(person, school)
-          end.to change { school.people.count }.by(-1)
+          end.to change { school.reload.school_relationships.active.count }.by(-1)
         end
 
         it 'sets the end_date for the school_relationship' do
           School::RemovePartner.run(person, school)
-          school_relationship = SchoolRelationship.find_by(school:, person:)
-          expect(school_relationship.end_date).not_to be_nil
+          expect(school_relationship.reload.end_date).not_to be_nil
         end
 
         it 'does NOT remove person from the directory' do
           School::RemovePartner.run(person, school)
-          expect(person.active).to be_true
+          expect(person.reload.active).to be_truthy
         end
 
         it 'does NOT delete user login' do
           School::RemovePartner.run(person, school)
-          expect(user).to exist
+          expect(user.reload.deleted?).to be_falsey
         end
       end
     end
 
     context 'when the partner removal fails' do
-      before do
-        allow(school).to receive(:people).and_raise(StandardError, 'Something went wrong')
-      end
+      let!(:school_relationship) { nil }
 
       it 'raises an error' do
         expect do
           School::RemovePartner.run(person, school)
-        end.to raise_error(StandardError, 'Something went wrong')
+        end.to raise_error(StandardError, "Partner #{person.email} not associated to school #{school.name}")
       end
     end
   end
