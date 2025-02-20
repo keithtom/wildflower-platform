@@ -34,6 +34,7 @@ module V1
     attribute :ssj do |user|
       person = user.person
       ssj_team = person&.ssj_team
+      ssj_team = person.ssj_team_members.first&.ssj_team if ssj_team.nil?
       if person && ssj_team
         workflow = ssj_team.workflow
         {
