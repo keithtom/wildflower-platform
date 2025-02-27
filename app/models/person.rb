@@ -46,6 +46,9 @@ class Person < ApplicationRecord
 
   before_validation :set_name, if: proc { |person| person.full_name.present? }
 
+  has_one :user, dependent: :nullify
+  after_update :sync_user_email, if: :saved_change_to_email?
+
   has_one_attached :profile_image
 
   validates :email, uniqueness: true
@@ -109,5 +112,9 @@ class Person < ApplicationRecord
 
   def remove_from_airtable
     RemoveAirtableRecordJob.perform_later(platform_airtable_id, Airtable::Platform::PEOPLE) if platform_airtable_id
+  end
+
+  def sync_user_email
+    user.update(email:) if user.present?
   end
 end
