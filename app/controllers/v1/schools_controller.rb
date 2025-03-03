@@ -87,9 +87,10 @@ class V1::SchoolsController < ApiController
   def remove_partner
     school = School.find_by!(external_identifier: params[:school_id])
     person = Person.find_by!(external_identifier: person_params['id'])
+    end_date = person_params[:end_date].to_date
 
     begin
-      School::RemovePartner.run(person, school)
+      School::RemovePartner.run(person, school, end_date)
     rescue Exception => e
       log_error(e)
       render json: { error: e.message }, status: :unprocessable_entity
@@ -108,7 +109,7 @@ class V1::SchoolsController < ApiController
   end
 
   def person_params
-    params.require(:person).permit(:id, :email, :first_name, :last_name)
+    params.require(:person).permit(:id, :email, :first_name, :last_name, :end_date)
   end
 
   def school_relationship_params
