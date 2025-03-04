@@ -78,6 +78,8 @@ class SSJ::InviteSchool < BaseService
   # TODO: remove @team after deprecation
   def create_school
     @school = School.create!(name: @team.temp_name, affiliated: false, status: School::Status::EMERGING)
+    @workflow_instance.school = @school
+    @workflow_instance.save!
     @team.partner_members.each do |member|
       sr = SchoolRelationship.create!(school_id: @school.id, person_id: member.person_id)
       sr.role_list.add(Person::ETL)
