@@ -87,7 +87,7 @@ class V1::SchoolsController < ApiController
   def remove_partner
     school = School.find_by!(external_identifier: params[:school_id])
     person = Person.find_by!(external_identifier: person_params['id'])
-    end_date = person_params[:end_date].to_date
+    end_date = person_params[:end_date]&.to_date
 
     begin
       School::RemovePartner.run(person, school, end_date)
