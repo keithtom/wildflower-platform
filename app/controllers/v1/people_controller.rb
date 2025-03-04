@@ -6,9 +6,15 @@ class V1::PeopleController < ApiController
     if params[:etl]
       @people = @people.includes([:ssj_team]).tagged_with(Person::ETL)
       render json: V1::PersonBasicSerializer.new(@people.all)
+    elsif params[:lightweight]
+      render json: V1::PersonBasicSerializer.new(@people.all)
     else
       render json: V1::PersonSerializer.new(@people.all)
     end
+  end
+
+  def create
+    # TODO
   end
 
   def show
