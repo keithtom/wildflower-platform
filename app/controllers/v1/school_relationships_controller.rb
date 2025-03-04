@@ -12,6 +12,7 @@ class V1::SchoolRelationshipsController < ApiController
     @school_relationship = SchoolRelationship.new(school_relationship_params)
     @school_relationship.school = school
     @school_relationship.person = person
+    # TODO: trigger email
 
     if @school_relationship.save
       render json: V1::SchoolRelationshipSerializer.new(@school_relationship, serializer_options), status: :created
