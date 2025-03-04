@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class School::RemovePartner < BaseService
-  def initialize(partner, school, end_date)
+  def initialize(partner, school, end_date = nil)
     @partner = partner
     @school = school
     @end_date = end_date
