@@ -23,7 +23,7 @@ class V1::SchoolsController < ApiController
       @schools = query.all.includes(*includes)
     end
 
-    @schools = @schools.tagged_with(status) if status
+    @schools = @schools.where(status:) if status
 
     render json: V1::SchoolSerializer.new(@schools, serialization_options)
   end
