@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 class School::RemovePartner < BaseService
-  def initialize(partner, school)
+  def initialize(partner, school, end_date = nil)
     @partner = partner
     @school = school
+    @end_date = end_date
   end
 
   def run
     sr = SchoolRelationship.find_by(school_id: @school.id, person_id: @partner.id)
     raise StandardError, "Partner #{@partner.email} not associated to school #{@school.name}" if sr.nil?
 
-    sr.end_date = Date.today
+    sr.end_date = @end_date || Date.today
     sr.save!
 
     # Is this person associated to any other schools?
