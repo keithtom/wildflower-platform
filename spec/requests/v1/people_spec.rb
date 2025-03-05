@@ -90,8 +90,22 @@ describe 'API V1 People', type: :request do
         end
 
         it 'raises an error and does not create records' do
+          puts "\n=== Debug information ==="
+          puts "Person count before test: #{Person.count}"
+          puts 'Person records before test:'
+          Person.all.each do |p|
+            puts "  - #{p.id}: #{p.email} (created_at: #{p.created_at})"
+          end
+
           post '/v1/people', params: invalid_params, headers: headers
           expect(response).to have_http_status(:unprocessable_entity)
+
+          puts "\nPerson count after request: #{Person.count}"
+          puts 'Person records after request:'
+          Person.all.each do |p|
+            puts "  - #{p.id}: #{p.email} (created_at: #{p.created_at})"
+          end
+          puts "=== End debug information ===\n"
 
           expect(Person.count).to eq(2) # The two people created in the before block
           expect(User.count).to eq(1)   # Just the admin user
