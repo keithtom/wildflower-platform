@@ -243,7 +243,6 @@ RSpec.describe 'V1::Workflow::Steps', type: :request do
 
         it 'succeeds' do
           Bullet.enable = false
-          puts school.workflow_id
           expect(step.assignments.count).to eq(1)
           put "/v1/workflow/steps/#{step.external_identifier}/unassign", headers: headers,
                                                                          params: { assignee_id: person2.external_identifier }

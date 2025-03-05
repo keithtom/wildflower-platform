@@ -1,5 +1,5 @@
 class Users::SendInviteEmail < BaseCommand
-  def initialize(user, ops_guide)
+  def initialize(user, ops_guide = nil)
     @user = user
     @ops_guide = ops_guide
   end
@@ -17,6 +17,10 @@ class Users::SendInviteEmail < BaseCommand
   end
 
   def send_invite_email
-    SSJMailer.invite(@user.id, @ops_guide.id).deliver_later
+    if @ops_guide.present?
+      SSJMailer.invite(@user.id, @ops_guide.id).deliver_later
+    else
+      NetworkMailer.invite(@user.id).deliver_later
+    end
   end
 end
