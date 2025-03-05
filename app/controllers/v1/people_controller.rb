@@ -1,4 +1,6 @@
 class V1::PeopleController < ApiController
+  before_action :authenticate_admin!, only: [:create]
+
   def index
     @people = Person.includes(:profile_image_attachment, :schools, :address, taggings: [:tag])
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
@@ -14,7 +16,14 @@ class V1::PeopleController < ApiController
   end
 
   def create
-    # TODO
+    begin
+      @person = Admin::CreatePerson.run(person_params)
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+      return
+    end
+
+    render json: V1::PersonSerializer.new(@person), status: :created
   end
 
   def show
