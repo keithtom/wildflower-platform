@@ -1,29 +1,31 @@
 require 'rails_helper'
 
-RSpec.describe "V1::Workflow::Processes", type: :request do
-  let(:headers) { {'ACCEPT' => 'application/json'} }
+RSpec.describe 'V1::Workflow::Processes', type: :request do
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
   let(:person) { create(:person) }
   let(:workflow_definition) { create(:workflow_definition_workflow) }
   let(:workflow) { Workflow::Instance::Workflow.create!(definition: workflow_definition) }
-  let(:process_definition) { Workflow::Definition::Process.create!(title: "file taxes", description: "pay taxes to the IRS") }
-  let!(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow: workflow) }
+  let(:process_definition) do
+    Workflow::Definition::Process.create!(title: 'file taxes', description: 'pay taxes to the IRS')
+  end
+  let!(:process) { Workflow::Instance::Process.create!(definition: process_definition, workflow:) }
   let(:user) { create(:user, person_id: person.id) }
   let!(:assigned_step) { create(:workflow_instance_step_manual, process_id: process.id) }
-  let!(:assignment) { create(:workflow_instance_step_assignment, step: assigned_step, assignee: user.person)}  
+  let!(:assignment) { create(:workflow_instance_step_assignment, step: assigned_step, assignee: user.person) }
 
   before do
     sign_in(user)
   end
 
-  describe "GET /v1/processes/6823-2341" do
-    it "succeeds" do
+  describe 'GET /v1/processes/6823-2341' do
+    it 'succeeds' do
       Bullet.enable = false
       get "/v1/workflow/processes/#{process.external_identifier}", headers: headers
       expect(response).to have_http_status(:success)
-      expect(json_response["data"]).to have_type(:process).and have_attribute(:status)
-      expect(json_response["data"]).to have_type(:process).and have_attribute(:stepsCount)
-      expect(json_response["data"]).to have_type(:process).and have_attribute(:completedStepsCount)
-      step_obj = json_response["included"].select{|obj| obj["type"] == "step"}.last
+      expect(json_response['data']).to have_type(:process).and have_attribute(:status)
+      expect(json_response['data']).to have_type(:process).and have_attribute(:stepsCount)
+      expect(json_response['data']).to have_type(:process).and have_attribute(:completedStepsCount)
+      step_obj = json_response['included'].select { |obj| obj['type'] == 'step' }.last
       Bullet.enable = true
     end
   end
@@ -31,45 +33,46 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
   describe 'GET /v1/workflow/workflows/:workflow_id/processes' do
     context 'when using within_timeframe and omit_include params' do
       let(:date) { Date.today.to_s }
-      let!(:past_due_process) { 
+      let!(:past_due_process) do
         Workflow::Instance::Process.create!(
           definition: process_definition,
-          workflow: workflow,
+          workflow:,
           suggested_start_date: 3.months.ago,
           due_date: 1.month.ago,
           completion_status: Workflow::Instance::Process.completion_statuses[:started]
         )
-      }
-      let!(:within_timeframe_incompleted_process) {
+      end
+      let!(:within_timeframe_incompleted_process) do
         Workflow::Instance::Process.create!(
           definition: process_definition,
-          workflow: workflow,
+          workflow:,
           suggested_start_date: 3.months.ago,
           due_date: 1.month.from_now,
           completion_status: Workflow::Instance::Process.completion_statuses[:started]
         )
-      }
-      let!(:within_timeframe_completed_process) {
+      end
+      let!(:within_timeframe_completed_process) do
         Workflow::Instance::Process.create!(
           definition: process_definition,
-          workflow: workflow,
+          workflow:,
           suggested_start_date: 3.months.ago,
           due_date: 1.month.from_now,
           completion_status: Workflow::Instance::Process.completion_statuses[:finished]
         )
-      }
-      let!(:future_process) {
+      end
+      let!(:future_process) do
         Workflow::Instance::Process.create!(
           definition: process_definition,
-          workflow: workflow,
+          workflow:,
           suggested_start_date: 1.month.from_now,
           due_date: 2.months.from_now,
           completion_status: Workflow::Instance::Process.completion_statuses[:unstarted]
         )
-      }
+      end
 
       it 'succeeds' do
-        get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?timeframe=#{date}&omit_include=true", headers: headers
+        get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?timeframe=#{date}&omit_include=true",
+            headers: headers
         expect(response).to have_http_status(:success)
         process_ids = json_response['data'].map { |process| process['id'] }
         expect(process_ids).to include(past_due_process.external_identifier)
@@ -77,12 +80,29 @@ RSpec.describe "V1::Workflow::Processes", type: :request do
         expect(process_ids).to include(within_timeframe_completed_process.external_identifier)
         expect(process_ids).not_to include(future_process.external_identifier)
       end
+
+      context 'when using limit param' do
+        let(:date) { Date.today.to_s }
+        let(:limit) { 2 }
+        let!(:extra_processes) do
+          create_list(:workflow_instance_process, 10, definition: process_definition, workflow:)
+        end
+
+        it 'succeeds and returns limited number of processes' do
+          get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?timeframe=#{date}&omit_include=true&limit=#{limit}",
+              headers: headers
+          expect(response).to have_http_status(:success)
+          expect(json_response['data'].size).to eq(limit)
+        end
+      end
     end
 
     context 'when date is not valid' do
-      let(:date) { "00 - 234- 0" }
+      let(:date) { '00 - 234- 0' }
+
       it 'fails' do
-        get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?timeframe=#{date}&omit_include=true", headers: headers
+        get "/v1/workflow/workflows/#{workflow.external_identifier}/processes?timeframe=#{date}&omit_include=true",
+            headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
