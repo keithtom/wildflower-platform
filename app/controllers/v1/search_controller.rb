@@ -34,7 +34,7 @@ class V1::SearchController < ApplicationController
         open_date_selections = default_search_options[:where].delete('open_date')
         default_search_options[:where].merge!(reinterpret_open_date_filters(open_date_selections))
       end
-      default_search_options[:where]&.merge!(affiliated: true)
+      default_search_options[:where]&.merge!(directory_visible: true)
 
       @search = School.search(query, **default_search_options.merge!({ includes: school_includes }))
       @results = @search.to_a
