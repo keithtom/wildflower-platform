@@ -42,6 +42,7 @@ class V1::Workflow::ProcessesController < ApiController
     else
       processes = workflow.processes.eager_load(*eager_load_associations).by_position
     end
+    processes = processes.limit(params[:limit].to_i) if params[:limit]
 
     render json: V1::Workflow::ProcessSerializer.new(processes, serialization_options)
   end

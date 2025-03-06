@@ -51,7 +51,7 @@ class Person < ApplicationRecord
 
   has_one_attached :profile_image
 
-  validates :email, uniqueness: true
+  validates :email, uniqueness: true, presence: true
 
   before_destroy :remove_from_airtable
 
