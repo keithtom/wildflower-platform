@@ -17,7 +17,6 @@ describe V1::SchoolSerializer do
   end
 
   it 'serializes properly' do
-    puts json_document['data']
     expect(json_document['data']).to have_id('sch333')
     expect(json_document['data']).to have_type('school')
     expect(json_document['data']).to have_jsonapi_attributes(:name, :website, :phone, :email, :location)

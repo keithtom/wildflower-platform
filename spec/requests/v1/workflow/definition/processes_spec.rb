@@ -363,7 +363,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
           it 'updates the instances associated to the process' do
             process_instance.reload
             expect(response).to have_http_status(:success)
-            expect(process_instance.category_list).to eq(%w[Finance Admin])
+            expect(process_instance.category_list).to match_array(%w[Finance Admin])
             expect(process_instance.title).to eq('Updated Process')
           end
         end

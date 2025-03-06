@@ -10,7 +10,7 @@ module V1
                :hero_image2_url, :about, :about_es,
                :affiliation_date, :closed_on, :num_classrooms, :charter_string,
                :opened_on, :updated_at, :expected_start_date,
-               :facility_type
+               :facility_type, :directory_visible
 
     # done this way to avoid n+1 queries
     attribute :tuition_assistance_type_list do |person|
