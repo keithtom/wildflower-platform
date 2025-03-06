@@ -96,7 +96,8 @@ class School < ApplicationRecord
       facility_type:,
       charter: charter_string,
       open_date: opened_on&.to_datetime,
-      affiliated:
+      affiliated:,
+      directory_visible:
     }
   end
 

@@ -148,6 +148,7 @@ class V1::SchoolsController < ApiController
       :max_enrollment,
       :num_classrooms,
       :charter_string,
+      :directory_visible,
       school_relationships_attributes: [:person_id],
       address_attributes: %i[city state]
     )

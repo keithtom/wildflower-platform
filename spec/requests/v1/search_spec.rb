@@ -4,8 +4,8 @@ RSpec.describe 'V1::Searches', type: :request do
   describe 'GET /index', search: true do
     let!(:person1) { create(:person, first_name: 'Keith', active: true) }
     let!(:person2) { create(:person, first_name: 'Keith', last_name: 'Inactive', active: false) }
-    let!(:school1) { create(:school, name: 'Keith Montessori', affiliated: true) }
-    let!(:school2) { create(:school, name: 'Unaffiliated Montessori', affiliated: false) }
+    let!(:school1) { create(:school, name: 'Keith Montessori', affiliated: true, directory_visible: true) }
+    let!(:school2) { create(:school, name: 'Unaffiliated Montessori', affiliated: false, directory_visible: false) }
 
     before do
       Person.reindex
