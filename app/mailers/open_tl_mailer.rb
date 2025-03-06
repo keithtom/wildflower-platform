@@ -7,6 +7,7 @@ class OpenTlMailer < ApplicationMailer
     @user = User.find(user_id)
     mail to: @user.email, cc: 'support@wildflowerschools.org',
          subject: 'Monthly Admin Checklists now on My Wildflower'
+  # TODO subject needs to be updated to be generalized
   end
 
   def invite_partner(user_id)
