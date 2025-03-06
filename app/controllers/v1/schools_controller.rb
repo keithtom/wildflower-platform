@@ -5,11 +5,17 @@ class V1::SchoolsController < ApiController
     status = filter_params[:status]
     person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
     role = filter_params[:role]
+    serialization_fields = filter_params[:serialization_fields]&.split(',')
     serialization_options = {}
 
     query = School
     includes = [:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
                                [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] }]
+    if serialization_fields
+      serialization_options = { fields: { school: serialization_fields.map(&:to_sym) } }
+      includes = [[]]
+    end
+
     if filter_params[:name_only]
       serialization_options = { fields: { school: [:name] } }
       includes = [[]]
@@ -155,6 +161,6 @@ class V1::SchoolsController < ApiController
   end
 
   def filter_params
-    params.permit(:person_id, :status, :role, :name_only)
+    params.permit(:person_id, :status, :role, :name_only, :serialization_fields)
   end
 end
