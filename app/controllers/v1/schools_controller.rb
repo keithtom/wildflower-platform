@@ -141,6 +141,7 @@ class V1::SchoolsController < ApiController
     params.require(:school).permit(
       [etl_people_params: %i[first_name last_name email]],
       :workflow_id,
+      :name,
       :ops_guide_id,
       :rgl_id,
       :expected_start_date,
