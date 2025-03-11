@@ -26,7 +26,7 @@ Rails.application.routes.draw do
     end
 
 
-    resources :schools, except: [:destroy] do
+    resources :schools do
       put 'invite_partner', to: 'schools#invite_partner'
       put 'reinvite_partner', to: 'schools#reinvite_partner'
       put 'remove_partner', to: 'schools#remove_partner'
@@ -107,7 +107,7 @@ Rails.application.routes.draw do
 
       resources :decision_options, only: [:destroy]
 
-      resources :workflows, only: [:show] do
+      resources :workflows, only: [:create, :show, :update] do
         resources :processes, only: [:index]
         get :resources
         get '/assigned_steps', to: 'workflows#assigned_steps'

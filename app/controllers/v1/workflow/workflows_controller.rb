@@ -1,6 +1,9 @@
 class V1::Workflow::WorkflowsController < ApiController
+  before_action :authenticate_admin!, only: %i[update]
+
   def create
-    ## TODO
+    ## TODO; takes in a definition_id and school_id
+    ## calls a service to create a new workflow instance record
   end
 
   def show
@@ -11,8 +14,10 @@ class V1::Workflow::WorkflowsController < ApiController
     render json: V1::Workflow::WorkflowSerializer.new(@workflow)
   end
 
-  def destroy
-    ## TODO
+  def update
+    @workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:id])
+    @workflow.update!(workflow_params)
+    render json: V1::Workflow::WorkflowSerializer.new(@workflow)
   end
 
   def resources
@@ -55,5 +60,11 @@ class V1::Workflow::WorkflowsController < ApiController
     }
 
     render json: V1::Workflow::StepSerializer.new(steps, serialization_options)
+  end
+
+  private
+
+  def workflow_params
+    params.require(:workflow).permit(:visible, :definition_id, :school_id)
   end
 end
