@@ -61,6 +61,15 @@ class V1::SchoolsController < ApiController
     render json: { message: e.message }, status: :unprocessable_entity
   end
 
+  def destroy
+    school = School.find_by!(external_identifier: params[:id])
+    # TODO: call service to delete school
+    # school.destroy!
+    render json: { message: "school #{school.external_identifier} deleted" }
+  rescue StandardError => e
+    render json: { message: e.message }, status: :unprocessable_entity
+  end
+
   def invite_partner
     school = School.includes(taggings: [:tag],
                              school_relationships: [:person]).find_by!(external_identifier: params[:school_id])
@@ -149,6 +158,7 @@ class V1::SchoolsController < ApiController
       :logo_image,
       :about,
       :opened_on,
+      :status,
       :expected_start_date,
       [ages_served_list: []],
       :governance_type,
