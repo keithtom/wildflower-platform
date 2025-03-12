@@ -10,6 +10,7 @@ class School::Remove < BaseService
 
     @school.affiliated = false
     @school.directory_visible = false
+    @school.status = School::Status::ABANDONED
     @school.save!
   end
 end

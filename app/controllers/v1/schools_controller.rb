@@ -1,5 +1,5 @@
 class V1::SchoolsController < ApiController
-  before_action :authenticate_admin!, only: [:create]
+  before_action :authenticate_admin!, only: %i[create destroy]
 
   def index
     status = filter_params[:status]
