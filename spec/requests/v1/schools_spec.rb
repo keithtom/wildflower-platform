@@ -314,4 +314,28 @@ describe 'API V1 School', type: :request do
       end
     end
   end
+
+  describe 'DELETE /v1/schools/:id' do
+    let(:user) { create(:user, :admin) }
+
+    context 'when the school exists' do
+      it 'removes the school and returns a success message' do
+        expect(School::Remove).to receive(:run).with(school).once
+
+        delete "/v1/schools/#{school.external_identifier}", headers: headers
+
+        expect(response).to have_http_status(:success)
+        expect(JSON.parse(response.body)).to eq({ 'message' => "school #{school.external_identifier} deleted" })
+      end
+    end
+
+    context 'when the school does not exist' do
+      it 'returns an error message' do
+        delete '/v1/schools/nonexistent', headers: headers
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)).to have_key('message')
+      end
+    end
+  end
 end
