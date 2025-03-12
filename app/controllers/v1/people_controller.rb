@@ -37,7 +37,9 @@ class V1::PeopleController < ApiController
   end
 
   def update
-    if current_user
+    @person = Person.find_by!(external_identifier: params[:id])
+
+    if @person.user == current_user || current_user.admin?
       @person = current_user.person
       @person.update!(person_params)
       render json: V1::PersonSerializer.new(@person.reload)
