@@ -165,6 +165,8 @@ class V1::SchoolsController < ApiController
       :num_classrooms,
       :charter_string,
       :directory_visible,
+      :affiliated,
+      :affiliation_date,
       school_relationships_attributes: [:person_id],
       address_attributes: %i[city state]
     )
