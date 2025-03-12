@@ -63,8 +63,7 @@ class V1::SchoolsController < ApiController
 
   def destroy
     school = School.find_by!(external_identifier: params[:id])
-    # TODO: call service to delete school
-    # school.destroy!
+    School::Remove.run(school)
     render json: { message: "school #{school.external_identifier} deleted" }
   rescue StandardError => e
     render json: { message: e.message }, status: :unprocessable_entity

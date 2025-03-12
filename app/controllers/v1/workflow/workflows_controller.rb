@@ -1,9 +1,13 @@
 class V1::Workflow::WorkflowsController < ApiController
-  before_action :authenticate_admin!, only: %i[update]
+  before_action :authenticate_admin!, only: %i[update create]
 
   def create
-    ## TODO; takes in a definition_id and school_id
-    ## calls a service to create a new workflow instance record
+    definition = Workflow::Definition::Workflow.find(workflow_params[:definition_id])
+    school = School.find_by!(external_identifier: workflow_params[:school_id])
+    workflow = Workflow::Instance::Workflow.create!(definition:, school:)
+    Workflow::InitializeWorkflowJob.perform_later(workflow.id)
+
+    render json: V1::Workflow::WorkflowSerializer.new(workflow)
   end
 
   def show
