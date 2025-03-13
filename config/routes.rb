@@ -16,11 +16,11 @@ Rails.application.routes.draw do
   end
 
   namespace :v1 do
-    resources :users, except: [:index, :create, :destroy]
+    resources :users, except: [:index, :create]
 
     get "/search" => "search#index", as: :search
 
-    resources :people  do
+    resources :people, except: [:destroy] do
       get "/profile_image", to: 'profile_images#show', as: 'profile_image'
       # resources :school_relationships
     end
