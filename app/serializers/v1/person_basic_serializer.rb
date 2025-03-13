@@ -9,7 +9,8 @@ module V1
                :show_ssj,
                :updated_at,
                :is_onboarded,
-               :preferred_language
+               :preferred_language,
+               :active
 
     attribute :image_url do |person|
       image_url(person)
