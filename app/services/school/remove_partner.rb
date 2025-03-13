@@ -17,8 +17,11 @@ class School::RemovePartner < BaseService
     # Is this person associated to any other schools?
     return if @partner.school_relationships.active.any?
 
-    # do not show in directory
+    # destroy all incomplete assignments
+    @partner.assignments.for_workflow(@school.workflow_id).incomplete.destroy_all
+
     @partner.active = false
+    @partner.end_date = @end_date || Date.today
     @partner.save!
 
     # delete user id and password
