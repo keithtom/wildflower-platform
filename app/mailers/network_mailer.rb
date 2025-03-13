@@ -6,7 +6,7 @@ class NetworkMailer < ApplicationMailer
 
     @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{user.authentication_token}"
 
-    mail to: @user.email, subject: "Welcome to #{ENV.fetch('APP_NAME', nil)}!"
+    mail to: @user.email, subject: "Welcome to #{ENV.fetch('APP_NAME', nil)} - Log in to activate your account!"
   end
 
   def remind_login(user)
