@@ -1,5 +1,5 @@
 class V1::PeopleController < ApiController
-  before_action :authenticate_admin!, only: %i[create destroy]
+  before_action :authenticate_admin!, only: %i[create]
 
   def index
     @people = Person.includes(:profile_image_attachment, :schools, :address, taggings: [:tag])
@@ -48,13 +48,6 @@ class V1::PeopleController < ApiController
         message: 'Must be signed in'
       }, status: :unauthorized
     end
-  end
-
-  def destroy
-    # TODO: remove all associated school relationships
-    # TODO: destroy all incomplete assignments
-    # TODO: remove login
-    # TODO: remove from directory (change active to false)
   end
 
   protected
