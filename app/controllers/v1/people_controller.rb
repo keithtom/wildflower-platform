@@ -1,5 +1,5 @@
 class V1::PeopleController < ApiController
-  before_action :authenticate_admin!, only: %i[create]
+  before_action :authenticate_admin!, only: %i[create, :destroy]
 
   def index
     @people = Person.includes(:profile_image_attachment, :schools, :address, taggings: [:tag])
@@ -48,6 +48,12 @@ class V1::PeopleController < ApiController
         message: 'Must be signed in'
       }, status: :unauthorized
     end
+  end
+
+  def destroy
+    @person = Person.find_by!(external_identifier: params[:id])
+    User::Offboard.new(@person.user, Date.today).run
+    render json: { message: 'Person deleted' }, status: :ok
   end
 
   protected
