@@ -13,6 +13,7 @@ class Person
 
     def update_ssj_team_member_status
       if is_onboarded
+        self.start_date = Date.today
         school_relationships.invited.update(start_date: Date.today) # TODO: move somewhere else?
         ssj_team_members.invited.update(status: 'active') # DEPRECATE
       end
