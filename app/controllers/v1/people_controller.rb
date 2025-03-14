@@ -52,7 +52,7 @@ class V1::PeopleController < ApiController
 
   def destroy
     @person = Person.find_by!(external_identifier: params[:id])
-    User::Offboard.new(@person.user, Date.today).run
+    Users::Offboard.new(@person.user, Date.today).run
     render json: { message: 'Person deleted' }, status: :ok
   end
 
