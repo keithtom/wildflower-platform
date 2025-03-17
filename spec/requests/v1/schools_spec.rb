@@ -53,6 +53,137 @@ describe 'API V1 School', type: :request do
           expect(response).to have_http_status(:success)
         end
       end
+
+      context 'with pagination' do
+        before do
+          Bullet.enable = false
+          # Create 30 schools to test pagination
+          create_list(:school, 30)
+        end
+
+        after do
+          Bullet.enable = true
+        end
+
+        it 'returns paginated results with default values' do
+          get '/v1/schools', headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data'].length).to eq(25) # default per_page
+          expect(json_response['meta']).to include(
+            'current_page' => 1,
+            'per_page' => 25,
+            'total_entries' => 32, # 30 created + 2 from before block
+            'total_pages' => 2
+          )
+        end
+
+        it 'respects custom page and per_page parameters' do
+          get '/v1/schools', params: { page: 2, per_page: 10 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data'].length).to eq(10)
+          expect(json_response['meta']).to include(
+            'current_page' => 2,
+            'per_page' => 10,
+            'total_entries' => 32,
+            'total_pages' => 4
+          )
+        end
+
+        it 'returns the last page with remaining records' do
+          get '/v1/schools', params: { page: 4, per_page: 10 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data'].length).to eq(2) # Last page with remaining record
+          expect(json_response['meta']).to include(
+            'current_page' => 4,
+            'per_page' => 10,
+            'total_entries' => 32,
+            'total_pages' => 4
+          )
+        end
+
+        context 'with invalid pagination parameters' do
+          it 'handles negative page numbers gracefully' do
+            get '/v1/schools', params: { page: -1 }, headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['meta']).to include(
+              'current_page' => 1  # Should default to first page
+            )
+          end
+
+          it 'handles zero page number gracefully' do
+            get '/v1/schools', params: { page: 0 }, headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['meta']).to include(
+              'current_page' => 1  # Should default to first page
+            )
+          end
+
+          it 'handles negative per_page gracefully' do
+            get '/v1/schools', params: { per_page: -5 }, headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['meta']).to include(
+              'per_page' => 25  # Should use default per_page
+            )
+          end
+
+          it 'handles too large per_page gracefully' do
+            get '/v1/schools', params: { per_page: 1000 }, headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['meta']).to include(
+              'per_page' => 50  # Should use max per_page
+            )
+          end
+
+          it 'handles non-numeric pagination parameters gracefully' do
+            get '/v1/schools', params: { page: 'abc', per_page: 'def' }, headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['meta']).to include(
+              'current_page' => 1,
+              'per_page' => 25  # Should use defaults
+            )
+          end
+        end
+
+        context 'with empty result sets' do
+          before do
+            School.destroy_all
+          end
+
+          it 'returns empty data array with correct metadata' do
+            get '/v1/schools', headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['data']).to be_empty
+            expect(json_response['meta']).to include(
+              'current_page' => 1,
+              'per_page' => 25,
+              'total_entries' => 0,
+              'total_pages' => 1
+            )
+          end
+        end
+
+        context 'when requesting a page beyond total pages' do
+          it 'returns empty data array with correct metadata' do
+            get '/v1/schools', params: { page: 100 }, headers: headers
+
+            expect(response).to have_http_status(:success)
+            expect(json_response['data']).to be_empty
+            expect(json_response['meta']).to include(
+              'current_page' => 100,
+              'total_pages' => 2 # With 31 records and 25 per page, should have 2 pages
+            )
+          end
+        end
+      end
     end
 
     describe 'GET /v1/schools/1' do
