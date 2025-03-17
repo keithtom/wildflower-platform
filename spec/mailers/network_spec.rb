@@ -7,7 +7,7 @@ RSpec.describe NetworkMailer, type: :subjecter do
     let(:subject) { described_class.invite(user) }
 
     it "renders the headers" do
-      expect(subject.subject).to eq("Welcome to #{ENV['APP_NAME']}!")
+      expect(subject.subject).to eq("Welcome to #{ENV['APP_NAME']} - Log in to activate your account!")
       expect(subject.to).to eq([user.email])
       expect(subject.from).to eq(["platform@email.wildflowerschools.org"])
       expect(subject.reply_to).to eq(["support@wildflowerschools.org"])
