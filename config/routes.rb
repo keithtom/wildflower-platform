@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     post "/users/email_login" => "users/registrations#email_login", as: :email_login
+    post "/users/password_reset" => "users/registrations#password_reset", as: :password_reset
   end
 
   namespace :v1 do
