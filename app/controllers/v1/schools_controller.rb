@@ -31,7 +31,15 @@ class V1::SchoolsController < ApiController
 
     @schools = @schools.where(status:) if status
 
-    render json: V1::SchoolSerializer.new(@schools, serialization_options)
+    # Add pagination
+    page = [filter_params[:page].to_i, 1].max
+    per_page = [[filter_params[:per_page].to_i, 1].max, 50].min
+    per_page = 25 if per_page == 1 && !filter_params[:per_page].to_i.positive?
+
+    paginated_schools = @schools.paginate(page:, per_page:)
+    serialization_options[:meta] = pagination_meta(paginated_schools)
+
+    render json: V1::SchoolSerializer.new(paginated_schools, serialization_options)
   end
 
   def show
@@ -173,6 +181,17 @@ class V1::SchoolsController < ApiController
   end
 
   def filter_params
-    params.permit(:person_id, :status, :role, :name_only, :serialization_fields)
+    params.permit(:person_id, :status, :role, :name_only, :serialization_fields, :page, :per_page)
+  end
+
+  private
+
+  def pagination_meta(paginated_object)
+    {
+      current_page: paginated_object.current_page,
+      per_page: paginated_object.per_page,
+      total_entries: paginated_object.total_entries,
+      total_pages: paginated_object.total_pages
+    }
   end
 end
