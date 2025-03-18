@@ -2,7 +2,7 @@
 class SSJMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/user_mailer/invite
   def invite_partner
-    SSJMailer.invite_partner(User.first, User.last)
+    SSJMailer.invite_partner(User.first.id, User.last.id, Person.last.id)
   end
 
   def invite
