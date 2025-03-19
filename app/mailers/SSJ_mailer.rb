@@ -28,7 +28,7 @@ class SSJMailer < ApplicationMailer
     @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{@user.authentication_token}"
 
     mail to: @user.email, cc: [@ops_guide.email, 'support@wildflowerschools.org'],
-         subject: "Welcome to #{ENV.fetch('APP_NAME', 'My Wildflower')} - Log in to begin your School Startup Journey"
+         subject: "Welcome to #{ENV.fetch('APP_NAME', 'My Wildflower')} - Log in to begin your School Startup Journey!"
   end
 
   def invite_ops_guide(user, ssj_team)
