@@ -1,23 +1,11 @@
 <p>
-Dear <%= @user.name %>,
+Dear <%= @user.first_name %>,
 </p>
 <p>
-We are thrilled to welcome you to join <%= ENV['APP_NAME'] %>! 
+<%= @inviter.name %> has invited you to join <%= ENV['APP_NAME'] %>,  a platform that connects and supports Wildflower Teacher Leaders, Foundation Partners, and schools. Through <%= ENV.fetch('APP_NAME', 'My Wildflower') %> you will have access to the Wildflower network directory and <%= @school_name %>’s school dashboard. Please <%= link_to "click here", @invite_url %> to activate your account and complete your directory profile!
 </p>
 <p>
-Through <%= ENV['APP_NAME'] %>, you will have immediate access to the Wildflower People Directory as well as Monthly Admin Checklists. 
-</p>
-<p>
-The <u>Wildflower People Directory</u> is an interactive tool for you to see who is in the network, what schools are in the network and a way for you to connect with them and for others to connect with you.  We use the Wildflower Directory as our way of knowing who is in the Wildflower network and use the information within the Directory to share communications and information. 
-</p>
-<p>
-The <u>Monthly Administrative Checklist</u> is a dynamic tool designed to help you efficiently manage your administrative tasks. This feature provides a comprehensive, easy-to-use checklist that updates monthly, ensuring you stay on top of your responsibilities throughout the academic year. 
-</p>
-<p>
-We are excited for you to set up your profile and begin to use <%= ENV['APP_NAME'] %>. Please <%= link_to "click here", @invite_url %> to log in and check it out!
-</p>
-<p>
-Welcome to the next stage in Wildflower connection!
+Warmly,
 <br/>
-<br/>
-Katelyn
+Wildflower Support
+</p>

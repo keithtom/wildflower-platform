@@ -110,7 +110,7 @@ RSpec.describe 'V1::Workflow::Workflows', type: :request do
         post '/v1/workflow/workflows', params: invalid_params, headers: headers
 
         expect(response).to have_http_status(:not_found)
-        expect(json_response).to have_key('message')
+        expect(json_response).to have_key('error')
       end
     end
   end

@@ -7,6 +7,6 @@ class OpenTlPreview < ActionMailer::Preview
   end
 
   def invite_partner
-    OpenTlMailer.invite_partner(User.first.id)
+    OpenTlMailer.invite_partner(User.first.id, User.last.id, 'Test School')
   end
 end

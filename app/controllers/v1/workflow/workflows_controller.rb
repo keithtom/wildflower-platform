@@ -2,12 +2,13 @@ class V1::Workflow::WorkflowsController < ApiController
   before_action :authenticate_admin!, only: %i[update create]
 
   def create
-    definition = Workflow::Definition::Workflow.find(workflow_params[:definition_id])
-    school = School.find_by!(external_identifier: workflow_params[:school_id])
-    workflow = Workflow::Instance::Workflow.create!(definition:, school:)
-    Workflow::InitializeWorkflowJob.perform_later(workflow.id)
-
+    workflow = Workflow::Create.call(
+      definition_id: workflow_params[:definition_id],
+      school_id: workflow_params[:school_id]
+    )
     render json: V1::Workflow::WorkflowSerializer.new(workflow)
+  rescue Workflow::ServiceError => e
+    render json: { error: e.message }, status: e.status
   end
 
   def show
