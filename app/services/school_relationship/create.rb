@@ -26,6 +26,6 @@ class SchoolRelationship::Create < BaseService
     end
     Users::GenerateToken.call(user)
 
-    SchoolRelationshipMailer.add_partner(user.id, @school.name).deliver_later
+    SchoolMailer.add_partner(user.id, @school.name).deliver_later
   end
 end

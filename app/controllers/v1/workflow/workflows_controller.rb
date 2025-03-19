@@ -6,6 +6,8 @@ class V1::Workflow::WorkflowsController < ApiController
     school = School.find_by!(external_identifier: workflow_params[:school_id])
     workflow = Workflow::Instance::Workflow.create!(definition:, school:)
     Workflow::InitializeWorkflowJob.perform_later(workflow.id)
+    WorkflowMailer.notify_partners(workflow.id).deliver_later
+    # TODO: send email to partners to notify them that they have been added to the workflow
 
     render json: V1::Workflow::WorkflowSerializer.new(workflow)
   end

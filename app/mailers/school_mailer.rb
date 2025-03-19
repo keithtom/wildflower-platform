@@ -1,6 +1,7 @@
-class SchoolRelationshipMailer < ApplicationMailer
+class SchoolMailer < ApplicationMailer
   default bcc: 'support@wildflowerschools.org'
 
+  # Generic email to notify a partner that they have been added to a school dashboard
   def add_partner(user_id, school_name)
     @user = User.find(user_id)
     @school_name = school_name

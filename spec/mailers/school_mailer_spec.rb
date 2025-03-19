@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe SchoolRelationshipMailer, type: :mailer do
+RSpec.describe SchoolMailer, type: :mailer do
   describe 'add_partner' do
     let(:user) { create(:user, authentication_token: Devise.friendly_token) }
     let(:school_name) { 'Wildflower Test School' }
-    let(:mail) { SchoolRelationshipMailer.add_partner(user.id, school_name) }
+    let(:mail) { SchoolMailer.add_partner(user.id, school_name) }
 
     it 'renders the headers' do
       expect(mail.subject).to eq("#{ENV.fetch('APP_NAME',
