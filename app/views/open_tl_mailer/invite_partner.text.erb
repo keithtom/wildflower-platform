@@ -1,6 +1,6 @@
 Dear <%= @user.first_name %>,
 
-<%= @inviter.name %> has invited you to join <%= ENV['APP_NAME'] %>, a platform that connects and supports Wildflower Teacher Leaders, Foundation Partners, and schools. Through <%= ENV['APP_NAME'] %> you will have access to the Wildflower network directory and <%= @school_name %>’s school dashboard. Please click here (<%= @invite_url %>) to activate your account and complete your directory profile!
+<%= @inviter.name %> has invited you to join <%= ENV.fetch('APP_NAME', 'My Wildflower') %>, a platform that connects and supports Wildflower Teacher Leaders, Foundation Partners, and schools. Through <%= ENV['APP_NAME'] %> you will have access to the Wildflower network directory and <%= @school_name %>’s school dashboard. Please click here (<%= @invite_url %>) to activate your account and complete your directory profile!
 
 Warmly,
 Wildflower Support

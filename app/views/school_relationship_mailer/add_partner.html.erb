@@ -1,0 +1,12 @@
+<p>
+Dear <%= @user.first_name %>, 
+</p>
+<p>
+Exciting news! You have been added to the <%= ENV.fetch('APP_NAME', 'My Wildflower') %> dashboard for <%= @school_name %>. Please <%= link_to 'click here', @invite_url %> to log in, update your profile and explore!
+</p>
+<p>
+If you have any questions about your <%= ENV.fetch('APP_NAME', 'My Wildflower') %> account, please contact support@wildflowerschools.org.
+</p>
+<p>
+Warmly,
+Wildflower Support
