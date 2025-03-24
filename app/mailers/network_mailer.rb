@@ -4,7 +4,7 @@ class NetworkMailer < ApplicationMailer
   def invite(user_id)
     @user = User.find(user_id)
 
-    @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{user.authentication_token}"
+    @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{@user.authentication_token}"
 
     mail to: @user.email, cc: 'support@wildflowerschools.org',
          subject: "Welcome to #{ENV.fetch('APP_NAME', nil)} - Log in to activate your account!"
