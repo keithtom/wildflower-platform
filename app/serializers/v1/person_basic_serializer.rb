@@ -9,7 +9,8 @@ module V1
                :show_ssj,
                :updated_at,
                :is_onboarded,
-               :preferred_language
+               :preferred_language,
+               :active
 
     attribute :image_url do |person|
       image_url(person)
@@ -24,7 +25,7 @@ module V1
     # end
 
     attribute :ssj_phase do |person|
-      person.ssj_team&.workflow&.current_phase if person.ssj_team
+      person.schools.first&.workflows&.first&.current_phase
     end
 
     has_one :address, id_method_name: :external_identifier do |person|

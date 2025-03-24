@@ -9,7 +9,6 @@ class V1::UsersController < ApiController
   def user_options
     options = {}
     options[:include] = ['person', 'person.address']
-    return options
+    options
   end
 end
-

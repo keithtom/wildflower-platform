@@ -685,6 +685,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_05_192511) do
     t.string "version"
     t.datetime "deleted_at"
     t.bigint "school_id"
+    t.boolean "visible", default: true, null: false
     t.index ["definition_id"], name: "index_workflow_instance_workflows_on_definition_id"
     t.index ["deleted_at"], name: "index_workflow_instance_workflows_on_deleted_at"
     t.index ["external_identifier"], name: "index_workflow_instance_workflows_on_external_identifier", unique: true

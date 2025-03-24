@@ -7,18 +7,16 @@ class V1::SchoolRelationshipsController < ApiController
   end
 
   def create
-    school = School.find_by!(external_identifier: school_relationship_params.delete(:school_id))
-    person = Person.find_by!(external_identifier: school_relationship_params.delete(:person_id))
-    @school_relationship = SchoolRelationship.new(school_relationship_params)
-    @school_relationship.school = school
-    @school_relationship.person = person
-    # TODO: trigger email
-
-    if @school_relationship.save
-      render json: V1::SchoolRelationshipSerializer.new(@school_relationship, serializer_options), status: :created
-    else
-      render json: @school_relationship.errors, status: :unprocessable_entity
+    begin
+      @school_relationship = SchoolRelationship::Create.run(school_relationship_params, current_user)
+      # Refetch with includes to avoid N+1
+      @school_relationship = SchoolRelationship.includes(school: [:people]).find(@school_relationship.id)
+    rescue StandardError => e
+      render json: { error: e.message }, status: :unprocessable_entity
+      return
     end
+
+    render json: V1::SchoolRelationshipSerializer.new(@school_relationship, serializer_options), status: :created
   end
 
   def show

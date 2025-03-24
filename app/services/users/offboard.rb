@@ -3,27 +3,23 @@
 module Users
   class Offboard
     # inverse of onboard.
-    # user becomes inactive or leaves network
-    # disable google account
-    # remove them from google groups
-    # suspend profile
-    # suspend school profile
 
-    def initialize(user, school, end_date)
+    def initialize(user, end_date)
       @user = user
       @person = user.person
-      @school = school
       @end_date = end_date
     end
 
     def run
       if @person
-        @person.end_date = end_date
         @person.active = false
+        @person.end_date ||= @end_date
         @person.save!
 
-        @person.school_relationships.where(school_id: @school.id).each do |sr|
-          sr.end_date = end_date
+        @person.assignments.incomplete.destroy_all
+
+        @person.school_relationships.each do |sr|
+          sr.end_date ||= @end_date
           sr.save!
         end
       end

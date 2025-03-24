@@ -1,15 +1,21 @@
 class V1::SchoolsController < ApiController
-  before_action :authenticate_admin!, only: [:create]
+  before_action :authenticate_admin!, only: %i[create destroy]
 
   def index
     status = filter_params[:status]
     person_id = Person.find_by(external_identifier: filter_params[:person_id])&.id
     role = filter_params[:role]
+    serialization_fields = filter_params[:serialization_fields]&.split(',')
     serialization_options = {}
 
     query = School
     includes = [:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
                                [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] }]
+    if serialization_fields
+      serialization_options = { fields: { school: serialization_fields.map(&:to_sym) } }
+      includes = [[]]
+    end
+
     if filter_params[:name_only]
       serialization_options = { fields: { school: [:name] } }
       includes = [[]]
@@ -25,7 +31,15 @@ class V1::SchoolsController < ApiController
 
     @schools = @schools.where(status:) if status
 
-    render json: V1::SchoolSerializer.new(@schools, serialization_options)
+    # Add pagination
+    page = [filter_params[:page].to_i, 1].max
+    per_page = [[filter_params[:per_page].to_i, 1].max, 50].min
+    per_page = 25 if per_page == 1 && !filter_params[:per_page].to_i.positive?
+
+    paginated_schools = @schools.paginate(page:, per_page:)
+    serialization_options[:meta] = pagination_meta(paginated_schools)
+
+    render json: V1::SchoolSerializer.new(paginated_schools, serialization_options)
   end
 
   def show
@@ -51,6 +65,14 @@ class V1::SchoolsController < ApiController
 
     school = SSJ::InviteSchool.run(school_params[:etl_people_params], school_params[:workflow_id], ops_guide, rgl)
     render json: { message: "school #{school.external_identifier} invite emails sent" }
+  rescue StandardError => e
+    render json: { message: e.message }, status: :unprocessable_entity
+  end
+
+  def destroy
+    school = School.find_by!(external_identifier: params[:id])
+    School::Remove.run(school)
+    render json: { message: "school #{school.external_identifier} deleted" }
   rescue StandardError => e
     render json: { message: e.message }, status: :unprocessable_entity
   end
@@ -135,6 +157,7 @@ class V1::SchoolsController < ApiController
     params.require(:school).permit(
       [etl_people_params: %i[first_name last_name email]],
       :workflow_id,
+      :name,
       :ops_guide_id,
       :rgl_id,
       :expected_start_date,
@@ -142,6 +165,7 @@ class V1::SchoolsController < ApiController
       :logo_image,
       :about,
       :opened_on,
+      :status,
       :expected_start_date,
       [ages_served_list: []],
       :governance_type,
@@ -149,12 +173,25 @@ class V1::SchoolsController < ApiController
       :num_classrooms,
       :charter_string,
       :directory_visible,
+      :affiliated,
+      :affiliation_date,
       school_relationships_attributes: [:person_id],
       address_attributes: %i[city state]
     )
   end
 
   def filter_params
-    params.permit(:person_id, :status, :role, :name_only)
+    params.permit(:person_id, :status, :role, :name_only, :serialization_fields, :page, :per_page)
+  end
+
+  private
+
+  def pagination_meta(paginated_object)
+    {
+      current_page: paginated_object.current_page,
+      per_page: paginated_object.per_page,
+      total_entries: paginated_object.total_entries,
+      total_pages: paginated_object.total_pages
+    }
   end
 end

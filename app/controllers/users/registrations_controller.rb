@@ -51,7 +51,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
       Users::GenerateToken.call(user)
       LoginMailer.login(user).deliver_now
     end
-    render json: { message: "Email sent successfully" }
+    render json: { message: 'Email sent successfully' }
+  end
+
+  # POST /resource/password_reset
+  # send an email to a user to login via link, and prompt to reset password
+  def password_reset
+    if user = User.find_by(email: params[:email]&.downcase)
+      Users::GenerateToken.call(user)
+      LoginMailer.password_reset(user).deliver_now
+    end
+    render json: { message: 'Email sent successfully' }
   end
 
   # protected
@@ -72,7 +82,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       render json: V1::UserSerializer.new(resource, user_options), status: :ok
     else
       render json: {
-        status: {message: "User couldn't be created successfully. #{resource.errors.full_messages.to_sentence}"}
+        status: { message: "User couldn't be created successfully. #{resource.errors.full_messages.to_sentence}" }
       }, status: :unprocessable_entity
     end
   end
@@ -80,11 +90,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def user_options
     options = {}
     options[:include] = ['person', 'person.address']
-    return options
+    options
   end
 
   def bypass_sign_in(resource, scope: nil)
-    #noop
-    # not using a session store b/c of jwt. 
+    # noop
+    # not using a session store b/c of jwt.
   end
 end
