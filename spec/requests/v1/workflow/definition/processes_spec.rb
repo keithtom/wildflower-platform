@@ -198,7 +198,7 @@ RSpec.describe V1::Workflow::Definition::ProcessesController, type: :request do
 
         expect(json_response['data']['attributes']['description']).to eq(valid_params[:process][:description])
         expect(json_response['data']['attributes']['title']).to eq(valid_params[:process][:title])
-        expect(json_response['data']['attributes']['categories']).to eq(valid_params[:process][:category_list])
+        expect(json_response['data']['attributes']['categories']).to match_array(valid_params[:process][:category_list])
         expect(json_response['included']).to include(have_type(:step).and(have_attribute(:title)))
         expect(json_response['included']).to include(have_type(:selectedProcess).and(have_attribute(:position,
                                                                                                     :state)))

@@ -1,6 +1,14 @@
 class V1::Workflow::WorkflowsController < ApiController
+  before_action :authenticate_admin!, only: %i[update create]
+
   def create
-    ## TODO
+    workflow = Workflow::Create.call(
+      definition_id: workflow_params[:definition_id],
+      school_id: workflow_params[:school_id]
+    )
+    render json: V1::Workflow::WorkflowSerializer.new(workflow)
+  rescue Workflow::ServiceError => e
+    render json: { error: e.message }, status: e.status
   end
 
   def show
@@ -11,8 +19,10 @@ class V1::Workflow::WorkflowsController < ApiController
     render json: V1::Workflow::WorkflowSerializer.new(@workflow)
   end
 
-  def destroy
-    ## TODO
+  def update
+    @workflow = Workflow::Instance::Workflow.find_by!(external_identifier: params[:id])
+    @workflow.update!(workflow_params)
+    render json: V1::Workflow::WorkflowSerializer.new(@workflow)
   end
 
   def resources
@@ -55,5 +65,11 @@ class V1::Workflow::WorkflowsController < ApiController
     }
 
     render json: V1::Workflow::StepSerializer.new(steps, serialization_options)
+  end
+
+  private
+
+  def workflow_params
+    params.require(:workflow).permit(:visible, :definition_id, :school_id)
   end
 end

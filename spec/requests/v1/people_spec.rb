@@ -27,6 +27,157 @@ describe 'API V1 People', type: :request do
         expect(response).to have_http_status(:success)
       end
     end
+
+    context 'with pagination' do
+      before do
+        # Create 30 people to test pagination
+        create_list(:person, 30)
+      end
+
+      it 'returns paginated results with default values' do
+        get '/v1/people', headers: headers
+
+        expect(response).to have_http_status(:success)
+        expect(json_response['data'].length).to eq(25) # default per_page
+        expect(json_response['meta']).to include(
+          'current_page' => 1,
+          'per_page' => 25,
+          'total_entries' => 32, # 2 from top before block + 30 created here
+          'total_pages' => 2
+        )
+      end
+
+      it 'respects custom page and per_page parameters' do
+        get '/v1/people', params: { page: 2, per_page: 10 }, headers: headers
+
+        expect(response).to have_http_status(:success)
+        expect(json_response['data'].length).to eq(10)
+        expect(json_response['meta']).to include(
+          'current_page' => 2,
+          'per_page' => 10,
+          'total_entries' => 32,
+          'total_pages' => 4
+        )
+      end
+
+      it 'returns the last page with remaining records' do
+        get '/v1/people', params: { page: 4, per_page: 10 }, headers: headers
+
+        expect(response).to have_http_status(:success)
+        expect(json_response['data'].length).to eq(2) # Last page with remaining record
+        expect(json_response['meta']).to include(
+          'current_page' => 4,
+          'per_page' => 10,
+          'total_entries' => 32,
+          'total_pages' => 4
+        )
+      end
+
+      context 'with different serializer options' do
+        it 'paginates ETL filtered results' do
+          create_list(:person, 5).each do |p|
+            p.role_list.add(Person::ETL)
+            p.save!
+          end
+
+          Bullet.enable = false
+          get '/v1/people', params: { etl: true, page: 1, per_page: 2 }, headers: headers
+          Bullet.enable = false
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data'].length).to eq(2)
+          expect(json_response['meta']['total_entries']).to eq(5)
+        end
+
+        it 'paginates lightweight results' do
+          get '/v1/people', params: { lightweight: true, page: 1, per_page: 10 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data'].length).to eq(10)
+          expect(json_response['meta']).to include('total_pages', 'current_page')
+        end
+      end
+
+      context 'with invalid pagination parameters' do
+        it 'handles negative page numbers gracefully' do
+          get '/v1/people', params: { page: -1 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['meta']).to include(
+            'current_page' => 1  # Should default to first page
+          )
+        end
+
+        it 'handles zero page number gracefully' do
+          get '/v1/people', params: { page: 0 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['meta']).to include(
+            'current_page' => 1  # Should default to first page
+          )
+        end
+
+        it 'handles negative per_page gracefully' do
+          get '/v1/people', params: { per_page: -5 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['meta']).to include(
+            'per_page' => 25 # Should use default per_page
+          )
+        end
+
+        it 'handles too large per_page gracefully' do
+          get '/v1/people', params: { per_page: 1000 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['meta']).to include(
+            'per_page' => 100 # Should use max per_page
+          )
+        end
+
+        it 'handles non-numeric pagination parameters gracefully' do
+          get '/v1/people', params: { page: 'abc', per_page: 'def' }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['meta']).to include(
+            'current_page' => 1,
+            'per_page' => 25 # Should use defaults
+          )
+        end
+      end
+
+      context 'with empty result sets' do
+        before do
+          Person.destroy_all
+        end
+
+        it 'returns empty data array with correct metadata' do
+          get '/v1/people', headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data']).to be_empty
+          expect(json_response['meta']).to include(
+            'current_page' => 1,
+            'per_page' => 25,
+            'total_entries' => 0,
+            'total_pages' => 1
+          )
+        end
+      end
+
+      context 'when requesting a page beyond total pages' do
+        it 'returns empty data array with correct metadata' do
+          get '/v1/people', params: { page: 100 }, headers: headers
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data']).to be_empty
+          expect(json_response['meta']).to include(
+            'current_page' => 100,
+            'total_pages' => 2 # With 31 records and 25 per page, should have 2 pages
+          )
+        end
+      end
+    end
   end
 
   context 'when user is admin' do

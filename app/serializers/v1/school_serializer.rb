@@ -8,7 +8,7 @@ module V1
     attributes :name, :short_name, :website, :phone, :email, :governance_type, :calendar,
                :max_enrollment, :facebook, :instagram, :status, :timezone, :domain,
                :hero_image2_url, :about, :about_es,
-               :affiliation_date, :closed_on, :num_classrooms, :charter_string,
+               :affiliation_date, :affiliated, :closed_on, :num_classrooms, :charter_string,
                :opened_on, :updated_at, :expected_start_date,
                :facility_type, :directory_visible
 
@@ -78,7 +78,7 @@ module V1
     end
 
     attribute :workflow_ids do |school|
-      school.workflows.pluck(:external_identifier)
+      school.workflows.visible.pluck(:external_identifier)
     end
 
     # for SSJ only

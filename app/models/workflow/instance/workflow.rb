@@ -21,5 +21,7 @@ module Workflow
     delegate :version, to: :definition
 
     delegate :recurring, to: :definition
+
+    scope :visible, -> { where(visible: true) }
   end
 end

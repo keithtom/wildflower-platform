@@ -1,6 +1,6 @@
 class SSJMailer < ApplicationMailer
-  default bcc: "support@wildflowerschools.org"
-  
+  default bcc: 'support@wildflowerschools.org'
+
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
   #
@@ -14,9 +14,10 @@ class SSJMailer < ApplicationMailer
     @ops_guide = Person.find(ops_guide_id)
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
-    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{@user.authentication_token}"
+    @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{@user.authentication_token}"
 
-    mail to: @user.email, cc: [@ops_guide.email, "support@wildflowerschools.org"], subject: "Welcome to the School Startup Journey!"
+    mail to: @user.email, cc: [@ops_guide.email, 'support@wildflowerschools.org', @inviter.email],
+         subject: "Welcome to #{ENV.fetch('APP_NAME', 'My Wildflower')} - Log in to begin your School Startup Journey!"
   end
 
   def invite(user_id, ops_guide_id)
@@ -24,16 +25,17 @@ class SSJMailer < ApplicationMailer
     @ops_guide = User.find(ops_guide_id)
 
     # invite link takes ppl to a front end.  e.g. id.wildflowerschools.org.  here this page sends a request to create a session with the token.
-    @invite_url = "#{ENV['FRONTEND_URL']}/token?token=#{@user.authentication_token}"
+    @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{@user.authentication_token}"
 
-    mail to: @user.email, cc: @ops_guide.email, subject: "Welcome to the School Startup Journey!"
+    mail to: @user.email, cc: [@ops_guide.email, 'support@wildflowerschools.org'],
+         subject: "Welcome to #{ENV.fetch('APP_NAME', 'My Wildflower')} - Log in to begin your School Startup Journey!"
   end
 
   def invite_ops_guide(user, ssj_team)
     @user = user
-    @dashboard_url = "#{ENV['FRONTEND_URL']}/token?token=#{user.authentication_token}"
+    @dashboard_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{user.authentication_token}"
     @partner_names = ssj_team.partner_members.map(&:person).map(&:first_name).to_sentence
 
-    mail to: @user.email, subject: "SSJ Dashboard: You have a new team!"
+    mail to: @user.email, subject: 'SSJ Dashboard: You have a new team!'
   end
 end

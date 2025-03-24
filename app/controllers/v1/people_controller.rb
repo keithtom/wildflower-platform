@@ -1,17 +1,25 @@
 class V1::PeopleController < ApiController
-  before_action :authenticate_admin!, only: [:create]
+  before_action :authenticate_admin!, only: %i[create destroy]
 
   def index
     @people = Person.includes(:profile_image_attachment, :schools, :address, taggings: [:tag])
     @people = @people.tagged_with(Person::OPS_GUIDE) if params[:ops_guide]
     @people = @people.tagged_with(Person::RGL) if params[:rgl]
+
+    page = [params[:page].to_i, 1].max
+    per_page = [[params[:per_page].to_i, 1].max, 100].min
+    per_page = 25 if per_page == 1 && !params[:per_page].to_i.positive?
+
     if params[:etl]
-      @people = @people.includes([:ssj_team]).tagged_with(Person::ETL)
-      render json: V1::PersonBasicSerializer.new(@people.all)
+      @people = @people.tagged_with(Person::ETL)
+      paginated_people = @people.paginate(page:, per_page:)
+      render json: V1::PersonBasicSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     elsif params[:lightweight]
-      render json: V1::PersonBasicSerializer.new(@people.all)
+      paginated_people = @people.paginate(page:, per_page:)
+      render json: V1::PersonBasicSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     else
-      render json: V1::PersonSerializer.new(@people.all)
+      paginated_people = @people.paginate(page:, per_page:)
+      render json: V1::PersonSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     end
   end
 
@@ -37,8 +45,9 @@ class V1::PeopleController < ApiController
   end
 
   def update
-    if current_user
-      @person = current_user.person
+    @person = Person.find_by!(external_identifier: params[:id])
+
+    if @person.user == current_user || current_user.is_admin
       @person.update!(person_params)
       render json: V1::PersonSerializer.new(@person.reload)
     else
@@ -47,6 +56,12 @@ class V1::PeopleController < ApiController
         message: 'Must be signed in'
       }, status: :unauthorized
     end
+  end
+
+  def destroy
+    @person = Person.find_by!(external_identifier: params[:id])
+    Users::Offboard.new(@person.user, Date.today).run
+    render json: { message: 'Person deleted' }, status: :ok
   end
 
   protected
@@ -74,7 +89,19 @@ class V1::PeopleController < ApiController
                                    [role_list: []],
                                    :phone,
                                    :about,
+                                   :active,
                                    :is_onboarded,
                                    address_attributes: %i[city state])
+  end
+
+  private
+
+  def pagination_meta(paginated_object)
+    {
+      current_page: paginated_object.current_page,
+      per_page: paginated_object.per_page,
+      total_entries: paginated_object.total_entries,
+      total_pages: paginated_object.total_pages
+    }
   end
 end
