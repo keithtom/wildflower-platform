@@ -1,12 +1,13 @@
 class NetworkMailer < ApplicationMailer
   default bcc: 'support@wildflowerschools.org'
 
-  def invite(user)
-    @user = user
+  def invite(user_id)
+    @user = User.find(user_id)
 
-    @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{user.authentication_token}"
+    @invite_url = "#{ENV.fetch('FRONTEND_URL', nil)}/token?token=#{@user.authentication_token}"
 
-    mail to: @user.email, cc: 'support@wildflowerschools.org', subject: "Welcome to #{ENV.fetch('APP_NAME', nil)} - Log in to activate your account!"
+    mail to: @user.email, cc: 'support@wildflowerschools.org',
+         subject: "Welcome to #{ENV.fetch('APP_NAME', nil)} - Log in to activate your account!"
   end
 
   def remind_login(user)

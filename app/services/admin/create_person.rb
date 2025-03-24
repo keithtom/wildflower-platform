@@ -5,9 +5,8 @@ class Admin::CreatePerson < BaseService
 
   def run
     ActiveRecord::Base.transaction do
-      @person = Person.new(@person_params)
-      @person.active = false
-      @person.save!
+      @person_params[:active] = false if @person_params[:active].nil?
+      @person = Person.create!(@person_params)
 
       @user = User.new(email: @person.email, person: @person)
       @user.save!

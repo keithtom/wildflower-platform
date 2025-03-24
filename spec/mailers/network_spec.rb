@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe NetworkMailer, type: :subjecter do
 
   describe "invite" do
-    let(:user) { build(:user, authentication_token: Devise.friendly_token) }
-    let(:subject) { described_class.invite(user) }
+    let!(:user) { create(:user, authentication_token: Devise.friendly_token) }
+    let(:subject) { described_class.invite(user.id) }
 
     it "renders the headers" do
       expect(subject.subject).to eq("Welcome to #{ENV['APP_NAME']} - Log in to activate your account!")
