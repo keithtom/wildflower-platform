@@ -9,6 +9,7 @@ class SchoolRelationship < ApplicationRecord
 
   after_create :set_name
   before_destroy :remove_from_airtable
+  after_save :add_role_to_person
   after_commit :reindex_models
 
   scope :active, -> { where.not(start_date: nil).where(end_date: nil) }
@@ -33,5 +34,14 @@ class SchoolRelationship < ApplicationRecord
       RemoveAirtableRecordJob.perform_later(platform_airtable_id,
                                             Airtable::Platform::SCHOOL_RELATIONSHIP)
     end
+  end
+
+  def add_role_to_person
+    return if role_list.empty?
+
+    role_list.each do |role|
+      person.role_list.add(role)
+    end
+    person.save!
   end
 end
