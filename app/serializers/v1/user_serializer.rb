@@ -14,6 +14,10 @@ module V1
       end
     end
 
+    attribute :has_password do |user|
+      user.password.present?
+    end
+
     attribute :image_url do |user|
       if person = user.person
         if person.profile_image.attached?
