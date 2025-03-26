@@ -47,13 +47,15 @@ class Person < ApplicationRecord
   attr_accessor :full_name
 
   before_validation :set_name, if: proc { |person| person.full_name.present? }
+  before_validation :normalize_email
 
   has_one :user, dependent: :nullify
   after_update :sync_user_email, if: :saved_change_to_email?
 
   has_one_attached :profile_image
 
-  validates :email, uniqueness: true, presence: true
+  validates :email, uniqueness: true, presence: true,
+                    format: { with: URI::MailTo::EMAIL_REGEXP, message: 'must be a valid email address' }
 
   before_destroy :remove_from_airtable
 
@@ -110,6 +112,10 @@ class Person < ApplicationRecord
     self.first_name = names.first
     self.last_name = names.last
     self.middle_name = names[1] if names.length == 3
+  end
+
+  def normalize_email
+    self.email = email.to_s.strip.downcase if email.present?
   end
 
   def remove_from_airtable
