@@ -11,7 +11,10 @@ module Workflow
 
     scope :for_person_id, ->(person_id) { where(assignee_id: person_id) }
 
-    scope :for_workflow, ->(workflow_id) { joins(step: { process: :workflow }).where("workflow_instance_workflows.id = ?", workflow_id) }
+    scope :for_workflow, lambda { |workflow_ids|
+      workflow_ids = Array(workflow_ids)
+      joins(step: { process: :workflow }).where('workflow_instance_workflows.id IN (?)', workflow_ids)
+    }
     scope :complete, -> { where.not(completed_at: nil) }
     scope :incomplete, -> { where(completed_at: nil) }
   end

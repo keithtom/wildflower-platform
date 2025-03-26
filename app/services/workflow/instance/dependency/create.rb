@@ -29,6 +29,8 @@ module Workflow
 
         def find_prerequisite_workable
           prerequisite_workable_definition = @dependency_definition.prerequisite_workable
+          puts "Dependency definition #{@dependency_definition.inspect}"
+          puts prerequisite_workable_definition.id
           @prerequisite_workable = @wf_instance.processes.where(definition_id: prerequisite_workable_definition.id).first
 
           # during a rollout, it's possible the prerequisite was not updated because it was started.
