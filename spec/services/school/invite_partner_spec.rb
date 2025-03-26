@@ -27,7 +27,7 @@ RSpec.describe School::InvitePartner, type: :service do
       it 'raises an error' do
         expect do
           described_class.run(person_params, school_relationship_params, school, inviter)
-        end.to raise_error(StandardError, 'Invalid email format: invalid-email')
+        end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Email must be a valid email address')
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe School::InvitePartner, type: :service do
       it 'raises an error' do
         expect do
           described_class.run(person_params, school_relationship_params, school, inviter)
-        end.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Email can\'t be blank, Email must be a valid email address')
       end
     end
 

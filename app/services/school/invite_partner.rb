@@ -8,9 +8,8 @@ class School::InvitePartner < BaseService
 
   def run
     validate_school_status
-    validate_email_format
 
-    person = Person.find_or_create_by!(email: @person_params[:email].strip.downcase)
+    person = Person.find_or_create_by!(email: @person_params[:email])
     role = Person::TL
     if @school.status == School::Status::EMERGING
       person.update!(@person_params.merge(active: false))
@@ -42,10 +41,5 @@ class School::InvitePartner < BaseService
 
   def validate_school_status
     raise StandardError, 'School must have status' unless @school.status
-  end
-
-  def validate_email_format
-    email = @person_params[:email].to_s.strip
-    raise StandardError, "Invalid email format: #{email}" unless URI::MailTo::EMAIL_REGEXP.match?(email)
   end
 end
