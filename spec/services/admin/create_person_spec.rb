@@ -48,7 +48,8 @@ RSpec.describe Admin::CreatePerson, type: :service do
 
       it 'raises an error' do
         expect { described_class.new(invalid_params).run }
-          .to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Email can\'t be blank')
+          .to raise_error(ActiveRecord::RecordInvalid,
+                          'Validation failed: Email can\'t be blank, Email must be a valid email address')
       end
 
       it 'does not create a person' do
