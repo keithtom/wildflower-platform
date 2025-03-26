@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :workflow_definition_workflow, class: 'Workflow::Definition::Workflow' do
-    version { 'v1' }
-    name { Faker::Book.title }
+    sequence(:version) { |n| "v#{n}" }
+    sequence(:name) { |n| "Workflow #{n}" }
     description { 'Imagine the school of your dreams' }
     trait :with_recurring_processes do
       after(:create) do |workflow_definition_workflow|
