@@ -10,7 +10,7 @@ module V1
                :updated_at,
                :is_onboarded,
                :preferred_language,
-               :active
+               :active, :end_date
 
     attribute :image_url do |person|
       image_url(person)
