@@ -59,7 +59,7 @@ module V1
             id: sr.school&.external_identifier,
             name: sr.school&.name,
             workflowId: sr.school&.workflow&.external_identifier, # DEPRECATE
-            workflowIds: sr.school&.workflows&.map(&:external_identifier),
+            workflowIds: sr.school&.workflows&.visible&.map(&:external_identifier),
             affiliated: sr.school&.affiliated,
             start_date: sr.start_date,
             end_date: sr.end_date,
