@@ -18,7 +18,7 @@ class V1::PeopleController < ApiController
       paginated_people = @people.paginate(page:, per_page:)
       render json: V1::PersonBasicSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     else
-      paginated_people = @people.paginate(page:, per_page:)
+      paginated_people = @people.order(first_name: :asc).paginate(page:, per_page:)
       render json: V1::PersonSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     end
   end
