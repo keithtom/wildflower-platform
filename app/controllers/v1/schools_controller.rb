@@ -36,7 +36,7 @@ class V1::SchoolsController < ApiController
     per_page = [[filter_params[:per_page].to_i, 1].max, 50].min
     per_page = 25 if per_page == 1 && !filter_params[:per_page].to_i.positive?
 
-    paginated_schools = @schools.paginate(page:, per_page:)
+    paginated_schools = @schools.order(name: :asc).paginate(page:, per_page:)
     serialization_options[:meta] = pagination_meta(paginated_schools)
 
     render json: V1::SchoolSerializer.new(paginated_schools, serialization_options)
