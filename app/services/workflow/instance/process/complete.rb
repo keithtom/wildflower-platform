@@ -11,13 +11,13 @@ module Workflow
         complete_process
 
         check_postrequisites_startable
-        
+
         # Maybe update a phase counter of milestones completed.
-        
-        update_current_phase
+
+        update_current_phase if @process.due_date.blank?
 
         # upon completing a process we should update the dependencies
-        
+
         notify_people
       end
 
@@ -32,13 +32,11 @@ module Workflow
       def prerequisites_completed?(process)
         process.prerequisites.not_finished.empty?
       end
-    
+
       def check_postrequisites_startable
         @process.postrequisites.each do |postrequisite|
           # for this postrequisite, check if all prerequisites are complete
-          if postrequisite.prerequisites.not_finished.empty?
-            postrequisite.prerequisites_met!
-          end
+          postrequisite.prerequisites_met! if postrequisite.prerequisites.not_finished.empty?
         end
       end
 
@@ -47,7 +45,8 @@ module Workflow
         workflow = @process.workflow
 
         # if there are no processes tagged with the current phase and are not finished, then the phase is complete
-        current_phase_complete = workflow.processes.not_finished.tagged_with(workflow.current_phase, on: :phase, any: true).empty?
+        current_phase_complete = workflow.processes.not_finished.tagged_with(workflow.current_phase, on: :phase,
+                                                                                                     any: true).empty?
 
         if current_phase_complete
           current_phase_index = SSJ::Phase::PHASES.index(workflow.current_phase)
@@ -62,8 +61,7 @@ module Workflow
         end
       end
 
-      def notify_people
-      end
+      def notify_people; end
     end
   end
 end
