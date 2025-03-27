@@ -12,10 +12,10 @@ class V1::PeopleController < ApiController
 
     if params[:etl]
       @people = @people.tagged_with(Person::ETL)
-      paginated_people = @people.paginate(page:, per_page:)
+      paginated_people = @people.order(first_name: :asc).paginate(page:, per_page:)
       render json: V1::PersonBasicSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     elsif params[:lightweight]
-      paginated_people = @people.paginate(page:, per_page:)
+      paginated_people = @people.order(first_name: :asc).paginate(page:, per_page:)
       render json: V1::PersonBasicSerializer.new(paginated_people, meta: pagination_meta(paginated_people))
     else
       paginated_people = @people.order(first_name: :asc).paginate(page:, per_page:)
