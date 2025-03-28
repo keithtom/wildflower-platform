@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Users::Offboard, type: :service do
+RSpec.describe People::Offboard, type: :service do
   let(:end_date) { Date.today }
   let(:person) { create(:person, active: true) }
   let!(:user) { create(:user, person:) }
@@ -15,7 +15,7 @@ RSpec.describe Users::Offboard, type: :service do
   end
 
   describe '#run' do
-    subject { described_class.new(user, end_date).run }
+    subject { described_class.new(person, end_date).run }
 
     context 'when user has a person record' do
       it 'deactivates the person' do
@@ -45,11 +45,12 @@ RSpec.describe Users::Offboard, type: :service do
       end
     end
 
-    context 'when user does not have a person record' do
-      let!(:user) { create(:user, person: nil) }
+    context 'when a person record does not have a user record' do
+      let!(:user) { nil }
 
-      it 'only destroys the user record' do
-        expect { subject }.to change { User.count }.by(-1)
+      it 'does not destroy any user record, and does not raise an error' do
+        expect { subject }.not_to change { User.count }
+        expect { subject }.not_to raise_error
       end
     end
   end
