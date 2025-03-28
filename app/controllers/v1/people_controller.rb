@@ -60,8 +60,12 @@ class V1::PeopleController < ApiController
 
   def destroy
     @person = Person.find_by!(external_identifier: params[:id])
-    Person::Offboard.new(@person, Date.today).run
-    render json: { message: 'Person deleted' }, status: :ok
+    begin
+      People::Offboard.new(@person, Date.today).run
+      render json: { message: 'Person removed' }, status: :ok
+    rescue StandardError => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
   end
 
   protected
