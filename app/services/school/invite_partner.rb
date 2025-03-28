@@ -20,8 +20,10 @@ class School::InvitePartner < BaseService
     person.role_list.add(role)
     person.save!
 
+    new_sr = person.school_relationships.empty?
     sr = SchoolRelationship.find_or_create_by!(school_id: @school.id, person_id: person.id)
     sr.role_list.add(role)
+    sr.start_date = Date.today unless new_sr
     sr.save!
     sr.update!(@school_relationship_params) if @school_relationship_params
 
