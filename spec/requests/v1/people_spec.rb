@@ -178,6 +178,15 @@ describe 'API V1 People', type: :request do
         end
       end
     end
+
+    context 'DELETTE /v1/people/1' do
+      let(:person) { create(:person) }
+
+      it 'returns unauthorized status' do
+        delete "/v1/people/#{person.external_identifier}", headers: headers
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
   end
 
   context 'when user is admin' do
@@ -268,6 +277,62 @@ describe 'API V1 People', type: :request do
           expect do
             post '/v1/people', params: valid_params, headers:
           end.not_to change(User, :count)
+        end
+      end
+    end
+
+    describe 'DELETE /v1/people/:id' do
+      let(:person) { create(:person) }
+      let!(:user) { create(:user, person:) }
+
+      context 'when person exists' do
+        it 'destroys the person and associated user' do
+          expect do
+            delete "/v1/people/#{person.external_identifier}", headers:
+          end.to change(Person, :count).by(0)
+                                       .and change(User, :count).by(-1)
+
+          expect(person.reload.end_date).to eq(Date.today)
+          expect(person.active).to be false
+          expect(response).to have_http_status(:ok)
+          expect(json_response).to eq({ 'message' => 'Person removed' })
+        end
+
+        it 'returns 404 if person does not exist' do
+          delete '/v1/people/non-existent-id', headers: headers
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context 'when person has associated records' do
+        let!(:school_relationship) { create(:school_relationship, person:, end_date: nil) }
+        let!(:workflow_assignment) { create(:workflow_instance_step_assignment, assignee: person) }
+
+        it 'destroys the person and all associated records' do
+          expect do
+            delete "/v1/people/#{person.external_identifier}", headers:
+          end.to change(Person, :count).by(0)
+             .and change(User, :count).by(-1)
+             .and change(SchoolRelationship, :count).by(0)
+             .and change(Workflow::Instance::StepAssignment, :count).by(-1)
+
+          expect(person.reload.end_date).to eq(Date.today)
+          expect(school_relationship.reload.end_date).to eq(Date.today)
+          expect(response).to have_http_status(:ok)
+          expect(json_response).to eq({ 'message' => 'Person removed' })
+        end
+      end
+
+      context 'error is raised' do
+        let(:offboard_date) { Date.today }
+
+        it 'handles offboarding errors gracefully' do
+          allow_any_instance_of(People::Offboard).to receive(:run).and_raise(StandardError.new('Offboarding failed'))
+
+          delete "/v1/people/#{person.external_identifier}", headers: headers
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(json_response).to eq({ 'error' => 'Offboarding failed' })
         end
       end
     end
