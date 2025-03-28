@@ -24,6 +24,8 @@ class ApiController < ActionController::API
   end
 
   def workflow_id
+    return Workflow::Instance::Workflow.find_by!(external_identifier: params[:workflow_id]) if params[:workflow_id]
+
     find_team&.workflow_id
   end
 
