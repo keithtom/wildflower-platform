@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module People
-  class Offboard
+  class Offboard < BaseService
     def initialize(person, end_date)
       @person = person
       @user = person.user
