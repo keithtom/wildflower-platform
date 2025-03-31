@@ -39,7 +39,7 @@ class V1::Workflow::WorkflowsController < ApiController
                                 documentable_type: Workflow::Definition::Step.to_s).includes(includes)
 
     serializer = V1::Workflow::ResourceSerializer
-    serializer = V1::SSJ::ResourcesByCategoryAndPhaseSerializer if params[:phase].present?
+    serializer = V1::ResourcesByCategorySerializer if params[:phase].present?
     render json: serializer.new(documents)
   end
 
