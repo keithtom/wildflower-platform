@@ -46,6 +46,22 @@ RSpec.describe 'V1::Workflow::Workflows', type: :request do
       expect(json_response['data'].count).to be(6)
       expect(json_response['data'].first).to have_attribute('categories')
     end
+
+    context 'when phase parameter is present' do
+      it 'uses ResourcesByCategoryAndPhaseSerializer' do
+        get "/v1/workflow/workflows/#{workflow.external_identifier}/resources?phase=true", headers: headers
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('by_phase')
+      end
+    end
+
+    context 'when phase parameter is not present' do
+      it 'uses ResourceSerializer' do
+        get "/v1/workflow/workflows/#{workflow.external_identifier}/resources", headers: headers
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('"type":"resource"')
+      end
+    end
   end
 
   describe 'GET /v1/workflow/workflows/:workflow_id/assigned_steps' do

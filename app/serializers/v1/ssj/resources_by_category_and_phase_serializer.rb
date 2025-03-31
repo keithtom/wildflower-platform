@@ -1,5 +1,5 @@
 ## DEPRECATE. Duplicate version not nested under SSJ
-class V1::SSJ::ResourcesByCategorySerializer < ApplicationSerializer
+class V1::SSJ::ResourcesByCategoryAndPhaseSerializer < ApplicationSerializer
   include V1::Categorizable
 
   def serializable_hash

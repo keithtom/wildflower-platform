@@ -31,12 +31,16 @@ class V1::Workflow::WorkflowsController < ApiController
     definition_step_ids = Workflow::Instance::Step.where(process_id: process_ids).pluck(:definition_id)
 
     ## document could either be from instance or definition
+    includes = { documentable: [process: %i[categories]] }
+    includes = { documentable: [process: %i[categories phase]] } if params[:phase].present?
     documents = Document.where(documentable_id: instance_step_ids,
-                               documentable_type: Workflow::Instance::Step.to_s).includes(documentable: [process: [:categories]])
+                               documentable_type: Workflow::Instance::Step.to_s).includes(includes)
     documents += Document.where(documentable_id: definition_step_ids,
-                                documentable_type: Workflow::Definition::Step.to_s).includes(documentable: [process: [:categories]])
+                                documentable_type: Workflow::Definition::Step.to_s).includes(includes)
 
-    render json: V1::Workflow::ResourceSerializer.new(documents)
+    serializer = V1::Workflow::ResourceSerializer
+    serializer = V1::SSJ::ResourcesByCategoryAndPhaseSerializer if params[:phase].present?
+    render json: serializer.new(documents)
   end
 
   # assume that workflow_id is passed in
