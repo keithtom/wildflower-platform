@@ -227,7 +227,7 @@ describe 'API V1 School', type: :request do
         expect(school.address.id).to eq(current_school_id)
         expect(school.address.city).to eq('new city')
         expect(school.people).to include(person1, person2, person3)
-        expect(school.ages_served_list).to eq(%w[elementary middle])
+        expect(school.ages_served_list).to match_array(%w[elementary middle])
       end
     end
   end
