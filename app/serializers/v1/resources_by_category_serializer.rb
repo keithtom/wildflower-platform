@@ -3,8 +3,11 @@ class V1::ResourcesByCategorySerializer < ApplicationSerializer
 
   def serializable_hash
     {
-      by_phase: grouped_by_phase(@resource),
-      by_category: grouped_by_category(@resource)
+      resources:
+        {
+          by_phase: grouped_by_phase(@resource),
+          by_category: grouped_by_category(@resource)
+        }
     }
   end
 
@@ -25,7 +28,7 @@ class V1::ResourcesByCategorySerializer < ApplicationSerializer
     end
 
     grouped_documents.map do |key, value|
-      {key => value}
+      { key => value }
     end
   end
 
@@ -42,7 +45,7 @@ class V1::ResourcesByCategorySerializer < ApplicationSerializer
     end
 
     grouped_documents.map do |key, value|
-      {key => value}
+      { key => value }
     end
   end
 
