@@ -102,19 +102,19 @@ class School < ApplicationRecord
   end
 
   def ops_guides
-    Person.where(id: school_relationships.tagged_with(Person::OPS_GUIDE).pluck(:person_id))
+    Person.where(id: school_relationships.active.tagged_with(Person::OPS_GUIDE).pluck(:person_id))
   end
 
   def rgls
-    Person.where(id: school_relationships.tagged_with(Person::RGL).pluck(:person_id))
+    Person.where(id: school_relationships.active.tagged_with(Person::RGL).pluck(:person_id))
   end
 
   def etls
-    Person.where(id: school_relationships.tagged_with(Person::ETL).pluck(:person_id))
+    Person.where(id: school_relationships.active.tagged_with(Person::ETL).pluck(:person_id))
   end
 
   def tls
-    Person.where(id: school_relationships.tagged_with(Person::TL).pluck(:person_id))
+    Person.where(id: school_relationships.active.tagged_with(Person::TL).pluck(:person_id))
   end
 
   def active_partners
