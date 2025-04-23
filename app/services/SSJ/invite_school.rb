@@ -86,11 +86,12 @@ class SSJ::InviteSchool < BaseService
       sr.save!
     end
 
-    sr = SchoolRelationship.create!(school_id: @school.id, person_id: @ops_guide.id)
+    sr = SchoolRelationship.create!(school_id: @school.id, person_id: @ops_guide.id, start_date: Date.today)
     sr.role_list.add(Person::OPS_GUIDE)
     sr.save!
 
-    sr = SchoolRelationship.create!(school_id: @school.id, person_id: @regional_growth_leader.id)
+    sr = SchoolRelationship.create!(school_id: @school.id, person_id: @regional_growth_leader.id,
+                                    start_date: Date.today)
     sr.role_list.add(Person::RGL)
     sr.save!
   end
