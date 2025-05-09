@@ -25,7 +25,7 @@ class V1::SearchController < ApplicationController
     when 'person', 'people', 'persons'
       # people where
       # based on the keys above, build the right where clause using a language of OR
-      default_search_options[:where]&.merge!(active: true)
+      default_search_options[:where]&.merge!(active: true) unless search_params[:show_inactive]
       @search = Person.search(query, **default_search_options.merge!({ includes: person_includes }))
       @results = @search.to_a
       render json: V1::PersonSearchSerializer.new(@results)
@@ -40,7 +40,7 @@ class V1::SearchController < ApplicationController
       @results = @search.to_a
       render json: V1::SchoolSearchSerializer.new(@results)
     else
-      default_search_options[:where]&.merge!(active: true)
+      default_search_options[:where]&.merge!(active: true) unless search_params[:show_inactive]
       @search = Person.search(query,
                               **default_search_options.merge!({ includes: person_includes, models: model_whitelist }))
       @results = @search.to_a
@@ -61,6 +61,7 @@ class V1::SearchController < ApplicationController
   def search_params
     params.permit(
       :q,
+      :show_inactive,
       :models,
       :role_list,
       :offset,
