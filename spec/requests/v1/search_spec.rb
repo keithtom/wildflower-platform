@@ -21,6 +21,40 @@ RSpec.describe 'V1::Searches', type: :request do
       expect(json_response['data']).not_to include(have_type('personSearch').and(have_attribute(:lastName).with_value('Inactive')))
     end
 
+    describe 'with show_inactive parameter' do
+      it 'returns only active people by default' do
+        get '/v1/search', params: { q: 'Keith', models: 'person' },
+                          headers: { 'ACCEPT' => 'application/json' }
+        expect(response).to have_http_status(:success)
+
+        expect(json_response['data']).to include(have_type('personSearch').and(have_id(person1.external_identifier)))
+        expect(json_response['data'].map { |p| p['id'] }).not_to include(person2.external_identifier)
+      end
+
+      it 'returns both active and inactive people when show_inactive is true' do
+        get '/v1/search', params: { q: 'Keith', models: 'person', show_inactive: true },
+                          headers: { 'ACCEPT' => 'application/json' }
+        expect(response).to have_http_status(:success)
+
+        expect(json_response['data']).to include(
+          have_type('personSearch').and(have_id(person1.external_identifier)),
+          have_type('personSearch').and(have_id(person2.external_identifier))
+        )
+      end
+
+      it 'applies show_inactive parameter to default search as well' do
+        get '/v1/search', params: { q: 'Keith', show_inactive: true },
+                          headers: { 'ACCEPT' => 'application/json' }
+        expect(response).to have_http_status(:success)
+
+        # Default search includes person model
+        expect(json_response['data']).to include(
+          have_type('personSearch').and(have_id(person1.external_identifier)),
+          have_type('personSearch').and(have_id(person2.external_identifier))
+        )
+      end
+    end
+
     it 'succeeds for schools' do
       get '/v1/search', params: { q: 'Keith', models: 'school' }, headers: { 'ACCEPT' => 'application/json' }
       expect(response).to have_http_status(:success)
