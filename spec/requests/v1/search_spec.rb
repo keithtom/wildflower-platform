@@ -21,7 +21,7 @@ RSpec.describe 'V1::Searches', type: :request do
       expect(json_response['data']).not_to include(have_type('personSearch').and(have_attribute(:lastName).with_value('Inactive')))
     end
 
-    describe 'with show_inactive parameter' do
+    describe 'with show_all parameter' do
       it 'returns only active people by default' do
         get '/v1/search', params: { q: 'Keith', models: 'person' },
                           headers: { 'ACCEPT' => 'application/json' }
@@ -31,8 +31,8 @@ RSpec.describe 'V1::Searches', type: :request do
         expect(json_response['data'].map { |p| p['id'] }).not_to include(person2.external_identifier)
       end
 
-      it 'returns both active and inactive people when show_inactive is true' do
-        get '/v1/search', params: { q: 'Keith', models: 'person', show_inactive: true },
+      it 'returns both active and inactive people when show_all is true' do
+        get '/v1/search', params: { q: 'Keith', models: 'person', show_all: 'true' },
                           headers: { 'ACCEPT' => 'application/json' }
         expect(response).to have_http_status(:success)
 
@@ -42,8 +42,8 @@ RSpec.describe 'V1::Searches', type: :request do
         )
       end
 
-      it 'applies show_inactive parameter to default search as well' do
-        get '/v1/search', params: { q: 'Keith', show_inactive: true },
+      it 'applies show_all parameter to default search as well' do
+        get '/v1/search', params: { q: 'Keith', show_all: 'true' },
                           headers: { 'ACCEPT' => 'application/json' }
         expect(response).to have_http_status(:success)
 
