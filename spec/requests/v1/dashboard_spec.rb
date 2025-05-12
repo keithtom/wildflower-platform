@@ -32,8 +32,8 @@ RSpec.describe 'V1::Dashboard', type: :request do
       get '/v1/dashboard/resources', headers: headers
       expect(response).to have_http_status(:success)
       expect(json_response['resources']['by_category'][1]['Finance']).not_to be_nil
-      expect(json_response['resources']['by_category'][4]['Human Resources']).not_to be_nil
-      expect(json_response['resources']['by_category'][4]['Human Resources']).not_to be_empty
+      expect(json_response['resources']['by_category'][5]['Human Resources']).not_to be_nil
+      expect(json_response['resources']['by_category'][5]['Human Resources']).not_to be_empty
       expect(json_response['resources']['by_phase'].first[phase]).not_to be_nil
     end
   end
