@@ -33,7 +33,7 @@ class V1::Workflow::ProcessesController < ApiController
     elsif params[:timeframe]
       begin
         date = Date.strptime(params[:timeframe], '%Y-%m-%d')
-        processes = workflow.processes.within_timeframe(date).or(workflow.processes.past_due).includes(%i[categories
+        processes = workflow.processes.within_timeframe(date).includes(%i[categories
                                                                                                           taggings])
       rescue ArgumentError
         render json: { error: "Invalid date format: #{params[:timeframe]}" }, status: :unprocessable_entity
