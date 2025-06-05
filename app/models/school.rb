@@ -102,11 +102,19 @@ class School < ApplicationRecord
   end
 
   def ops_guides
-    Person.where(id: school_relationships.active.tagged_with(Person::OPS_GUIDE).pluck(:person_id))
+    @ops_guides ||= people.joins(:school_relationships)
+                          .where(school_relationships: { school_id: id, end_date: nil })
+                          .where.not(school_relationships: { start_date: nil })
+                          .tagged_with(Person::OPS_GUIDE)
+    # Person.where(id: school_relationships.active.tagged_with(Person::OPS_GUIDE).pluck(:person_id))
   end
 
   def rgls
-    Person.where(id: school_relationships.active.tagged_with(Person::RGL).pluck(:person_id))
+    @rgls ||= people.joins(:school_relationships)
+                    .where(school_relationships: { school_id: id, end_date: nil })
+                    .where.not(school_relationships: { start_date: nil })
+                    .tagged_with(Person::RGL)
+    # Person.where(id: school_relationships.active.tagged_with(Person::RGL).pluck(:person_id))
   end
 
   def etls
@@ -118,11 +126,18 @@ class School < ApplicationRecord
   end
 
   def active_partners
-    Person.where(id: school_relationships.partners.active.pluck(:person_id))
+    @active_partners ||= people.joins(:school_relationships)
+                               .where(school_relationships: { school_id: id, end_date: nil })
+                               .where.not(school_relationships: { start_date: nil })
+                               .tagged_with([Person::TL, Person::ETL], any: true)
+    # Person.where(id: school_relationships.partners.active.pluck(:person_id))
   end
 
   def invited_partners
-    Person.where(id: school_relationships.partners.invited.pluck(:person_id))
+    @invited_partners ||= people.joins(:school_relationships)
+                                .where(school_relationships: { school_id: id, start_date: nil, end_date: nil })
+                                .tagged_with([Person::TL, Person::ETL], any: true)
+    # Person.where(id: school_relationships.partners.invited.pluck(:person_id))
   end
 
   def partner_count

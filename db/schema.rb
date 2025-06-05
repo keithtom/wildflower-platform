@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_16_193755) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_05_143533) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -363,9 +363,13 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_16_193755) do
     t.string "title"
     t.index ["airtable_id"], name: "index_school_relationships_on_airtable_id", unique: true
     t.index ["deleted_at"], name: "index_school_relationships_on_deleted_at"
+    t.index ["end_date"], name: "index_school_relationships_on_end_date"
     t.index ["external_identifier"], name: "index_school_relationships_on_external_identifier", unique: true
+    t.index ["kind"], name: "index_school_relationships_on_kind"
     t.index ["person_id", "school_id"], name: "index_school_relationships_on_person_id_and_school_id", unique: true, where: "((deleted_at IS NULL) AND (end_date IS NULL))"
     t.index ["person_id"], name: "index_school_relationships_on_person_id"
+    t.index ["school_id", "deleted_at", "end_date"], name: "index_school_relationships_on_school_active", where: "((deleted_at IS NULL) AND (end_date IS NULL))"
+    t.index ["school_id", "kind", "deleted_at", "end_date"], name: "index_school_relationships_on_school_kind_deleted_end", where: "(deleted_at IS NULL)"
     t.index ["school_id"], name: "index_school_relationships_on_school_id"
   end
 

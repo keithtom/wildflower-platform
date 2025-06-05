@@ -24,9 +24,9 @@ module V1
       person.taggings.select { |tagging| tagging.context == 'ages_served' }.map { |tagging| tagging.tag.name }
     end
 
-    belongs_to :pod, id_method_name: :external_identifier do |school|
-      school.pod
-    end
+    # belongs_to :pod, id_method_name: :external_identifier do |school|
+    #   school.pod
+    # end
 
     has_many :school_relationships, serializer: V1::SchoolRelationshipSerializer,
                                     id_method_name: :external_identifier do |school|
