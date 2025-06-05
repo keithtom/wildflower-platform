@@ -9,7 +9,7 @@ class V1::SchoolsController < ApiController
     serialization_options = {}
 
     query = School
-    includes = [:banner_image_attachment, :logo_image_attachment, :pod, :people, :address,
+    includes = [:banner_image_attachment, :logo_image_attachment, :people, :address,
                                [:workflow], [:sister_schools], { taggings: [:tag], school_relationships: [:person] }]
     if serialization_fields
       serialization_options = { fields: { school: serialization_fields.map(&:to_sym) } }
@@ -126,7 +126,7 @@ class V1::SchoolsController < ApiController
 
   def school_options
     options = {
-      include: %i[people school_relationships school_relationships.person address pod sister_schools]
+      include: %i[people school_relationships school_relationships.person address sister_schools]
     }
   end
 
