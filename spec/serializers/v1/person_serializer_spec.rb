@@ -20,7 +20,7 @@ describe V1::PersonSerializer do
     expect(json_document['data']).to have_relationships(:address, :schools, :schoolRelationships)
 
     expect(json_document['data']).to have_relationship(:address).with_data({'id' => 'add123', 'type' => 'address'})
-    expect(json_document['data']).to have_relationship(:schools).with_data([{'id' => 'sch123', 'type' => 'school'}])
+    expect(json_document['data']).to have_relationship(:schools).with_data([{'id' => 'sch123', 'type' => 'schoolSearch'}])
     expect(json_document['data']).to have_relationship(:schoolRelationships).with_data([{'id' => 'sr123', 'type' => 'schoolRelationship'}])
   end
 end
