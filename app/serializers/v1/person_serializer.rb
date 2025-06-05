@@ -36,12 +36,26 @@ module V1
       location(person)
     end
 
-    has_many :schools, id_method_name: :external_identifier do |person|
-      person.schools
+    has_many :schools, serializer: V1::SchoolSearchSerializer, id_method_name: :external_identifier do |person, params|
+      if params[:network]
+        School.joins(:school_relationships)
+              .where(school_relationships: { person_id: person.id })
+              .merge(SchoolRelationship.tagged_with([Person::ETL, Person::TL, Person::BOARD_MEMBER], any: true))
+              .includes(:address, :banner_image_attachment, :logo_image_attachment, taggings: [:tag])
+              .select('schools.*')
+      else
+        person.schools
+      end
     end
 
-    has_many :school_relationships, id_method_name: :external_identifier do |person|
-      person.school_relationships
+    has_many :school_relationships, id_method_name: :external_identifier do |person, params|
+      if params[:network]
+        person.school_relationships.includes(:school, taggings: [:tag]).tagged_with(
+          [Person::ETL, Person::TL, Person::BOARD_MEMBER], any: true
+        )
+      else
+        person.school_relationships
+      end
     end
 
     # consider not serializing this for privacy reasons.  how does front-end use it?

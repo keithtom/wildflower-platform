@@ -36,8 +36,11 @@ class V1::PeopleController < ApiController
 
   def show
     if params[:network] # for directory usage
-      @person = Person.includes(:schools, :school_relationships).find_by!(external_identifier: params[:id])
-      render json: V1::PersonSerializer.new(@person, include: %i[schools school_relationships address])
+                    @person = Person.includes(taggings: [:tag]).find_by!(external_identifier: params[:id])
+                    render json: V1::PersonSerializer.new(@person,
+                                                          { include: %i[schools school_relationships address],
+
+                                                            params: { network: true } })
     else
       @person = Person.find_by!(external_identifier: params[:id])
       render json: V1::PersonSerializer.new(@person)
