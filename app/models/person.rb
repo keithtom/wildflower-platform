@@ -9,7 +9,7 @@ class Person < ApplicationRecord
   audited
 
   ROLES = [OPS_GUIDE = 'Ops Guide', RGL = 'Regional Entrepreneur', ETL = 'Emerging Teacher Leader',
-           TL = 'Teacher Leader']
+           TL = 'Teacher Leader', BOARD_MEMBER = 'Board Member']
 
   searchkick callbacks: :async, word_middle: %i[name schools about montessori_certified_levels],
              text_middle: %i[languages race_ethnicities roles genders]

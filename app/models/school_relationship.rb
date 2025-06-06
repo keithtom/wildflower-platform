@@ -15,6 +15,7 @@ class SchoolRelationship < ApplicationRecord
   scope :active, -> { where.not(start_date: nil).where(end_date: nil) }
   scope :invited, -> { where(start_date: nil).where(end_date: nil) }
   scope :partners, -> { tagged_with([Person::TL, Person::ETL], any: true) }
+  scope :board_members, -> { tagged_with(Person::BOARD_MEMBER) }
 
   private
 
