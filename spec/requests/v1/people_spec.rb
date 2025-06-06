@@ -21,10 +21,150 @@ describe 'API V1 People', type: :request do
       end
     end
 
-    describe 'GET /v1/people/1' do
+    describe 'GET /v1/people/:id' do
+      let(:person) { create(:person) }
+
       it 'succeeds' do
-        get "/v1/people/#{Person.first.external_identifier}", headers: headers
+        get "/v1/people/#{person.external_identifier}", headers: headers
         expect(response).to have_http_status(:success)
+      end
+
+      context 'when network parameter is true' do
+        let!(:school1) { create(:school) }
+        let!(:school2) { create(:school) }
+        let!(:school3) { create(:school) }
+
+        # Create school relationships with different roles
+        let!(:etl_relationship) do
+          create(:school_relationship,
+                 person:,
+                 school: school1,
+                 end_date: nil,
+                 role_list: [Person::ETL])
+        end
+
+        let!(:tl_relationship) do
+          create(:school_relationship,
+                 person:,
+                 school: school2,
+                 end_date: nil,
+                 role_list: [Person::TL])
+        end
+
+        let!(:board_member_relationship) do
+          create(:school_relationship,
+                 person:,
+                 school: school3,
+                 end_date: nil,
+                 role_list: [Person::BOARD_MEMBER])
+        end
+
+        # Create a relationship that should NOT be included (no relevant role)
+        let!(:other_relationship) do
+          create(:school_relationship,
+                 person:,
+                 school: create(:school),
+                 end_date: nil,
+                 role_list: ['Other Role'])
+        end
+
+        it 'returns success with network-filtered data' do
+          Bullet.enable = false
+          get "/v1/people/#{person.external_identifier}",
+              params: { network: true },
+              headers: headers
+          Bullet.enable = true
+
+          expect(response).to have_http_status(:success)
+          expect(json_response['data']).to have_type('person')
+        end
+
+        it 'includes relationships with ETL, TL, and BOARD_MEMBER roles' do
+          Bullet.enable = false
+          get "/v1/people/#{person.external_identifier}",
+              params: { network: true },
+              headers: headers
+          Bullet.enable = true
+
+          included_school_relationships = json_response['included']
+                                           .select { |item| item['type'] == 'schoolRelationship' }
+
+          expect(included_school_relationships.length).to eq(3)
+
+          # Verify the correct relationships are included
+          relationship_ids = included_school_relationships.map { |rel| rel['id'] }
+          expect(relationship_ids).to include(etl_relationship.external_identifier)
+          expect(relationship_ids).to include(tl_relationship.external_identifier)
+          expect(relationship_ids).to include(board_member_relationship.external_identifier)
+          expect(relationship_ids).not_to include(other_relationship.external_identifier)
+        end
+
+        it 'includes only schools associated with ETL, TL, and BOARD_MEMBER roles' do
+          Bullet.enable = false
+          get "/v1/people/#{person.external_identifier}",
+              params: { network: true },
+              headers: headers
+          Bullet.enable = true
+
+          included_schools = json_response['included']
+                             .select { |item| item['type'] == 'schoolSearch' }
+
+          expect(included_schools.length).to eq(3)
+
+          # Verify the correct schools are included
+          school_ids = included_schools.map { |school| school['id'] }
+          expect(school_ids).to include(school1.external_identifier)
+          expect(school_ids).to include(school2.external_identifier)
+          expect(school_ids).to include(school3.external_identifier)
+          expect(school_ids).not_to include(other_relationship.school.external_identifier)
+        end
+
+        it 'includes address data' do
+          person.create_address(city: 'Test City', state: 'Test State')
+
+          Bullet.enable = false
+          get "/v1/people/#{person.external_identifier}",
+              params: { network: true },
+              headers: headers
+          Bullet.enable = true
+
+          included_addresses = json_response['included']
+                               .select { |item| item['type'] == 'address' }
+
+          expect(included_addresses.length).to eq(1)
+          expect(included_addresses.first['attributes']['city']).to eq('Test City')
+        end
+
+        context 'when person has no network-relevant relationships' do
+          let(:person_without_network_roles) { create(:person) }
+
+          before do
+            # Create relationships without ETL, TL, or BOARD_MEMBER roles
+            create(:school_relationship,
+                   person: person_without_network_roles,
+                   school: create(:school),
+                   end_date: nil,
+                   role_list: ['Some Other Role'])
+          end
+
+          it 'returns empty schools and school_relationships' do
+            get "/v1/people/#{person_without_network_roles.external_identifier}",
+                params: { network: true },
+                headers: headers
+
+            # Should still return the person but with empty related arrays
+            expect(response).to have_http_status(:success)
+            expect(json_response['data']).to have_type('person')
+
+            included_school_relationships = json_response['included']
+                                           &.select { |item| item['type'] == 'schoolRelationship' } || []
+            included_schools = json_response['included']
+                              &.select { |item| item['type'] == 'school' } || []
+
+            expect(included_school_relationships).to be_empty
+            expect(included_schools).to be_empty
+          end
+        end
       end
     end
 
@@ -179,7 +319,7 @@ describe 'API V1 People', type: :request do
       end
     end
 
-    context 'DELETTE /v1/people/1' do
+    context 'DELETE /v1/people/1' do
       let(:person) { create(:person) }
 
       it 'returns unauthorized status' do
