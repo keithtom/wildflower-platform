@@ -106,7 +106,7 @@ class School < ApplicationRecord
                           .where(school_relationships: { school_id: id, end_date: nil })
                           .where.not(school_relationships: { start_date: nil })
                           .tagged_with(Person::OPS_GUIDE)
-    # Person.where(id: school_relationships.active.tagged_with(Person::OPS_GUIDE).pluck(:person_id))
+                          .distinct
   end
 
   def rgls
@@ -114,7 +114,7 @@ class School < ApplicationRecord
                     .where(school_relationships: { school_id: id, end_date: nil })
                     .where.not(school_relationships: { start_date: nil })
                     .tagged_with(Person::RGL)
-    # Person.where(id: school_relationships.active.tagged_with(Person::RGL).pluck(:person_id))
+                    .distinct
   end
 
   def etls
@@ -130,7 +130,7 @@ class School < ApplicationRecord
                                .where(school_relationships: { school_id: id, end_date: nil })
                                .where.not(school_relationships: { start_date: nil })
                                .tagged_with([Person::TL, Person::ETL], any: true)
-    # Person.where(id: school_relationships.partners.active.pluck(:person_id))
+                               .distinct
   end
 
   def invited_partners
