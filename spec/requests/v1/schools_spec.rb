@@ -194,6 +194,28 @@ describe 'API V1 School', type: :request do
         expect(json_response['included']).to include(have_type(:person).and(have_attribute(:email)))
         Bullet.enable = true
       end
+
+      context 'with serialization_fields parameter' do
+        it 'returns only requested fields and relationships' do
+          get "/v1/schools/#{school.external_identifier}?serialization_fields=name,status,school_relationships",
+              headers: { 'ACCEPT' => 'application/json' }
+
+          expect(response).to have_http_status(:success)
+
+          # Check that only requested attributes are present
+          attributes = json_response['data']['attributes']
+          expect(attributes.keys).to match_array(%w[name status])
+          expect(attributes.keys).not_to include('about', 'maxEnrollment', 'numClassrooms')
+
+          # Check that school_relationships are included
+          expect(json_response['data']['relationships']).to have_key('schoolRelationships')
+          expect(json_response['included']).to include(have_type(:schoolRelationship))
+
+          # Check that other relationships are not included
+          relationships = json_response['data']['relationships']
+          expect(relationships.keys).not_to include('address', 'sister_schools')
+        end
+      end
     end
 
     describe 'PUT /v1/schools/1' do
