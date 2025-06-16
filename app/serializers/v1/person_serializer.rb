@@ -36,7 +36,10 @@ module V1
       location(person)
     end
 
-    has_many :schools, serializer: V1::SchoolSearchSerializer, id_method_name: :external_identifier do |person, params|
+    has_many :schools,
+             serializer: V1::SchoolSearchSerializer,
+             id_method_name: :external_identifier,
+             if: ->(_person, params) { params[:school_id].nil? } do |person, params|
       if params[:network]
         School.joins(:school_relationships)
               .where(school_relationships: { person_id: person.id })
@@ -48,7 +51,9 @@ module V1
       end
     end
 
-    has_many :school_relationships, id_method_name: :external_identifier do |person, params|
+    has_many :school_relationships,
+             id_method_name: :external_identifier,
+             if: ->(_person, params) { params[:school_id].nil? } do |person, params|
       if params[:network]
         person.school_relationships.includes(:school, taggings: [:tag]).tagged_with(
           [Person::ETL, Person::TL, Person::BOARD_MEMBER], any: true
