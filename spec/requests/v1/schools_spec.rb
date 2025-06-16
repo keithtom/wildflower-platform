@@ -216,6 +216,33 @@ describe 'API V1 School', type: :request do
           expect(relationships.keys).not_to include('address', 'sister_schools')
         end
       end
+
+      context 'with an included person that has several school_relationships' do
+        let!(:other_school) { create(:school) }
+        let!(:another_school) { create(:school) }
+
+        before do
+          # Create additional relationships for the person
+          create(:school_relationship, person:, school: other_school)
+          create(:school_relationship, person:, school: another_school)
+        end
+
+        it 'does not include schools or school_relationships in the included person object' do
+          Bullet.enable = false
+          get "/v1/schools/#{school.external_identifier}", headers: { 'ACCEPT' => 'application/json' }
+          Bullet.enable = true
+          expect(response).to have_http_status(:success)
+
+          # Find the person in the included array
+          included_person = json_response['included'].find do |inc|
+            inc['type'] == 'person' && inc['id'] == person.external_identifier
+          end
+
+          # Verify the person does not have schools or school_relationships included
+          expect(included_person['relationships']).not_to include('schools')
+          expect(included_person['relationships']).not_to include('schoolRelationships')
+        end
+      end
     end
 
     describe 'PUT /v1/schools/1' do
