@@ -43,13 +43,37 @@ class V1::SchoolsController < ApiController
   end
 
   def show
-    if params[:network] # for directory usage
-      @school = School.includes(*optimized_query).find_by!(external_identifier: params[:id])
-      render json: V1::SchoolSerializer.new(@school, school_options)
-    else
-      @school = School.includes(*optimized_query).find_by!(external_identifier: params[:id])
-      render json: V1::SchoolSerializer.new(@school, school_options)
+    serialization_fields = filter_params[:serialization_fields]&.split(',')
+    serialization_options = school_options
+    includes = optimized_query
+
+    if serialization_fields
+      serialization_options = {
+        fields: { school: serialization_fields.map(&:to_sym) },
+        include: []
+      }
+
+      # Map fields to their required includes
+      required_includes = []
+      if serialization_fields.include?('school_relationships')
+        required_includes << { school_relationships: [:person] }
+        serialization_options[:include] << :school_relationships
+        serialization_options[:include] << :'school_relationships.person'
+      end
+      if serialization_fields.include?('address')
+        required_includes << :address
+        serialization_options[:include] << :address
+      end
+      if serialization_fields.include?('sister_schools')
+        required_includes << :sister_schools
+        serialization_options[:include] << :sister_schools
+      end
+
+      includes = required_includes.empty? ? [[]] : required_includes
     end
+
+    @school = School.includes(*includes).find_by!(external_identifier: params[:id])
+    render json: V1::SchoolSerializer.new(@school, serialization_options)
   end
 
   def update
