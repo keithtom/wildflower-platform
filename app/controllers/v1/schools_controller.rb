@@ -45,18 +45,20 @@ class V1::SchoolsController < ApiController
   def show
     serialization_fields = filter_params[:serialization_fields]&.split(',')
     serialization_options = school_options
+    serialization_options[:params] = { school_id: params[:id] }
     includes = optimized_query
 
     if serialization_fields
       serialization_options = {
         fields: { school: serialization_fields.map(&:to_sym) },
-        include: []
+        include: [],
+        params: { school_id: params[:id] }
       }
 
       # Map fields to their required includes
       required_includes = []
       if serialization_fields.include?('school_relationships')
-        required_includes << { school_relationships: [:person] }
+        required_includes << :school_relationships
         serialization_options[:include] << :school_relationships
       end
       if serialization_fields.include?('address')
@@ -149,7 +151,7 @@ class V1::SchoolsController < ApiController
 
   def school_options
     options = {
-      include: %i[people school_relationships school_relationships.person address sister_schools]
+      include: %i[people school_relationships address sister_schools]
     }
   end
 
@@ -172,7 +174,7 @@ class V1::SchoolsController < ApiController
       [:sister_schools],
       [:school_relationships],
       { taggings: [:tag],
-        people: [:address, :profile_image_attachment, { taggings: [:tag] }] }
+        people: [:profile_image_attachment] }
     ]
   end
 
