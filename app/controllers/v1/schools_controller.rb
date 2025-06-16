@@ -45,12 +45,14 @@ class V1::SchoolsController < ApiController
   def show
     serialization_fields = filter_params[:serialization_fields]&.split(',')
     serialization_options = school_options
+    serialization_options[:params] = { school_id: params[:id] }
     includes = optimized_query
 
     if serialization_fields
       serialization_options = {
         fields: { school: serialization_fields.map(&:to_sym) },
-        include: []
+        include: [],
+        params: { school_id: params[:id] }
       }
 
       # Map fields to their required includes
