@@ -58,7 +58,6 @@ class V1::SchoolsController < ApiController
       if serialization_fields.include?('school_relationships')
         required_includes << { school_relationships: [:person] }
         serialization_options[:include] << :school_relationships
-        serialization_options[:include] << :'school_relationships.person'
       end
       if serialization_fields.include?('address')
         required_includes << :address
@@ -171,8 +170,8 @@ class V1::SchoolsController < ApiController
       :logo_image_attachment,
       [:workflow],
       [:sister_schools],
+      [:school_relationships],
       { taggings: [:tag],
-        school_relationships: [:person],
         people: [:address, :profile_image_attachment, { taggings: [:tag] }] }
     ]
   end
