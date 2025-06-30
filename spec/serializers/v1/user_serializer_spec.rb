@@ -6,7 +6,7 @@ describe V1::UserSerializer do
   let(:user) { build(:user) }
   let(:ssj_team) { build(:ssj_team) }
   let!(:workflow) { create(:workflow_instance_workflow) }
-  let!(:school) { create(:school, workflow_id: workflow.id) }
+  let!(:school) { create(:school, workflow_id: workflow.id, status: School::Status::OPEN) }
   let!(:school_relationship) { create(:school_relationship, person_id: person.id, school_id: school.id) }
   let(:person) { create(:person) }
 
