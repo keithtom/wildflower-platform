@@ -40,6 +40,11 @@ class V1::PeopleController < ApiController
       render json: V1::PersonSerializer.new(@person,
                                             { include: %i[schools school_relationships address],
                                               params: { network: true } })
+    elsif params[:included]
+      @person = Person.find_by!(external_identifier: params[:id])
+      render json: V1::PersonSerializer.new(@person, {
+                                              include: %i[schools school_relationships]
+                                            })
     else
       @person = Person.find_by!(external_identifier: params[:id])
       render json: V1::PersonSerializer.new(@person)
