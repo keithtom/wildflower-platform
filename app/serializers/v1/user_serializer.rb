@@ -55,6 +55,8 @@ module V1
       school_relationships = person&.school_relationships
       if person && school_relationships.length > 0
         school_relationships.map do |sr|
+          next unless [School::Status::OPEN, School::Status::EMERGING].include?(sr.school.status)
+
           {
             id: sr.school&.external_identifier,
             name: sr.school&.name,
