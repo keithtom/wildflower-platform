@@ -54,20 +54,20 @@ module V1
       person = user.person
       school_relationships = person&.school_relationships
       if person && school_relationships.length > 0
-        school_relationships.map do |sr|
-          next unless [School::Status::OPEN, School::Status::EMERGING].include?(sr.school.status)
-
-          {
-            id: sr.school&.external_identifier,
-            name: sr.school&.name,
-            workflowId: sr.school&.workflow&.external_identifier, # DEPRECATE
-            workflowIds: sr.school&.workflows&.visible&.map(&:external_identifier),
-            affiliated: sr.school&.affiliated,
-            start_date: sr.start_date,
-            end_date: sr.end_date,
-            role_list: sr.role_list
-          }
-        end
+        school_relationships
+          .select { |sr| [School::Status::OPEN, School::Status::EMERGING].include?(sr.school.status) }
+          .map do |sr|
+            {
+              id: sr.school&.external_identifier,
+              name: sr.school&.name,
+              workflowId: sr.school&.workflow&.external_identifier, # DEPRECATE
+              workflowIds: sr.school&.workflows&.visible&.map(&:external_identifier),
+              affiliated: sr.school&.affiliated,
+              start_date: sr.start_date,
+              end_date: sr.end_date,
+              role_list: sr.role_list
+            }
+          end
       end
     end
   end
