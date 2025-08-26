@@ -17,6 +17,8 @@ module Workflow
         def run
           return unless validate_dependency_creation
 
+          return if validate_dependency_instance_already_exists
+
           create_dependency_instance
           @dependency_instance
         end
@@ -58,6 +60,21 @@ module Workflow
           return unless @workable_process.nil?
 
           Rails.logger.info("workable not found for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}")
+        end
+
+        def validate_dependency_instance_already_exists
+          if @dependency_definition.instances.exists?(
+            workflow: @wf_instance,
+            workable: @workable_process,
+            prerequisite_workable: @prerequisite_workable
+          )
+
+            Rails.logger.info("dependency instance already exists for dependency def #{@dependency_definition.id} and workflow instance id #{@wf_instance.id}
+            and workable id #{@workable_process.id} and prerequisite_workable id #{@prerequisite_workable.id}")
+
+            return true
+          end
+          false
         end
 
         def create_dependency_instance
