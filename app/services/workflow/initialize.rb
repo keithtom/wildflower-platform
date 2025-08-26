@@ -2,9 +2,10 @@
 class Workflow::Initialize < BaseService
   def initialize(wf_instance_id)
     @wf_instance = Workflow::Instance::Workflow.find(wf_instance_id)
-    unless @wf_instance.processes.empty?
+    if !@wf_instance.definition.recurring? && !@wf_instance.processes.empty?
       raise "workflow instance #{@wf_instance.external_identifier} has already been instantiated with processes"
     end
+
     @workflow_definition = @wf_instance.definition
   end
 
@@ -36,9 +37,7 @@ class Workflow::Initialize < BaseService
 
   def update_process_dependencies
     @wf_instance.processes.each do |process|
-      if process.prerequisites.empty?
-        process.prerequisites_met!
-      end
+      process.prerequisites_met! if process.prerequisites.empty?
     end
   end
 end
