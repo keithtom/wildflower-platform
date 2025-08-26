@@ -125,6 +125,10 @@ RSpec.describe Workflow::Instance::Process::Create do
     context 'when no step instances exist' do
       let!(:existing_process) { create(:workflow_instance_process, definition: process_def, workflow: wf_instance) }
 
+      before do
+        subject.instance_variable_set(:@process_instances, [existing_process])
+      end
+
       it 'creates step instances for each step definition' do
         expect do
           subject.create_step_instances
