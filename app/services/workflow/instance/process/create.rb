@@ -34,6 +34,9 @@ module Workflow
               end # only create processes in the future for publishing
             end
 
+            # Do not create duplicate process instances, process should be unique by workflow instance id and due_date.
+            next if @process_definition.instances.where(workflow_id: @wf_instance.id).where(due_date:).exists?
+
             process_instance = @process_definition.instances.create!(attributes)
             process_instance.category_list = @process_definition.category_list
             process_instance.phase_list = @process_definition.phase_list
@@ -59,6 +62,10 @@ module Workflow
                                                                                     :completion_type, :min_worktime, :max_worktime, :decision_question,
                                                                                     :decision_question_es, :position)
               attributes.merge!(process_id: process_instance.id)
+
+              # check this process instance doesn't already have the same step instance
+              next if process_instance.steps.exists?(definition_id: step_definition.id)
+
               step_definition.instances.create!(attributes)
             end
           end
