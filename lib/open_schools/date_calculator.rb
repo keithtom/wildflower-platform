@@ -2,8 +2,8 @@ module OpenSchools
   class DateCalculator
     def due_date(month)
       # hardcoding school year for now.
-      school_year_start = 2024
-      school_year_end = 2025
+      school_year_start = 2025
+      school_year_end = 2026
       year = month < 9 ? school_year_end : school_year_start
       Date.new(year, month, 1).end_of_month
     end
