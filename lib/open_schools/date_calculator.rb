@@ -1,9 +1,31 @@
 module OpenSchools
   class DateCalculator
+    # Class variables for school year configuration
+    @@school_year_start = 2025
+    @@school_year_end = 2026
+
+    class << self
+      def school_year_start
+        @@school_year_start
+      end
+
+      def school_year_end
+        @@school_year_end
+      end
+
+      def school_year_start=(year)
+        @@school_year_start = year
+      end
+
+      def school_year_end=(year)
+        @@school_year_end = year
+      end
+    end
+
     def due_date(month)
-      # hardcoding school year for now.
-      school_year_start = 2024
-      school_year_end = 2025
+      # Use class variables for school year configuration
+      school_year_start = self.class.school_year_start
+      school_year_end = self.class.school_year_end
       year = month < 9 ? school_year_end : school_year_start
       Date.new(year, month, 1).end_of_month
     end
