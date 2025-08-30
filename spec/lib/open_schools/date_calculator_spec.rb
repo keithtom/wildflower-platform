@@ -3,8 +3,37 @@
 require 'rails_helper'
 
 RSpec.describe OpenSchools::DateCalculator do
+  describe 'class variables' do
+    it 'allows setting and getting school year values' do
+      original_start = OpenSchools::DateCalculator.school_year_start
+      original_end = OpenSchools::DateCalculator.school_year_end
+
+      OpenSchools::DateCalculator.school_year_start = 2023
+      OpenSchools::DateCalculator.school_year_end = 2024
+
+      expect(OpenSchools::DateCalculator.school_year_start).to eq(2023)
+      expect(OpenSchools::DateCalculator.school_year_end).to eq(2024)
+
+      # Reset to original values
+      OpenSchools::DateCalculator.school_year_start = original_start
+      OpenSchools::DateCalculator.school_year_end = original_end
+    end
+  end
+
   describe '#due_date' do
     let(:subject) { OpenSchools::DateCalculator.new }
+
+    before do
+      # Set school year to 2024-2025 for these tests
+      OpenSchools::DateCalculator.school_year_start = 2024
+      OpenSchools::DateCalculator.school_year_end = 2025
+    end
+
+    after do
+      # Reset to default 2025-2026
+      OpenSchools::DateCalculator.school_year_start = 2025
+      OpenSchools::DateCalculator.school_year_end = 2026
+    end
 
     context 'when it is the fall' do
       it 'is beginning of school year' do
@@ -33,6 +62,18 @@ RSpec.describe OpenSchools::DateCalculator do
 
   describe '#suggested_start_date' do
     let(:subject) { OpenSchools::DateCalculator.new }
+
+    before do
+      # Set school year to 2024-2025 for these tests
+      OpenSchools::DateCalculator.school_year_start = 2024
+      OpenSchools::DateCalculator.school_year_end = 2025
+    end
+
+    after do
+      # Reset to default 2025-2026
+      OpenSchools::DateCalculator.school_year_start = 2025
+      OpenSchools::DateCalculator.school_year_end = 2026
+    end
 
     context 'when due date is in a month that has 31 days' do
       let(:due_date) { Date.new(2024, 12, 31) }
