@@ -406,6 +406,15 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
 
         before do
           allow_any_instance_of(ActiveSupport::TimeZone).to receive(:today).and_return(Date.new(2025, 3, 15))
+          # Mock DateCalculator to use 2024-2025 school year for consistent test behavior
+          OpenSchools::DateCalculator.school_year_start = 2024
+          OpenSchools::DateCalculator.school_year_end = 2025
+        end
+
+        after do
+          # Reset to default 2025-2026
+          OpenSchools::DateCalculator.school_year_start = 2025
+          OpenSchools::DateCalculator.school_year_end = 2026
         end
 
         it 'does not remove the started or completed ones, creates the new ones in the future' do
@@ -449,6 +458,15 @@ RSpec.describe Workflow::Definition::Workflow::Publish do
 
         before do
           allow_any_instance_of(ActiveSupport::TimeZone).to receive(:today).and_return(Date.new(2025, 3, 15))
+          # Mock DateCalculator to use 2024-2025 school year for consistent test behavior
+          OpenSchools::DateCalculator.school_year_start = 2024
+          OpenSchools::DateCalculator.school_year_end = 2025
+        end
+
+        after do
+          # Reset to default 2025-2026
+          OpenSchools::DateCalculator.school_year_start = 2025
+          OpenSchools::DateCalculator.school_year_end = 2026
         end
 
         it 'does not remove the started or completed ones, creates the new ones in the future' do
