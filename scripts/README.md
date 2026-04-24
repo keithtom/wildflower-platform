@@ -60,3 +60,14 @@ For production use:
 3. Run during low-traffic periods
 4. Monitor the job queue for any failed jobs
 5. Check the logs for any initialization errors
+
+## How to run for 2026-2027 School Year
+1. Update places in code where school year is hardcoded to 2025-2026
+2. Commit code changes to main branch
+3. Open PR to merge main to dev. Merge in.
+4. Open PR to merge dev to staging. Merge in.
+5. Open PR to merge staging to production. Merge in.
+6. Deploy code to production via Render (make sure to do both api and worker)
+7. SSH into the production server via Render
+8. Via rails console, run the script
+
